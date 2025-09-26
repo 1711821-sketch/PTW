@@ -54,7 +54,17 @@ if (isset($_GET['approve_id']) && isset($_GET['role'])) {
     $approveRoleLc = strtolower($approveRole);
     $sessionRoleLc = strtolower($sessionRole);
 if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
-        foreach ($entries as &$entry) {
+        // CRITICAL FIX: Load ALL entries from file to avoid filtering issues
+        // DO NOT use the filtered $entries array as it may be limited to entrepreneur's WOs
+        $allEntries = [];
+        if (file_exists($data_file)) {
+            $allEntries = json_decode(file_get_contents($data_file), true);
+            if (!is_array($allEntries)) {
+                $allEntries = [];
+            }
+        }
+        
+        foreach ($allEntries as &$entry) {
             // Skip entries whose ID does not match the approval request
             if ((string)($entry['id'] ?? '') !== (string)$approveId) {
                 continue;
@@ -75,8 +85,8 @@ if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
             ];
             // Set approval for today for the role
             $entry['approvals'][$approveRoleLc] = $today;
-            // Persist the updated entries back to the JSON file
-            file_put_contents($data_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            // Persist ALL entries back to the JSON file (not just filtered ones)
+            file_put_contents($data_file, json_encode($allEntries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
             break;
         }
     }
@@ -88,9 +98,19 @@ if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
 $msg = '';
 if ($role === 'admin' && isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
+    
+    // CRITICAL FIX: Load ALL entries from file to avoid filtering issues
+    $allEntries = [];
+    if (file_exists($data_file)) {
+        $allEntries = json_decode(file_get_contents($data_file), true);
+        if (!is_array($allEntries)) {
+            $allEntries = [];
+        }
+    }
+    
     $new_entries = [];
     $deleted = false;
-    foreach ($entries as $entry) {
+    foreach ($allEntries as $entry) {
         if (isset($entry['id']) && (string)$entry['id'] === (string)$delete_id) {
             $deleted = true;
             continue;
@@ -99,7 +119,18 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     }
     if ($deleted) {
         file_put_contents($data_file, json_encode($new_entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $entries = $new_entries;
+        // Update the filtered entries for display purposes
+        $entries = array_filter($new_entries, function ($entry) use ($role) {
+            if (($role ?? '') === 'entreprenor') {
+                $firma = $_SESSION['entreprenor_firma'] ?? '';
+                if ($firma !== '') {
+                    return isset($entry['entreprenor_firma']) && $entry['entreprenor_firma'] === $firma;
+                }
+                return false;
+            }
+            return true;
+        });
+        $entries = array_values($entries);
         $msg = 'WO er blevet slettet.';
     } else {
         $msg = 'Kunne ikke finde WO til sletning.';

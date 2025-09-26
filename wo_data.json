@@ -1,35 +1,29 @@
 [
     {
-        "id": "27",
-        "work_order_no": "2561226",
-        "p_number": "P6251830",
+        "id": "29",
+        "work_order_no": "2561156",
+        "p_number": "P6251732",
         "mps_nr": "",
-        "description": "Fjerne vold ved 70'ertanke (N-tanke) Forebyggende (ZPRE)",
-        "p_description": "C.G-jensen, fjerne vold 70ër tanke Vis instruktioner INDLEDENDE GODKENDELSE Beskrivelse",
-        "jobansvarlig": "Edin Zubcevic",
-        "telefon": "24664369",
-        "oprettet_af": "12630",
-        "oprettet_dato": "2025-09-26",
+        "description": "Got, omlægning af kabler ved 2304",
+        "p_description": "Delpro, omlægning af kabler til D5 Vis instruktioner INDLEDENDE GODKENDELSE Beskrivelse",
+        "jobansvarlig": "Thomas Christensen",
+        "telefon": "24663498",
+        "oprettet_af": "13116",
+        "oprettet_dato": "2025-09-08",
         "components": "",
-        "entreprenor_firma": "CG Jensen A\/S",
-        "entreprenor_kontakt": "EDIZU",
+        "entreprenor_firma": "DELPRO A\/S",
+        "entreprenor_kontakt": "",
         "status": "active",
-        "latitude": "55.205903",
-        "longitude": "11.264111",
+        "latitude": "55.206383",
+        "longitude": "11.254034",
         "notes": "",
         "approvals": {
-            "opgaveansvarlig": "2025-09-26",
             "entreprenor": "2025-09-26"
         },
         "approval_history": [
             {
-                "timestamp": "2025-09-26 10:30",
-                "user": "admin",
-                "role": "opgaveansvarlig"
-            },
-            {
-                "timestamp": "2025-09-26 10:31",
-                "user": "morten",
+                "timestamp": "2025-09-26 19:19",
+                "user": "del",
                 "role": "entreprenor"
             }
         ]
