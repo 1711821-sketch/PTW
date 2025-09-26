@@ -415,12 +415,49 @@ if (strtolower($role) === 'entreprenor') {
                     icon = grayIcon;
                 }
                 var marker = L.marker([parseFloat(lat), parseFloat(lng)], { icon: icon });
-                var popup = '<strong>WO Nr: ' + (e.work_order_no || '') + '</strong><br>' +
-                    'Beskrivelse: ' + (e.description || '') + '<br>' +
-                    'Entreprenør: ' + (e.entreprenor_firma || '') +
-                    (e.entreprenor_kontakt ? ' (' + e.entreprenor_kontakt + ')' : '') + '<br>' +
-                    '<a href="print_wo.php?id=' + encodeURIComponent(e.id) + '" target="_blank">Åbn WO</a>';
-                marker.bindPopup(popup);
+                
+                // Create modern popup content
+                var statusText = status === 'planning' ? 'Planlagt' : status === 'active' ? 'Aktiv' : 'Afsluttet';
+                var statusIcon = status === 'planning' ? '📋' : status === 'active' ? '🔥' : '✅';
+                
+                var popup = '<div class="wo-popup">' +
+                    '<div class="wo-popup-header">' +
+                        '<h3 class="wo-popup-title">' + statusIcon + ' WO ' + (e.work_order_no || 'N/A') + '</h3>' +
+                        '<span class="wo-popup-status ' + status + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<div class="wo-popup-details">' +
+                        '<div class="wo-popup-detail">' +
+                            '<span class="wo-popup-label">Beskrivelse:</span>' +
+                            '<span class="wo-popup-value">' + (e.description || 'Ingen beskrivelse') + '</span>' +
+                        '</div>' +
+                        (e.jobansvarlig ? '<div class="wo-popup-detail">' +
+                            '<span class="wo-popup-label">Jobansvarlig:</span>' +
+                            '<span class="wo-popup-value">' + e.jobansvarlig + '</span>' +
+                        '</div>' : '') +
+                        '<div class="wo-popup-detail">' +
+                            '<span class="wo-popup-label">Entreprenør:</span>' +
+                            '<span class="wo-popup-value">' + (e.entreprenor_firma || 'Ikke angivet') + '</span>' +
+                        '</div>' +
+                        (e.entreprenor_kontakt ? '<div class="wo-popup-detail">' +
+                            '<span class="wo-popup-label">Kontakt:</span>' +
+                            '<span class="wo-popup-value">' + e.entreprenor_kontakt + '</span>' +
+                        '</div>' : '') +
+                        (e.oprettet_dato ? '<div class="wo-popup-detail">' +
+                            '<span class="wo-popup-label">Oprettet:</span>' +
+                            '<span class="wo-popup-value">' + e.oprettet_dato + '</span>' +
+                        '</div>' : '') +
+                    '</div>' +
+                    '<div class="wo-popup-actions">' +
+                        '<a href="print_wo.php?id=' + encodeURIComponent(e.id) + '" target="_blank" class="wo-popup-btn">' +
+                            '👁️ Se detaljer' +
+                        '</a>' +
+                    '</div>' +
+                '</div>';
+                
+                marker.bindPopup(popup, {
+                    maxWidth: 350,
+                    className: 'modern-popup'
+                });
                 allMarkers.push(marker);
                 if (status === 'planning') {
                     planningMarkers.push(marker);
@@ -454,26 +491,81 @@ if (strtolower($role) === 'entreprenor') {
     // Build the initial set of markers and add them to the map
     buildMarkers(entries);
     updateMapMarkers();
+    
+    // Update marker count info
+    function updateMarkerCount() {
+        var total = allMarkers.length;
+        var visible = 0;
+        
+        if (document.getElementById('showPlanning').checked) {
+            visible += planningMarkers.length;
+        }
+        if (document.getElementById('showActive').checked) {
+            visible += activeMarkers.length;
+        }
+        if (document.getElementById('showCompleted').checked) {
+            visible += completedMarkers.length;
+        }
+        
+        document.getElementById('markerCount').textContent = 
+            visible + ' af ' + total + ' arbejdsordrer vises';
+    }
+    
+    updateMarkerCount();
 
-    // Filter markers based on search input.  Matches against description,
-    // job responsible, contractor firm and contact person fields.
+    // Enhanced search with debouncing for better performance
+    var searchTimeout;
     document.getElementById('search').addEventListener('input', function() {
-        var term = this.value.toLowerCase();
-        var filtered = entries.filter(function(e) {
-            var desc = (e.description || '').toLowerCase();
-            var job  = (e.jobansvarlig || '').toLowerCase();
-            var firm = (e.entreprenor_firma || '').toLowerCase();
-            var kont = (e.entreprenor_kontakt || '').toLowerCase();
-            return desc.indexOf(term) !== -1 || job.indexOf(term) !== -1 || firm.indexOf(term) !== -1 || kont.indexOf(term) !== -1;
-        });
-        buildMarkers(filtered);
-        updateMapMarkers();
+        clearTimeout(searchTimeout);
+        var searchInput = this;
+        
+        searchTimeout = setTimeout(function() {
+            var term = searchInput.value.toLowerCase();
+            var filtered = entries.filter(function(e) {
+                var desc = (e.description || '').toLowerCase();
+                var job  = (e.jobansvarlig || '').toLowerCase();
+                var firm = (e.entreprenor_firma || '').toLowerCase();
+                var kont = (e.entreprenor_kontakt || '').toLowerCase();
+                var woNo = (e.work_order_no || '').toLowerCase();
+                var pDesc = (e.p_description || '').toLowerCase();
+                
+                return desc.indexOf(term) !== -1 || 
+                       job.indexOf(term) !== -1 || 
+                       firm.indexOf(term) !== -1 || 
+                       kont.indexOf(term) !== -1 ||
+                       woNo.indexOf(term) !== -1 ||
+                       pDesc.indexOf(term) !== -1;
+            });
+            buildMarkers(filtered);
+            updateMapMarkers();
+            updateMarkerCount();
+        }, 300);
     });
 
     // Toggle marker visibility when status checkboxes change
-    document.getElementById('showPlanning').addEventListener('change', updateMapMarkers);
-    document.getElementById('showActive').addEventListener('change', updateMapMarkers);
-    document.getElementById('showCompleted').addEventListener('change', updateMapMarkers);
+    document.getElementById('showPlanning').addEventListener('change', function() {
+        updateMapMarkers();
+        updateMarkerCount();
+    });
+    document.getElementById('showActive').addEventListener('change', function() {
+        updateMapMarkers();
+        updateMarkerCount();
+    });
+    document.getElementById('showCompleted').addEventListener('change', function() {
+        updateMapMarkers();
+        updateMarkerCount();
+    });
+    
+    // Add map click handler to close popups when clicking on map
+    map.on('click', function() {
+        map.closePopup();
+    });
+    
+    // Fit map to show all markers if there are any
+    if (allMarkers.length > 0) {
+        var group = new L.featureGroup(allMarkers);
+        map.fitBounds(group.getBounds().pad(0.1));
+    }
     </script>
 </body>
 </html>
