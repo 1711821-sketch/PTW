@@ -141,9 +141,10 @@ $medaljer = ["🥇", "🥈", "🥉"];
     </nav>
 
     <div class="container">
-        <h1>Dashboard</h1>
+        <h1>📊 Dashboard</h1>
 
         <!-- Hall of Fame -->
+        <section class="dashboard-section">
         <div class="hall-of-fame">
             <div class="hof-card ansvarlig">
                 <h3>🏆 Top Opgaveansvarlig</h3>
@@ -158,23 +159,43 @@ $medaljer = ["🥇", "🥈", "🥉"];
                 <p>Gns.: <?php echo round($topEntreprenorData["days"] / $topEntreprenorData["wo_count"], 1); ?> dage pr. WO</p>
             </div>
         </div>
+        </section>
 
         <!-- Status bokse -->
+        <section class="dashboard-section">
+            <h2>📊 Oversigt over Arbejdstilladelser</h2>
         <div class="dashboard">
-            <div class="card planlagt">Planlagte: <?php echo $counts["planning"]; ?></div>
-            <div class="card aktiv">Aktive: <?php echo $counts["active"]; ?></div>
-            <div class="card afsluttet">Afsluttede: <?php echo $counts["completed"]; ?></div>
+            <div class="card planlagt">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📋</div>
+                <div>Planlagte</div>
+                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["planning"]; ?></div>
+            </div>
+            <div class="card aktiv">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔥</div>
+                <div>Aktive</div>
+                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["active"]; ?></div>
+            </div>
+            <div class="card afsluttet">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✅</div>
+                <div>Afsluttede</div>
+                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["completed"]; ?></div>
+            </div>
         </div>
+        </section>
 
         <!-- Grafer -->
+        <section class="dashboard-section">
+            <h2>📈 Datavisualisering</h2>
         <div class="charts">
             <div class="chart-container"><h2>Status for WO</h2><canvas id="statusChart"></canvas></div>
             <div class="chart-container"><h2>WO fordelt pr. entreprenør</h2><canvas id="entreprenorChart"></canvas></div>
             <div class="chart-container"><h2>WO fordelt pr. opgaveansvarlig</h2><canvas id="ansvarligChart"></canvas></div>
             <div class="chart-container" style="flex: 1 1 100%;"><h2>Udvikling over tid</h2><canvas id="timelineChart"></canvas></div>
         </div>
+        </section>
 
         <!-- Entreprenør statistik -->
+        <section class="dashboard-section">
         <h2>Entreprenør statistik</h2>
         <h3>Top 3 Entreprenører</h3>
         <ol>
@@ -193,7 +214,10 @@ $medaljer = ["🥇", "🥈", "🥉"];
             </table>
         </div>
 
+        </section>
+
         <!-- Opgaveansvarlige statistik -->
+        <section class="dashboard-section">
         <h2>Opgaveansvarlige statistik</h2>
         <h3>Top 3 Opgaveansvarlige</h3>
         <ol>
@@ -211,27 +235,28 @@ $medaljer = ["🥇", "🥈", "🥉"];
                 </tbody>
             </table>
         </div>
+        </section>
     </div>
 
     <script>
         new Chart(document.getElementById('statusChart'), {
             type: 'bar',
             data: { labels: <?php echo json_encode($statusLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($statusData); ?>, backgroundColor: ['#0070C0','#28a745','#6c757d'] }]},
+                datasets: [{ data: <?php echo json_encode($statusData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280'] }]},
             options: { responsive: true, plugins: { legend: { display: false } } }
         });
 
         new Chart(document.getElementById('entreprenorChart'), {
             type: 'pie',
             data: { labels: <?php echo json_encode($entreprenorLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($entreprenorData); ?>, backgroundColor: ['#0070C0','#28a745','#6c757d','#ffc107','#17a2b8','#dc3545'] }]},
+                datasets: [{ data: <?php echo json_encode($entreprenorData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280','#f59e0b','#06b6d4','#ef4444'] }]},
             options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
         });
 
         new Chart(document.getElementById('ansvarligChart'), {
             type: 'pie',
             data: { labels: <?php echo json_encode($ansvarligLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($ansvarligData); ?>, backgroundColor: ['#0070C0','#28a745','#6c757d','#ffc107','#17a2b8','#dc3545'] }]},
+                datasets: [{ data: <?php echo json_encode($ansvarligData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280','#f59e0b','#06b6d4','#ef4444'] }]},
             options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
         });
 
@@ -239,8 +264,8 @@ $medaljer = ["🥇", "🥈", "🥉"];
             type: 'line',
             data: { labels: <?php echo json_encode($timelineLabels); ?>,
                 datasets: [
-                    { label: 'Akkumuleret oprettede WO', data: <?php echo json_encode($createdData); ?>, borderColor: '#0070C0', backgroundColor: '#0070C0', tension: 0.2, pointRadius: 3, fill: false },
-                    { label: 'Akkumuleret afsluttede WO', data: <?php echo json_encode($completedData); ?>, borderColor: '#28a745', backgroundColor: '#28a745', tension: 0.2, pointRadius: 3, fill: false }
+                    { label: 'Akkumuleret oprettede WO', data: <?php echo json_encode($createdData); ?>, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 },
+                    { label: 'Akkumuleret afsluttede WO', data: <?php echo json_encode($completedData); ?>, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 }
                 ]},
             options: { responsive: true, scales: { x: { title: { display: true, text: 'Dato' } }, y: { beginAtZero: true, title: { display: true, text: 'Akkumuleret antal WO' } } }, plugins: { legend: { position: 'bottom' } } }
         });
