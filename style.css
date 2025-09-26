@@ -1,0 +1,227 @@
+/*
+ * Global styling for the Work Order system
+ *
+ * This stylesheet defines a modern, clean look for all pages without
+ * changing any of the underlying functionality. It provides a flexible
+ * layout, improved typography, navigation, tables, buttons and forms.
+ */
+
+/* Reset box model for consistent sizing */
+* {
+    box-sizing: border-box;
+}
+
+/* Base body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+/* Constrain content to a reasonable width and center it */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Top navigation bar */
+.navbar {
+    display: flex;
+    align-items: center;
+    background-color: #0a3f6a;
+    color: #fff;
+    padding: 0.5rem 1rem;
+}
+.navbar a {
+    color: #fff;
+    margin-right: 1rem;
+    text-decoration: none;
+    font-weight: bold;
+}
+.navbar a:hover {
+    text-decoration: underline;
+}
+.navbar .nav-user {
+    margin-left: auto;
+    font-size: 0.9rem;
+}
+.navbar .logout-link {
+    margin-left: 1rem;
+    background-color: #c33327;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    color: #fff;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+thead tr {
+    background-color: #e9eff5;
+}
+th,
+td {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e7ef;
+    font-size: 0.9rem;
+}
+tbody tr:nth-child(odd) {
+    background-color: #f6f9fc;
+}
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Buttons and links that look like buttons */
+a.button,
+button {
+    display: inline-block;
+    padding: 0.45rem 0.85rem;
+    margin: 0.2rem 0.1rem;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 0.9rem;
+}
+a.button:hover,
+button:hover {
+    background-color: #0056b3;
+}
+a.button.button-danger {
+    background-color: #d9534f;
+}
+a.button.button-danger:hover {
+    background-color: #b52b27;
+}
+
+/* Form styling */
+form {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+form > div {
+    margin-bottom: 0.8rem;
+}
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select,
+input[type="file"] {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+textarea {
+    min-height: 4rem;
+}
+
+/* Special button styling for saving WOs */
+button[name="save_wo"] {
+    background-color: #28a745;
+    color: #fff;
+}
+button[name="save_wo"]:hover {
+    background-color: #1e7e34;
+}
+
+/* Parse log style */
+#parseLog {
+    margin-top: 0.8rem;
+    padding: 0.6rem;
+    border: 1px solid #eee;
+    background: #f7f9fb;
+    font-family: monospace;
+    white-space: pre-wrap;
+    border-radius: 4px;
+}
+
+/* Field OK/missing indicators used during PDF parsing */
+.field-ok {
+    border: 2px solid green !important;
+    background: #f6fff6 url('data:image/svg+xml;utf8,✔') no-repeat right 8px center;
+    background-size: 14px;
+}
+.field-missing {
+    border: 2px solid red !important;
+    background: #fff6f6 url('data:image/svg+xml;utf8,✘') no-repeat right 8px center;
+    background-size: 14px;
+}
+
+/* Status labels retain colour coding but adopt unified padding/radius */
+.status-planlagt {
+    color: #ffffff !important;
+    background-color: #0070C0 !important;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+.status-aktiv {
+    color: #ffffff !important;
+    background-color: #28a745 !important;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+.status-afsluttet {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Indicate parse log states used when parsing PDFs */
+.found {
+    color: green;
+}
+.missing {
+    color: red;
+}
+
+/* When printing, hide the navigation bar so the printout is clean */
+@media print {
+    .navbar {
+        display: none !important;
+    }
+}
+
+/* Map container height for create/edit page */
+#map {
+    height: 500px;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+/* Print-specific styling: hide navigation and print button */
+@media print {
+    .navbar,
+    .print-btn {
+        display: none;
+    }
+    body {
+        background-color: #fff;
+        color: #000;
+    }
+}
