@@ -213,7 +213,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       <div class="form-row">
         <div class="form-group" style="flex: 2;">
           <label for="pdfFile">Vælg PDF fil</label>
-          <input type="file" id="pdfFile" accept="application/pdf">
+          <div class="file-input-wrapper">
+            <input type="file" id="pdfFile" accept="application/pdf" class="file-input">
+            <div class="file-input-display">
+              <span class="file-icon">📁</span>
+              <span class="file-text" id="fileText">Klik for at vælge PDF fil...</span>
+            </div>
+          </div>
         </div>
         <div class="form-group" style="flex: 1;">
           <label style="opacity: 0;">Parse</label>
@@ -420,6 +426,28 @@ if (<?php echo ($current['latitude'] !== '' && $current['longitude'] !== '') ? '
 // Update marker and hidden fields when the map is clicked
 map.on('click', function(e) {
     setMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
+});
+
+// Modern file input handling
+document.getElementById('pdfFile').addEventListener('change', function() {
+    const fileText = document.getElementById('fileText');
+    const fileIcon = document.querySelector('.file-icon');
+    
+    if (this.files && this.files.length > 0) {
+        const fileName = this.files[0].name;
+        fileText.textContent = fileName;
+        fileText.classList.add('has-file');
+        fileIcon.textContent = '📄';
+    } else {
+        fileText.textContent = 'Klik for at vælge PDF fil...';
+        fileText.classList.remove('has-file');
+        fileIcon.textContent = '📁';
+    }
+});
+
+// Make the file display clickable
+document.querySelector('.file-input-display').addEventListener('click', function() {
+    document.getElementById('pdfFile').click();
 });
 
 // PDF parsing logic.  This handler runs when the Parse PDF button is

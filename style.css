@@ -551,6 +551,7 @@ input[type="file"] {
     border: 2px solid var(--border-color);
     border-radius: var(--radius-md);
     font-size: 0.9rem;
+    cursor: pointer;
     transition: var(--transition);
     background: var(--background-primary);
     color: var(--text-primary);
@@ -568,6 +569,68 @@ input[type="file"]:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     background: var(--background-primary);
+}
+
+/* Modern file input styling */
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-input {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.file-input-display {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--background-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 52px;
+}
+
+.file-input-display:hover {
+    border-color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.02);
+    transform: translateY(-1px);
+}
+
+.file-input-display:active {
+    transform: translateY(0);
+}
+
+.file-input-wrapper:focus-within .file-input-display {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.file-icon {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.file-text {
+    flex: 1;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.file-text.has-file {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.file-text.has-file .file-icon {
+    color: var(--secondary-color);
 }
 
 input[type="text"]:hover,
