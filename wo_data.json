@@ -125,5 +125,24 @@
         "latitude": "55.207152",
         "longitude": "11.262287",
         "notes": ""
+    },
+    {
+        "id": "34",
+        "work_order_no": "2561195",
+        "p_number": "P6251786",
+        "mps_nr": "360125-51",
+        "description": "Indkøb af ny el-minilæsser med long range batteri",
+        "p_description": "Avant, køb el-minilæsser Vis instruktioner INDLEDENDE GODKENDELSE Beskrivelse",
+        "jobansvarlig": "Edin Zubcevic",
+        "telefon": "24664369",
+        "oprettet_af": "12630",
+        "oprettet_dato": "2025-09-18",
+        "components": "",
+        "entreprenor_firma": "Sorring Maskinhandel A\/S (Avant DK)",
+        "entreprenor_kontakt": "",
+        "status": "planning",
+        "latitude": "55.206989",
+        "longitude": "11.255841",
+        "notes": ""
     }
 ]

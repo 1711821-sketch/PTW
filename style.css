@@ -544,7 +544,19 @@ input[type="tel"],
 input[type="date"],
 input[type="password"],
 textarea,
-select,
+select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    transition: var(--transition);
+    background: var(--background-primary);
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: text;
+}
+
 input[type="file"] {
     width: 100%;
     padding: 0.875rem 1rem;
@@ -583,6 +595,7 @@ input[type="file"]:focus {
     left: -9999px;
     opacity: 0;
     pointer-events: none;
+    z-index: -1;
 }
 
 .file-input-display {
@@ -658,6 +671,24 @@ input[type="radio"] {
 /* Form groups */
 .form-group {
     margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure form elements are always interactive */
+.form-group input,
+.form-group textarea,
+.form-group select {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto !important;
+}
+
+.card .form-group input,
+.card .form-group textarea,
+.card .form-group select {
+    pointer-events: auto !important;
+    user-select: auto !important;
 }
 
 .form-row {
@@ -822,7 +853,6 @@ p {
 
 .card:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
 }
 
 .card-header {
