@@ -173,5 +173,24 @@
                 "role": "entreprenor"
             }
         ]
+    },
+    {
+        "id": "36",
+        "work_order_no": "2561156",
+        "p_number": "P6251732",
+        "mps_nr": "",
+        "description": "Got, omlægning af kabler ved 2304",
+        "p_description": "Delpro, omlægning af kabler til D5 Vis instruktioner",
+        "jobansvarlig": "Thomas Christensen",
+        "telefon": "24663498",
+        "oprettet_af": "13116",
+        "oprettet_dato": "2025-09-08",
+        "components": "",
+        "entreprenor_firma": "DELPRO A\/S",
+        "entreprenor_kontakt": "",
+        "status": "planning",
+        "latitude": "55.206866",
+        "longitude": "11.278386",
+        "notes": ""
     }
 ]
