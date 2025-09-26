@@ -192,5 +192,24 @@
         "latitude": "55.206866",
         "longitude": "11.278386",
         "notes": ""
+    },
+    {
+        "id": "37",
+        "work_order_no": "2560024",
+        "p_number": "P6250393",
+        "mps_nr": "310125-03",
+        "description": "F2 Out of Service",
+        "p_description": "F2, vandstråleskæring Doorsheet",
+        "jobansvarlig": "Edin Zubcevic",
+        "telefon": "24664369",
+        "oprettet_af": "12630",
+        "oprettet_dato": "2025-01-06",
+        "components": "OIT31 EGB02BB001 TANK F2x",
+        "entreprenor_firma": "Suomen Vesipiikkaus Oy - Finla",
+        "entreprenor_kontakt": "",
+        "status": "planning",
+        "latitude": "55.205779",
+        "longitude": "11.267445",
+        "notes": ""
     }
 ]
