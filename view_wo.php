@@ -190,7 +190,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <th>📝 P-beskrivelse</th>
                         <th>👤 Jobansvarlig</th>
                         <th>🏢 Entreprenør</th>
-                        <th>📅 Dato oprettet</th>
                         <th>📊 Status</th>
                         <th>✅ Godkendelser (dagens status)</th>
                         <th>⚡ Handlinger</th>
@@ -229,7 +228,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         echo '<br><small>' . htmlspecialchars($kontakt) . '</small>';
                     }
                 ?></td>
-                <td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td>
                 <td><span class="<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span></td>
                 <td style="white-space: nowrap;">
                     <div style="margin-bottom: 0.3rem;">
