@@ -60,24 +60,290 @@ if (strtolower($role) === 'entreprenor') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oversigtskort over WO</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { margin: 0; font-family: Arial, sans-serif; }
-        #map { width: 100%; height: 80vh; }
-        .controls { padding: 0.5rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .controls input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .controls label { margin-left: 0.5rem; }
-        a.back { display: inline-block; margin: 1rem; color: #0070C0; text-decoration: none; }
+        .map-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: var(--background-primary);
+        }
+        
+        .map-controls {
+            background: var(--background-primary);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+            background: var(--background-primary);
+            color: var(--text-primary);
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .filter-option:hover {
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-1px);
+        }
+        
+        .filter-option input[type="checkbox"] {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .status-indicator.planning { color: var(--primary-color); }
+        .status-indicator.active { color: var(--secondary-color); }
+        .status-indicator.completed { color: var(--text-secondary); }
+        
+        #map {
+            flex: 1;
+            min-height: 0;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .map-info {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--background-primary);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            z-index: 1000;
+        }
+        
+        /* Custom popup styling */
+        .leaflet-popup-content-wrapper {
+            border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-lg) !important;
+            border: 1px solid var(--border-light) !important;
+        }
+        
+        .leaflet-popup-content {
+            margin: 0 !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+        
+        .wo-popup {
+            padding: 1.5rem;
+            min-width: 280px;
+        }
+        
+        .wo-popup-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .wo-popup-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .wo-popup-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .wo-popup-status.planning {
+            background: rgba(30, 64, 175, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .wo-popup-status.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .wo-popup-status.completed {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-secondary);
+        }
+        
+        .wo-popup-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .wo-popup-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .wo-popup-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+        
+        .wo-popup-value {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+        
+        .wo-popup-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .wo-popup-btn {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .wo-popup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .map-controls {
+                padding: 1rem;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            
+            .filter-option {
+                justify-content: center;
+            }
+            
+            .map-info {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin: 1rem;
+            }
+            
+            .wo-popup {
+                min-width: 250px;
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="controls">
-        <input type="text" id="search" placeholder="Søg i beskrivelse eller jobansvarlig…">
-        <label><input type="checkbox" id="showPlanning" checked> Planlagte</label>
-        <label><input type="checkbox" id="showActive" checked> Aktive</label>
-        <label><input type="checkbox" id="showCompleted" checked> Afsluttede</label>
+    <!-- Modern navigation bar -->
+    <nav class="navbar">
+        <a href="view_wo.php">🔍 WO Oversigt</a>
+        <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+            <a href="create_wo.php">➕ Opret ny WO</a>
+        <?php endif; ?>
+        <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
+        <a href="dashboard.php">📊 Dashboard</a>
+        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
+        <a class="logout-link" href="logout.php">Log ud</a>
+    </nav>
+    
+    <div class="map-container">
+        <!-- Modern control panel -->
+        <div class="map-controls">
+            <input type="text" id="search" class="search-box" placeholder="🔍 Søg i beskrivelse, jobansvarlig, entreprenør...">
+            
+            <div class="filter-controls">
+                <label class="filter-option" for="showPlanning">
+                    <input type="checkbox" id="showPlanning" checked>
+                    <span class="status-indicator planning">📋 Planlagte</span>
+                </label>
+                <label class="filter-option" for="showActive">
+                    <input type="checkbox" id="showActive" checked>
+                    <span class="status-indicator active">🔥 Aktive</span>
+                </label>
+                <label class="filter-option" for="showCompleted">
+                    <input type="checkbox" id="showCompleted" checked>
+                    <span class="status-indicator completed">✅ Afsluttede</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Map container -->
+        <div style="position: relative; flex: 1;">
+            <div id="map"></div>
+            <div class="map-info" id="mapInfo">
+                <span id="markerCount">Indlæser...</span>
+            </div>
+        </div>
     </div>
-    <div id="map"></div>
-    <a class="back" href="index.php">Tilbage til forsiden</a>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
