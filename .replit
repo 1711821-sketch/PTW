@@ -7,16 +7,16 @@ modules = ["php-8.2"]
 channel = "stable-22_11"
 
 [deployment]
-run = ["php", "-S", "0.0.0.0:8000", "-t", "."]
-deploymentTarget = "cloudrun"
+run = ["php", "-S", "0.0.0.0:5000"]
+deploymentTarget = "autoscale"
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 8000
-externalPort = 80
+localPort = 36667
+externalPort = 3001
 
 [[ports]]
 localPort = 41193
