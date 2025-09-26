@@ -512,8 +512,9 @@ document.getElementById('parseBtn').addEventListener('click', async function () 
     // Assign second description to P-number description
     let d2 = descMatches[1].trim();
     
-    // Remove "INDLEDENDE GODKENDELSE Beskrivelse" if present
+    // Remove unwanted text patterns if present
     d2 = d2.replace(/\bINDLEDENDE\s+GODKENDELSE\s+Beskrivelse\b/gi, '').trim();
+    d2 = d2.replace(/\bVis\s+instruktioner\b/gi, '').trim();
     // Clean up any extra whitespace that might be left
     d2 = d2.replace(/\s+/g, ' ').trim();
     
