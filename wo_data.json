@@ -75,5 +75,24 @@
         "latitude": "55.206618",
         "longitude": "11.262703",
         "notes": ""
+    },
+    {
+        "id": "32",
+        "work_order_no": "2560009",
+        "p_number": "",
+        "mps_nr": "",
+        "description": "Dybdeopmåling af havnebassiner og indsejling Forebyggende (ZPRE)",
+        "p_description": "",
+        "jobansvarlig": "Allan Hønholt Jensen",
+        "telefon": "24664169",
+        "oprettet_af": "10020",
+        "oprettet_dato": "2025-01-06",
+        "components": "EOT61 UZG Havn og sejlrendex",
+        "entreprenor_firma": "",
+        "entreprenor_kontakt": "",
+        "status": "planning",
+        "latitude": "55.204623",
+        "longitude": "11.263887",
+        "notes": ""
     }
 ]

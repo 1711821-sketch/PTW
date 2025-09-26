@@ -78,36 +78,131 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Login til SJA</title>
+    <title>Login - Arbejdstilladelsessystem</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f5f5f5; }
-        .container { max-width: 400px; margin: 80px auto; padding: 20px; background: #fff;
-                     border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        h1 { margin-top: 0; font-size: 1.4em; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 8px; margin: 8px 0;
-                                                         border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #0070C0; color: #fff; padding: 10px 15px;
-                 border: none; border-radius: 4px; cursor: pointer; width: 100%; }
-        .error { color: red; margin-top: 10px; }
-        .register-link { margin-top: 1rem; display: block; text-align: center; }
-        a { color: #0070C0; }
+        /* Login-specific styling */
+        .login-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        .login-card {
+            background: var(--background-primary);
+            padding: 2.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-dark);
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .login-form {
+            margin-bottom: 1.5rem;
+        }
+        
+        .login-form button {
+            width: 100%;
+            padding: 0.875rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+        
+        .register-link {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .register-link a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Login</h1>
-        <?php if ($error): ?>
-            <div class="error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        <form method="post" action="">
-            <label for="username">Brugernavn</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Adgangskode</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Log ind</button>
-        </form>
-        <a class="register-link" href="register.php">Opret ny bruger</a>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🔐 Login</h1>
+                <p class="login-subtitle">Arbejdstilladelsessystem</p>
+            </div>
+            
+            <?php if ($error): ?>
+                <div class="error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+            
+            <form method="post" action="" class="login-form">
+                <div class="form-group">
+                    <label for="username">Brugernavn</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Adgangskode</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Log ind</button>
+            </form>
+            
+            <div class="register-link">
+                <a href="register.php">Opret ny bruger</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
