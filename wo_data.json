@@ -27,5 +27,43 @@
                 "role": "entreprenor"
             }
         ]
+    },
+    {
+        "id": "30",
+        "work_order_no": "2561156",
+        "p_number": "P6251732",
+        "mps_nr": "",
+        "description": "Got, omlægning af kabler ved 2304",
+        "p_description": "Delpro, omlægning af kabler til D5 Vis instruktioner INDLEDENDE GODKENDELSE Beskrivelse",
+        "jobansvarlig": "Thomas Christensen",
+        "telefon": "24663498",
+        "oprettet_af": "13116",
+        "oprettet_dato": "2025-09-08",
+        "components": "",
+        "entreprenor_firma": "DELPRO A\/S",
+        "entreprenor_kontakt": "",
+        "status": "active",
+        "latitude": "55.204894",
+        "longitude": "11.257210",
+        "notes": ""
+    },
+    {
+        "id": "31",
+        "work_order_no": "2561226",
+        "p_number": "P6251830",
+        "mps_nr": "",
+        "description": "Fjerne vold ved 70'ertanke (N-tanke) Forebyggende (ZPRE)",
+        "p_description": "C.G-jensen, fjerne vold 70ër tanke Vis instruktioner INDLEDENDE GODKENDELSE Beskrivelse",
+        "jobansvarlig": "Edin Zubcevic",
+        "telefon": "24664369",
+        "oprettet_af": "12630",
+        "oprettet_dato": "2025-09-26",
+        "components": "",
+        "entreprenor_firma": "CG Jensen A\/S",
+        "entreprenor_kontakt": "EDIZU",
+        "status": "active",
+        "latitude": "55.206618",
+        "longitude": "11.262703",
+        "notes": ""
     }
 ]
