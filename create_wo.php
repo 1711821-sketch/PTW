@@ -25,6 +25,9 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
+// Get user role for permission checks
+$role = $_SESSION['role'] ?? 'user';
+
 // Path to the JSON file where work orders are stored.  If this file
 // doesn’t exist it will be created on first save.
 $data_file = __DIR__ . '/wo_data.json';
@@ -197,88 +200,179 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <h1><?php echo $edit_id ? 'Rediger Arbejdstilladelse / WO' : 'Opret ny Arbejdstilladelse (WO)'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
-<!-- The form posts back to this page.  Use enctype="multipart/form-data" so that file inputs work when we introduce server‑side parsing in the future. -->
-<form method="post">
-  <div>
-    <label for="pdfFile">Upload WO (PDF)</label>
-    <input type="file" id="pdfFile" accept="application/pdf">
-    <button type="button" id="parseBtn">Parse PDF</button>
+<!-- Modern form with organized sections -->
+<form method="post" style="background: transparent; padding: 0; box-shadow: none; border: none;">
+  
+  <!-- PDF Upload Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--primary-color);">📄 PDF Upload</h3>
+    </div>
+    <div class="card-body">
+      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Upload en PDF-arbejdsordre for automatisk udfyldning af felter</p>
+      <div class="form-row">
+        <div class="form-group" style="flex: 2;">
+          <label for="pdfFile">Vælg PDF fil</label>
+          <input type="file" id="pdfFile" accept="application/pdf">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label style="opacity: 0;">Parse</label>
+          <button type="button" id="parseBtn" class="button-lg" style="width: 100%;">Parse PDF</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="work_order_no">Arbejdstilladelse Nr.</label>
-    <input type="text" id="work_order_no" name="work_order_no" value="<?php echo htmlspecialchars($current['work_order_no']); ?>">
+
+  <!-- Basic Information Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--primary-color);">📋 Grundlæggende oplysninger</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="work_order_no">Arbejdstilladelse Nr.</label>
+          <input type="text" id="work_order_no" name="work_order_no" value="<?php echo htmlspecialchars($current['work_order_no']); ?>">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="planning"  <?php echo ($current['status'] === 'planning')  ? 'selected' : ''; ?>>Planlagt</option>
+            <option value="active"    <?php echo ($current['status'] === 'active')    ? 'selected' : ''; ?>>Aktiv</option>
+            <option value="completed" <?php echo ($current['status'] === 'completed') ? 'selected' : ''; ?>>Afsluttet</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="description">Beskrivelse</label>
+        <textarea id="description" name="description"><?php echo htmlspecialchars($current['description']); ?></textarea>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="description">Beskrivelse</label>
-    <textarea id="description" name="description"><?php echo htmlspecialchars($current['description']); ?></textarea>
+
+  <!-- P-Number & Technical Information Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--primary-color);">🔧 Tekniske oplysninger</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="p_number">P-nummer</label>
+          <input type="text" id="p_number" name="p_number" value="<?php echo htmlspecialchars($current['p_number']); ?>">
+        </div>
+        <div class="form-group">
+          <label for="mps_nr">MPS-nr.</label>
+          <input type="text" id="mps_nr" name="mps_nr" value="<?php echo htmlspecialchars($current['mps_nr']); ?>">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="p_description">Beskrivelse (P-nummer)</label>
+        <textarea id="p_description" name="p_description"><?php echo htmlspecialchars($current['p_description']); ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="components">Komponent nr. (én pr. linje)</label>
+        <textarea id="components" name="components"><?php echo htmlspecialchars($current['components']); ?></textarea>
+      </div>
+    </div>
   </div>
-  <!-- Additional description tied to the P-number -->
-  <div>
-    <label for="p_description">Beskrivelse (P-nummer)</label>
-    <textarea id="p_description" name="p_description"><?php echo htmlspecialchars($current['p_description']); ?></textarea>
+
+  <!-- Responsibility Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--primary-color);">👨‍💼 Ansvarlige</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="jobansvarlig">Jobansvarlig</label>
+          <input type="text" id="jobansvarlig" name="jobansvarlig" value="<?php echo htmlspecialchars($current['jobansvarlig']); ?>">
+        </div>
+        <div class="form-group">
+          <label for="telefon">Jobansvarlig telefon</label>
+          <input type="tel" id="telefon" name="telefon" value="<?php echo htmlspecialchars($current['telefon']); ?>">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="oprettet_af">WO oprettet af</label>
+          <input type="text" id="oprettet_af" name="oprettet_af" value="<?php echo htmlspecialchars($current['oprettet_af']); ?>">
+        </div>
+        <div class="form-group">
+          <label for="oprettet_dato">WO oprettet dato</label>
+          <input type="date" id="oprettet_dato" name="oprettet_dato" value="<?php echo htmlspecialchars($current['oprettet_dato']); ?>">
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="p_number">P-nummer</label>
-    <input type="text" id="p_number" name="p_number" value="<?php echo htmlspecialchars($current['p_number']); ?>">
+
+  <!-- Contractor Information Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--secondary-color);">🏢 Entreprenør oplysninger</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="entreprenor_firma">Entreprenør firma</label>
+          <input type="text" id="entreprenor_firma" name="entreprenor_firma" value="<?php echo htmlspecialchars($current['entreprenor_firma']); ?>">
+        </div>
+        <div class="form-group">
+          <label for="entreprenor_kontakt">Entreprenør kontaktperson</label>
+          <input type="text" id="entreprenor_kontakt" name="entreprenor_kontakt" value="<?php echo htmlspecialchars($current['entreprenor_kontakt']); ?>">
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="mps_nr">MPS-nr.</label>
-    <input type="text" id="mps_nr" name="mps_nr" value="<?php echo htmlspecialchars($current['mps_nr']); ?>">
+
+  <!-- Location Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--accent-color);">📍 Placering</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="map">Klik på kortet for at vælge placering</label>
+        <div id="map"></div>
+        <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($current['latitude'] ?: $defaultLat); ?>">
+        <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($current['longitude'] ?: $defaultLng); ?>">
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="jobansvarlig">Jobansvarlig</label>
-    <input type="text" id="jobansvarlig" name="jobansvarlig" value="<?php echo htmlspecialchars($current['jobansvarlig']); ?>">
+
+  <!-- Notes Section -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+      <h3 style="margin: 0; color: var(--text-primary);">📝 Bemærkninger</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="notes">Yderligere bemærkninger</label>
+        <textarea id="notes" name="notes" style="min-height: 120px;"><?php echo htmlspecialchars($current['notes']); ?></textarea>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="telefon">Jobansvarlig telefon</label>
-    <input type="tel" id="telefon" name="telefon" value="<?php echo htmlspecialchars($current['telefon']); ?>">
+
+  <!-- Save Button -->
+  <div style="text-align: center; margin: 2rem 0;">
+    <button type="submit" name="save_wo" class="button-lg" style="padding: 1rem 3rem; font-size: 1.1rem;">
+      <?php echo $edit_id ? '💾 Gem ændringer' : '💾 Gem Work Order'; ?>
+    </button>
   </div>
-  <div>
-    <label for="oprettet_af">WO oprettet af</label>
-    <input type="text" id="oprettet_af" name="oprettet_af" value="<?php echo htmlspecialchars($current['oprettet_af']); ?>">
-  </div>
-  <div>
-    <label for="oprettet_dato">WO oprettet dato</label>
-    <!-- Note: input type="date" expects ISO format (YYYY-MM-DD).  Values that cannot be parsed by browsers will be displayed as blank. -->
-    <input type="date" id="oprettet_dato" name="oprettet_dato" value="<?php echo htmlspecialchars($current['oprettet_dato']); ?>">
-  </div>
-  <div>
-    <label for="components">Komponent nr. (én pr. linje)</label>
-    <textarea id="components" name="components"><?php echo htmlspecialchars($current['components']); ?></textarea>
-  </div>
-  <div>
-    <label for="entreprenor_firma">Entreprenør</label>
-    <input type="text" id="entreprenor_firma" name="entreprenor_firma" value="<?php echo htmlspecialchars($current['entreprenor_firma']); ?>">
-  </div>
-  <div>
-    <label for="entreprenor_kontakt">Entreprenør kontaktperson</label>
-    <input type="text" id="entreprenor_kontakt" name="entreprenor_kontakt" value="<?php echo htmlspecialchars($current['entreprenor_kontakt']); ?>">
-  </div>
-  <div>
-    <label for="status">Status</label>
-    <select id="status" name="status">
-      <option value="planning"  <?php echo ($current['status'] === 'planning')  ? 'selected' : ''; ?>>Planlagt</option>
-      <option value="active"    <?php echo ($current['status'] === 'active')    ? 'selected' : ''; ?>>Aktiv</option>
-      <option value="completed" <?php echo ($current['status'] === 'completed') ? 'selected' : ''; ?>>Afsluttet</option>
-    </select>
-  </div>
-  <div>
-    <label for="map">Placering (klik på kortet for at vælge)</label>
-    <div id="map"></div>
-    <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($current['latitude'] ?: $defaultLat); ?>">
-    <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($current['longitude'] ?: $defaultLng); ?>">
-  </div>
-  <div>
-    <label for="notes">Bemærkninger</label>
-    <textarea id="notes" name="notes"><?php echo htmlspecialchars($current['notes']); ?></textarea>
-  </div>
-  <button type="submit" name="save_wo">Gem Work Order</button>
 </form>
 
-<hr>
-<h2>Parse PDF</h2>
-<p>Upload en PDF-arbejdsordre og tryk "Parse PDF". Felterne bliver udfyldt automatisk.</p>
-<div id="parseLog"></div>
+<!-- PDF Parse Log Section -->
+<div class="card" style="margin-bottom: 2rem;">
+  <div class="card-header">
+    <h3 style="margin: 0; color: var(--accent-color);">📄 PDF Parse Log</h3>
+  </div>
+  <div class="card-body">
+    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+      Her vises resultatet af PDF parsing. Grønne felter blev fundet, røde mangler.
+    </p>
+    <div id="parseLog" style="min-height: 50px; max-height: 300px; overflow-y: auto;"></div>
+  </div>
+</div>
 
 <script>
 // Helper: mark fields as found or missing.  When a value is marked as
