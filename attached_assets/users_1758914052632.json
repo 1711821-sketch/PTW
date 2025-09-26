@@ -1,0 +1,96 @@
+[
+    {
+        "username": "admin",
+        "password_hash": "$2y$12$846ZzhLP2DCMa6IoqxPOKOwHm0Zt706jb322fHkQlokCANnBmMTxK",
+        "role": "admin"
+    },
+    {
+        "username": "anel",
+        "password_hash": "$2y$10$3TVY6tMwZg9El6M6Lpm0reWtXMQUTWQlhg5.JFAKi5jI.mFNMF776",
+        "role": "admin"
+    },
+    {
+        "username": "beli",
+        "password_hash": "$2y$10$kL1vPyeGfJWSprwMf0n6ke8.fanJJt.7xbO7FTYvFzQE\/\/QjJT41q",
+        "role": "admin"
+    },
+    {
+        "username": "del",
+        "password_hash": "$2y$10$jsnTDUl4j8EeXa5x4ziUWeRCjegBZiqfaVta9qDoyMMB5Zgfv1Zz.",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "DELPRO A\/S"
+    },
+    {
+        "username": "k",
+        "password_hash": "$2y$10$MT34MV4hAodcSycMUaQAn.4B84uAjS\/JEBvJTEvriqkW\/PJTH8X1S",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "Kjærsgaard Vestsjælland Anlæg"
+    },
+    {
+        "username": "sudo",
+        "password_hash": "$2y$10$ugD1P9aXWGe06qFd\/T4J9.N2SMvFXGX\/OaH\/weXGs9neYIANhSUg6",
+        "role": "admin",
+        "approved": true
+    },
+    {
+        "username": "1",
+        "password_hash": "$2y$10$.TXfqhD9haX9Dc59MocGtuZlNUac3yvc0jzkix3\/Q7cFnyT9rhoGO",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "Suomen Vesipiikkaus Oy - Finla"
+    },
+    {
+        "username": "asmir",
+        "password_hash": "$2y$10$2kLvp2tGc.1HRxxoGH6xMe486Bv16dnMBL0zMvivU7WBei2W84uSy",
+        "role": "opgaveansvarlig",
+        "approved": true
+    },
+    {
+        "username": "Morten Kimer",
+        "password_hash": "$2y$10$XAMEQDDxpF13dJl2JU1fAe3FhSEiSycOSBrGITw0hy1ylmAA4Nio.",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "Veltec Industrial Services A\/S"
+    },
+    {
+        "username": "Tim M. Andersen",
+        "password_hash": "$2y$10$U.zcvUf\/V26zUv2tsg6BxeRSbeyql2j8kqx71.hxrcvhAr1uO6xsq",
+        "role": "opgaveansvarlig",
+        "approved": true
+    },
+    {
+        "username": "s",
+        "password_hash": "$2y$10$ZwZiPZsFb9549BCrNo2ya.QwuS5EiF8YJC8RAG\/7n9lBKkw.ZgObu",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "Sorring Maskinhandel A\/S (Avant DK)"
+    },
+    {
+        "username": "2",
+        "password_hash": "$2y$10$8cHoIzM3TFPdY\/WCyuRzPO9zqYMJFst\/r4XGXQjkbyJC9pY1EJVSS",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "Veltec Industrial Services A\/S"
+    },
+    {
+        "username": "3",
+        "password_hash": "$2y$10$oVZm.fN43xBHGPPXJdSauuhQZh1BT0j08E.6C0vODMMrokZXJjJIO",
+        "role": "drift",
+        "approved": true
+    },
+    {
+        "username": "mette",
+        "password_hash": "$2y$10$PaYXfiNgdpKqdltlJ.068.Acth1JVZVsfWaJqyLsw4ZJg1rjThcta",
+        "role": "opgaveansvarlig",
+        "approved": true
+    },
+    {
+        "username": "morten",
+        "password_hash": "$2y$10$iQ6Y3ccsM8MCeJYoyTXQAe9qqHhCwZNGLuZ3qCh\/YYLvN5VG1CwJG",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "CG Jensen A\/S"
+    }
+]

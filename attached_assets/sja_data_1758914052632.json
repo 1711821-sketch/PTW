@@ -1,0 +1,3044 @@
+[
+    {
+        "job": "Test job",
+        "hazards": "Fald risiko",
+        "controls": "Brug sikkerhedsudstyr",
+        "date": "2025-09-10"
+    },
+    {
+        "job": "e",
+        "hazards": "22",
+        "controls": "22",
+        "date": "2222-02-22"
+    },
+    {
+        "id": "68c8fac3d6faf",
+        "basic": {
+            "opgave": "dd",
+            "wo_po": "d",
+            "dato_udfoer": "0111-11-11",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "Ja",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "Nej",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": "ddd"
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "dd",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ]
+    },
+    {
+        "id": "68c901821db7a",
+        "created_by": "userx",
+        "basic": {
+            "opgave": "Test SJA by userx",
+            "wo_po": "WO9999",
+            "dato_udfoer": "",
+            "planlagt_af": "Planner2",
+            "udfoeres_af": "Team2",
+            "dato_planlagt": "",
+            "koordinator": "Coord2"
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ]
+    },
+    {
+        "id": "68c906007a98a",
+        "created_by": "edizu",
+        "basic": {
+            "opgave": "ee",
+            "wo_po": "ee",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "Ja",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ]
+    },
+    {
+        "id": "68c90b2312f3b",
+        "created_by": "admin",
+        "basic": {
+            "opgave": "F7 test",
+            "wo_po": "",
+            "dato_udfoer": "2025-09-16",
+            "planlagt_af": "Edin",
+            "udfoeres_af": "Arman",
+            "dato_planlagt": "2025-09-16",
+            "koordinator": "SGOT Drift"
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": "æ"
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "edin",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "latitude": "55.207558",
+        "longitude": "11.257703"
+    },
+    {
+        "id": "68c9118965982",
+        "created_by": "admin",
+        "basic": {
+            "opgave": "Arman",
+            "wo_po": "dd",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "dd",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "completed",
+        "latitude": "55.200427",
+        "longitude": "11.255692"
+    },
+    {
+        "id": "68c91711cbc0f",
+        "created_by": "admin",
+        "basic": {
+            "opgave": "Mixer C20",
+            "wo_po": "xxxxx",
+            "dato_udfoer": "2025-09-16",
+            "planlagt_af": "Arman",
+            "udfoeres_af": "Veltec",
+            "dato_planlagt": "2025-09-16",
+            "koordinator": "Driften"
+        },
+        "risici": {
+            "atex": {
+                "status": "Nej",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "55.201937",
+        "longitude": "11.270170"
+    },
+    {
+        "id": "68d429eb12e4e",
+        "created_by": "admin",
+        "wo_id": "9",
+        "basic": {
+            "opgave": "sss",
+            "wo_po": "",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    },
+    {
+        "id": "68d42b48c1c3d",
+        "created_by": "admin",
+        "wo_id": "10",
+        "basic": {
+            "opgave": "kkkkkkkk",
+            "wo_po": "",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    },
+    {
+        "id": "68d4d019e8974",
+        "created_by": "2",
+        "wo_id": "10",
+        "basic": {
+            "opgave": "arman",
+            "wo_po": "",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    },
+    {
+        "id": "68d658efe4ca3",
+        "created_by": "mette",
+        "wo_id": "23",
+        "basic": {
+            "opgave": "mettteteteeee",
+            "wo_po": "dd",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "zzzzzzzz",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    },
+    {
+        "id": "68d659322c9f7",
+        "created_by": "mette",
+        "wo_id": "23",
+        "basic": {
+            "opgave": "dddddddddddddddddddd",
+            "wo_po": "",
+            "dato_udfoer": "",
+            "planlagt_af": "",
+            "udfoeres_af": "",
+            "dato_planlagt": "",
+            "koordinator": ""
+        },
+        "risici": {
+            "atex": {
+                "status": "",
+                "remark": ""
+            },
+            "tryk": {
+                "status": "",
+                "remark": ""
+            },
+            "stoffer": {
+                "status": "",
+                "remark": ""
+            },
+            "cse": {
+                "status": "",
+                "remark": ""
+            },
+            "flugteveje": {
+                "status": "",
+                "remark": ""
+            },
+            "etsning": {
+                "status": "",
+                "remark": ""
+            },
+            "faldrisiko": {
+                "status": "",
+                "remark": ""
+            },
+            "alene": {
+                "status": "",
+                "remark": ""
+            },
+            "stoj": {
+                "status": "",
+                "remark": ""
+            },
+            "varme": {
+                "status": "",
+                "remark": ""
+            },
+            "kvaelning": {
+                "status": "",
+                "remark": ""
+            },
+            "udledning": {
+                "status": "",
+                "remark": ""
+            },
+            "stov": {
+                "status": "",
+                "remark": ""
+            },
+            "tunge": {
+                "status": "",
+                "remark": ""
+            },
+            "stoe": {
+                "status": "",
+                "remark": ""
+            },
+            "andre": {
+                "status": "",
+                "remark": ""
+            },
+            "intro": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "tilladelser": {
+            "sikring": {
+                "status": "",
+                "remark": ""
+            },
+            "varmt": {
+                "status": "",
+                "remark": ""
+            },
+            "koblinger": {
+                "status": "",
+                "remark": ""
+            },
+            "grave": {
+                "status": "",
+                "remark": ""
+            },
+            "aendring": {
+                "status": "",
+                "remark": ""
+            },
+            "andre_till": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "vaernemidler": {
+            "handsker": {
+                "status": "",
+                "remark": ""
+            },
+            "hore": {
+                "status": "",
+                "remark": ""
+            },
+            "dragter": {
+                "status": "",
+                "remark": ""
+            },
+            "aanded": {
+                "status": "",
+                "remark": ""
+            },
+            "filter": {
+                "status": "",
+                "remark": ""
+            },
+            "fald": {
+                "status": "",
+                "remark": ""
+            },
+            "laus": {
+                "status": "",
+                "remark": ""
+            },
+            "andet_ud": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "udstyr": {
+            "afspaerring": {
+                "status": "",
+                "remark": ""
+            },
+            "gas": {
+                "status": "",
+                "remark": ""
+            },
+            "net": {
+                "status": "",
+                "remark": ""
+            },
+            "forstehj": {
+                "status": "",
+                "remark": ""
+            },
+            "bjaerg": {
+                "status": "",
+                "remark": ""
+            },
+            "svejse": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "taenkt": {
+            "frie": {
+                "status": "",
+                "remark": ""
+            },
+            "afspaer": {
+                "status": "",
+                "remark": ""
+            },
+            "exudstyr": {
+                "status": "",
+                "remark": ""
+            },
+            "brand": {
+                "status": "",
+                "remark": ""
+            },
+            "vaerktoj": {
+                "status": "",
+                "remark": ""
+            },
+            "loto": {
+                "status": "",
+                "remark": ""
+            },
+            "nodstop": {
+                "status": "",
+                "remark": ""
+            },
+            "gasmaal": {
+                "status": "",
+                "remark": ""
+            },
+            "rydning": {
+                "status": "",
+                "remark": ""
+            }
+        },
+        "cancer": [
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            },
+            {
+                "name": "",
+                "cas": "",
+                "limit": "",
+                "datasheet": "",
+                "measures": ""
+            }
+        ],
+        "bem": "",
+        "deltagere": [
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            },
+            {
+                "navn": "",
+                "telefon": ""
+            }
+        ],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    }
+]
