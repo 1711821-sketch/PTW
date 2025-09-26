@@ -45,7 +45,17 @@
         "status": "active",
         "latitude": "55.204894",
         "longitude": "11.257210",
-        "notes": ""
+        "notes": "",
+        "approvals": {
+            "entreprenor": "2025-09-26"
+        },
+        "approval_history": [
+            {
+                "timestamp": "2025-09-26 19:24",
+                "user": "del",
+                "role": "entreprenor"
+            }
+        ]
     },
     {
         "id": "31",

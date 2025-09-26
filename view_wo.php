@@ -217,24 +217,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 <td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td>
                 <td><span class="<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span></td>
                 <td>
-                    <div>
-                        <strong>Opgaveansvarlig:</strong> <?php echo $oaApproved ? '✅' : '❌'; ?>
-                        <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                            <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">Godkend</a>
-                        <?php endif; ?>
-                    </div>
-                    <div>
-                        <strong>Driften:</strong> <?php echo $driftApproved ? '✅' : '❌'; ?>
-                        <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                            <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">Godkend</a>
-                        <?php endif; ?>
-                    </div>
-                    <div>
-                        <strong>Entreprenør:</strong> <?php echo $entApproved ? '✅' : '❌'; ?>
-                        <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                            <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">Godkend</a>
-                        <?php endif; ?>
-                    </div>
+                    <strong>Opgaveansvarlig:</strong> <?php echo $oaApproved ? '✅' : '❌'; ?>
+                    <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
+                        <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">Godkend</a>
+                    <?php endif; ?>
+                    <br>
+                    <strong>Driften:</strong> <?php echo $driftApproved ? '✅' : '❌'; ?>
+                    <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
+                        <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">Godkend</a>
+                    <?php endif; ?>
+                    <br>
+                    <strong>Entreprenør:</strong> <?php echo $entApproved ? '✅' : '❌'; ?>
+                    <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
+                        <a class="button" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">Godkend</a>
+                    <?php endif; ?>
                 </td>
                 <td>
                     <a class="button" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">Print / Vis</a>
