@@ -47,43 +47,59 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alle Sikker Job Analyser</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
-        th { background-color: #f2f2f2; }
-        a.button { display: inline-block; padding: 0.3rem 0.6rem; margin: 0 0.2rem; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 3px; }
-        /* Status label styles */
-        .status-active { color: #155724; background-color: #d4edda; font-weight: bold; padding: 0.2rem 0.4rem; border-radius: 3px; }
-        .status-completed { color: #004085; background-color: #cce5ff; font-weight: bold; padding: 0.2rem 0.4rem; border-radius: 3px; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Liste over Sikker Job Analyser (SJA)</h1>
-    <?php if ($msg): ?>
-        <p style="color: green;"><?php echo $msg; ?></p>
-    <?php endif; ?>
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <a href="view_sja.php">SJA Oversigt</a>
+        <a href="create_sja.php">Opret ny SJA</a>
+        <a href="view_wo.php">WO Oversigt</a>
+        <a href="dashboard.php">Dashboard</a>
+        <?php if ($role === 'admin'): ?>
+            <a href="admin.php">Admin</a>
+        <?php endif; ?>
+        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($role); ?>)</span>
+        <a class="logout-link" href="logout.php">Log ud</a>
+    </nav>
+
+    <div class="container">
+        <h1>📋 Liste over Sikker Job Analyser (SJA)</h1>
+        <?php if ($msg): ?>
+            <div class="alert alert-success"><?php echo $msg; ?></div>
+        <?php endif; ?>
     <?php if (count($entries) > 0): ?>
-        <!-- Filter controls to show/hide SJA by status -->
-        <div style="margin-bottom: 1rem;">
-            <label><input type="checkbox" id="filterActive" checked> Vis aktive</label>
-            <label style="margin-left:1rem;"><input type="checkbox" id="filterCompleted" checked> Vis afsluttede</label>
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label class="filter-label">
+                    <input type="checkbox" id="filterActive" checked> 
+                    <span class="status-aktiv">🔥 Vis aktive</span>
+                </label>
+                <label class="filter-label">
+                    <input type="checkbox" id="filterCompleted" checked> 
+                    <span class="status-afsluttet">✅ Vis afsluttede</span>
+                </label>
+            </div>
         </div>
-        <table id="sjaTable">
-            <tr>
-                <th>Opgave</th>
-                <th>Dato udførelse</th>
-                <th>Planlagt af</th>
-                <th>Udføres af</th>
-                <th>Status</th>
-                <th>Handlinger</th>
-            </tr>
+        <div class="table-wrapper">
+            <table id="sjaTable">
+                <thead>
+                    <tr>
+                        <th>📋 Opgave</th>
+                        <th>📅 Dato udførelse</th>
+                        <th>👤 Planlagt af</th>
+                        <th>🔧 Udføres af</th>
+                        <th>📊 Status</th>
+                        <th>⚡ Handlinger</th>
+                    </tr>
+                </thead>
+                <tbody>
             <?php foreach ($entries as $entry):
                 $basic = $entry['basic'] ?? [];
                 // Determine status (default to active if not set)
                 $status = $entry['status'] ?? 'active';
                 $statusLabel = ($status === 'completed') ? 'Afsluttet' : 'Aktiv';
-                $statusClass = ($status === 'completed') ? 'status-completed' : 'status-active';
+                $statusClass = ($status === 'completed') ? 'status-afsluttet' : 'status-aktiv';
             ?>
             <tr data-status="<?php echo htmlspecialchars($status); ?>">
                 <td><?php echo htmlspecialchars($basic['opgave'] ?? ''); ?></td>
@@ -100,7 +116,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </td>
             </tr>
             <?php endforeach; ?>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <script>
         // Filtering function to show/hide rows based on checkbox selection
         function filterRows() {
@@ -122,10 +140,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         filterRows();
         </script>
     <?php else: ?>
-        <p>Der er endnu ingen SJA'er oprettet.</p>
+        <div class="alert alert-info">
+            📋 Der er endnu ingen SJA'er oprettet. <a href="create_sja.php">Opret den første SJA</a>
+        </div>
     <?php endif; ?>
-    <p><a href="create_sja.php">Opret ny SJA</a></p>
-    <p><a href="map_overview.php">Se oversigtskort</a></p>
-    <p><a href="index.php">Tilbage til forsiden</a></p>
+    
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-light);">
+            <a href="create_sja.php" class="button button-primary">➕ Opret ny SJA</a>
+            <a href="map_overview.php" class="button button-secondary" style="margin-left: 1rem;">🗺️ Se oversigtskort</a>
+            <a href="index.php" class="button button-secondary" style="margin-left: 1rem;">🏠 Tilbage til forsiden</a>
+        </div>
+    </div>
 </body>
 </html>

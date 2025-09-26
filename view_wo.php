@@ -162,26 +162,41 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <div class="container">
     <h1>Liste over Arbejdstilladelser (WO)</h1>
     <?php if ($msg): ?>
-        <p style="color: green;"><?php echo $msg; ?></p>
+        <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
     <?php if (count($entries) > 0): ?>
-        <div style="margin-bottom: 1rem;">
-            <label><input type="checkbox" id="filterPlanning" checked> Vis planlagte</label>
-            <label style="margin-left:1rem;"><input type="checkbox" id="filterActive" checked> Vis aktive</label>
-            <label style="margin-left:1rem;"><input type="checkbox" id="filterCompleted" checked> Vis afsluttede</label>
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label class="filter-label">
+                    <input type="checkbox" id="filterPlanning" checked> 
+                    <span class="status-planlagt">📋 Vis planlagte</span>
+                </label>
+                <label class="filter-label">
+                    <input type="checkbox" id="filterActive" checked> 
+                    <span class="status-aktiv">🔥 Vis aktive</span>
+                </label>
+                <label class="filter-label">
+                    <input type="checkbox" id="filterCompleted" checked> 
+                    <span class="status-afsluttet">✅ Vis afsluttede</span>
+                </label>
+            </div>
         </div>
-        <table id="woTable">
-            <tr>
-                <th>WO Nr.</th>
-                <th>Beskrivelse</th>
-                <th>P-beskrivelse</th>
-                <th>Jobansvarlig</th>
-                <th>Entreprenør</th>
-                <th>Dato oprettet</th>
-                <th>Status</th>
-                <th>Godkendelser (dagens status)</th>
-                <th>Handlinger</th>
-            </tr>
+        <div class="table-wrapper">
+            <table id="woTable">
+                <thead>
+                    <tr>
+                        <th>🔢 WO Nr.</th>
+                        <th>📋 Beskrivelse</th>
+                        <th>📝 P-beskrivelse</th>
+                        <th>👤 Jobansvarlig</th>
+                        <th>🏢 Entreprenør</th>
+                        <th>📅 Dato oprettet</th>
+                        <th>📊 Status</th>
+                        <th>✅ Godkendelser (dagens status)</th>
+                        <th>⚡ Handlinger</th>
+                    </tr>
+                </thead>
+                <tbody>
             <?php foreach ($entries as $entry):
                 $status = $entry['status'] ?? 'planning';
                 // Map internal status codes to Danish labels and CSS classes
@@ -248,7 +263,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </td>
             </tr>
             <?php endforeach; ?>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <script>
         function filterRows() {
             var showPlanning = document.getElementById('filterPlanning').checked;

@@ -123,33 +123,22 @@ $medaljer = ["🥇", "🥈", "🥉"];
     <title>Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .hall-of-fame { display: flex; gap: 2rem; margin: 2rem 0; justify-content: center; }
-        .hof-card { flex: 1; max-width: 300px; background: #fff; border-radius: 8px; padding: 1.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        .hof-card h3 { margin-bottom: 1rem; color: #0a3f6a; }
-        .hof-card.ansvarlig { border-top: 6px solid #0070C0; }
-        .hof-card.entreprenor { border-top: 6px solid #28a745; }
-        .dashboard { display: flex; gap: 1rem; margin: 1rem 0; }
-        .card { flex: 1; padding: 2rem; border-radius: 8px; color: #fff; text-align: center; font-size: 1.2rem; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-        .planlagt { background-color: #0070C0; }
-        .aktiv { background-color: #28a745; }
-        .afsluttet { background-color: #6c757d; }
-        .charts { display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 2rem; }
-        .chart-container { flex: 1; min-width: 300px; }
-        table.stats { width: 100%; margin-top: 2rem; border-collapse: collapse; }
-        table.stats th, table.stats td { padding: 0.6rem; border: 1px solid #ccc; text-align: left; }
-        table.stats th { background-color: #f0f0f0; }
-    </style>
 </head>
 <body>
-    <div class="navbar">
+    <!-- Navigation bar -->
+    <nav class="navbar">
         <a href="index.php">Forside</a>
         <a href="dashboard.php">Dashboard</a>
-        <div class="nav-user">
-            <?php echo htmlspecialchars($_SESSION['user']); ?>
-            <a href="logout.php" class="logout-link">Log ud</a>
-        </div>
-    </div>
+        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_sja.php">SJA Oversigt</a>
+        <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+            <a href="admin.php">Admin</a>
+        <?php endif; ?>
+        <span class="nav-user">
+            Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($_SESSION['role'] ?? 'user'); ?>)
+        </span>
+        <a class="logout-link" href="logout.php">Log ud</a>
+    </nav>
 
     <div class="container">
         <h1>Dashboard</h1>
@@ -193,14 +182,16 @@ $medaljer = ["🥇", "🥈", "🥉"];
                 <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($firma); ?> – <?php echo $data["wo_count"]; ?> WO (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
             <?php $i++; endforeach; ?>
         </ol>
-        <table class="stats">
-            <thead><tr><th>Entreprenørfirma</th><th>Antal WO</th><th>Samlet arbejdsdage</th><th>Gns. pr. WO (dage)</th></tr></thead>
-            <tbody>
-            <?php foreach ($entreprenorStats as $firma => $data): ?>
-                <tr><td><?php echo htmlspecialchars($firma); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="stats">
+                <thead><tr><th>🏢 Entreprenørfirma</th><th>🔢 Antal WO</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. WO (dage)</th></tr></thead>
+                <tbody>
+                <?php foreach ($entreprenorStats as $firma => $data): ?>
+                    <tr><td><?php echo htmlspecialchars($firma); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Opgaveansvarlige statistik -->
         <h2>Opgaveansvarlige statistik</h2>
@@ -210,14 +201,16 @@ $medaljer = ["🥇", "🥈", "🥉"];
                 <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($navn); ?> – <?php echo $data["wo_count"]; ?> WO (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
             <?php $i++; endforeach; ?>
         </ol>
-        <table class="stats">
-            <thead><tr><th>Opgaveansvarlig</th><th>Antal WO</th><th>Samlet arbejdsdage</th><th>Gns. pr. WO (dage)</th></tr></thead>
-            <tbody>
-            <?php foreach ($ansvarligStats as $navn => $data): ?>
-                <tr><td><?php echo htmlspecialchars($navn); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="stats">
+                <thead><tr><th>👤 Opgaveansvarlig</th><th>🔢 Antal WO</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. WO (dage)</th></tr></thead>
+                <tbody>
+                <?php foreach ($ansvarligStats as $navn => $data): ?>
+                    <tr><td><?php echo htmlspecialchars($navn); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
