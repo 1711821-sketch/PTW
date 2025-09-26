@@ -254,7 +254,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </td>
                 <td>
                     <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
-                    <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
+                    <?php if ($role !== 'entreprenor'): ?>
+                        <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
+                    <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne WO?');">🗑️ Slet</a>
                     <?php endif; ?>
