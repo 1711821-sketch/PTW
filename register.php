@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </select>
                 </label>
             </div>
-            <button type="submit">Registrer</button>
+            <button type="submit" class="button button-primary button-lg" style="width: 100%; margin-top: 1rem;">👤 Registrer bruger</button>
         </form>
         <p style="text-align: center;"><a href="login.php">Tilbage til login</a></p>
     </div>

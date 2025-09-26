@@ -64,23 +64,28 @@ if (isset($_GET['delete'])) {
     <meta charset="UTF-8">
     <title>Brugeradministration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; }
-        h1 { margin-bottom: 1rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .msg { margin-bottom: 1rem; color: green; }
-        .btn-delete { color: #fff; background-color: #d9534f; padding: 0.3rem 0.6rem; border-radius: 3px; text-decoration: none; }
-        a { color: #0070C0; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Administrer brugere</h1>
-    <?php if ($message): ?>
-        <div class="msg"><?php echo $message; ?></div>
-    <?php endif; ?>
-    <table>
+    <!-- Navigation bar -->
+    <nav class="navbar">
+        <a href="index.php">Forside</a>
+        <a href="dashboard.php">Dashboard</a>
+        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_sja.php">SJA Oversigt</a>
+        <a href="admin.php">Admin</a>
+        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
+        <a class="logout-link" href="logout.php">Log ud</a>
+    </nav>
+
+    <div class="container">
+        <h1>⚙️ Brugeradministration</h1>
+        <?php if ($message): ?>
+            <div class="alert alert-success"><?php echo $message; ?></div>
+        <?php endif; ?>
+        
+        <div class="table-wrapper">
+            <table>
         <tr>
             <th>Brugernavn</th>
             <th>Rolle</th>
@@ -97,21 +102,27 @@ if (isset($_GET['delete'])) {
                         if (array_key_exists('approved', $u)) {
                             $approved = (bool)$u['approved'];
                         }
-                        echo $approved ? '<span style="color:green;">Godkendt</span>' : '<span style="color:red;">Afventer</span>';
+                        echo $approved ? '<span class="status-aktiv">Godkendt</span>' : '<span class="status-planlagt">Afventer</span>';
                     ?>
                 </td>
                 <td>
                     <?php if (!$approved): ?>
-                        <a href="?approve=<?php echo urlencode($u['username']); ?>">Godkend</a>
+                        <a class="button button-success button-sm" href="?approve=<?php echo urlencode($u['username']); ?>">✅ Godkend</a>
                     <?php endif; ?>
                     <?php if ($u['role'] !== 'admin'): ?>
                         <?php if (!$approved) echo ' | '; ?>
-                        <a class="btn-delete" href="?delete=<?php echo urlencode($u['username']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne bruger?');">Slet</a>
+                        <a class="button button-danger button-sm" href="?delete=<?php echo urlencode($u['username']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne bruger?');">🗑️ Slet</a>
                     <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
-    <p><a href="index.php">Tilbage til forsiden</a></p>
+        </div>
+        
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-light);">
+            <a href="index.php" class="button button-secondary">← Tilbage til forsiden</a>
+            <a href="register.php" class="button" style="margin-left: 1rem;">👤 Opret ny bruger</a>
+        </div>
+    </div>
 </body>
 </html>

@@ -489,7 +489,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
         </div>
 
-        <button type="submit" class="btn"><?php echo $edit_id ? 'Gem ændringer' : 'Gem SJA'; ?></button>
+        <button type="submit" name="save_sja" class="button button-success button-lg">
+            <?php echo $edit_id ? '💾 Gem ændringer' : '💾 Gem SJA'; ?>
+        </button>
     </form>
 
     <p><a href="view_sja.php">Se eksisterende SJA'er</a></p>

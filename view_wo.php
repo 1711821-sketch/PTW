@@ -221,29 +221,29 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <strong>Opgaveansvarlig:</strong> 
                         <span><?php echo $oaApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                            <a class="button" style="display: inline; margin-left: 0.5rem;" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">Godkend</a>
+                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">✅ Godkend</a>
                         <?php endif; ?>
                     </div>
                     <div style="margin-bottom: 0.3rem;">
                         <strong>Driften:</strong> 
                         <span><?php echo $driftApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                            <a class="button" style="display: inline; margin-left: 0.5rem;" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">Godkend</a>
+                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">✅ Godkend</a>
                         <?php endif; ?>
                     </div>
                     <div>
                         <strong>Entreprenør:</strong> 
                         <span><?php echo $entApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                            <a class="button" style="display: inline; margin-left: 0.5rem;" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">Godkend</a>
+                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">✅ Godkend</a>
                         <?php endif; ?>
                     </div>
                 </td>
                 <td>
-                    <a class="button" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">Print / Vis</a>
-                    <a class="button" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
+                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
+                    <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
                     <?php if ($role === 'admin'): ?>
-                        <a class="button" style="background-color:#d9534f" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne WO?');">Slet</a>
+                        <a class="button button-danger button-sm" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne WO?');">🗑️ Slet</a>
                     <?php endif; ?>
                 </td>
             </tr>

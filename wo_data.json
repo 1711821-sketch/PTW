@@ -18,13 +18,25 @@
         "longitude": "11.254034",
         "notes": "",
         "approvals": {
-            "entreprenor": "2025-09-26"
+            "entreprenor": "2025-09-26",
+            "opgaveansvarlig": "2025-09-26",
+            "drift": "2025-09-26"
         },
         "approval_history": [
             {
                 "timestamp": "2025-09-26 19:19",
                 "user": "del",
                 "role": "entreprenor"
+            },
+            {
+                "timestamp": "2025-09-26 22:14",
+                "user": "admin",
+                "role": "opgaveansvarlig"
+            },
+            {
+                "timestamp": "2025-09-26 22:14",
+                "user": "admin",
+                "role": "drift"
             }
         ]
     },
