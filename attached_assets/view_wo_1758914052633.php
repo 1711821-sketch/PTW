@@ -111,16 +111,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Arbejdstilladelser / WO</title>
+    <title>Alle arbejdstilladelser</title>
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny WO</a>
+            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Link to the dashboard for quick access to statistics -->
@@ -129,7 +129,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         <a class="logout-link" href="logout.php">Log ud</a>
     </nav>
     <div class="container">
-    <h1>Liste over Arbejdstilladelser (WO)</h1>
+    <h1>Liste over arbejdstilladelser</h1>
     <?php if ($msg): ?>
         <p style="color: green;"><?php echo $msg; ?></p>
     <?php endif; ?>
@@ -141,7 +141,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         <table id="woTable">
             <tr>
-                <th>WO Nr.</th>
+                <th>Arbejdstilladelse Nr.</th>
                 <th>Beskrivelse</th>
                 <th>P-beskrivelse</th>
                 <th>Jobansvarlig</th>

@@ -27,7 +27,7 @@ $role     = $_SESSION['role'] ?? 'user';
 <body>
     <div class="container">
         <h1>Velkommen, <?= htmlspecialchars($username) ?>!</h1>
-        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og Arbejdstilladelser (WO).</p>
+        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og arbejdstilladelser.</p>
         <p>
             <a href="create_sja.php">Opret en ny SJA</a><br>
             <a href="view_sja.php">Se eksisterende SJA'er</a><br>

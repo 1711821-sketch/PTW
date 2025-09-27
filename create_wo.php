@@ -145,7 +145,7 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title><?php echo $edit_id ? 'Rediger WO' : 'Opret ny WO'; ?></title>
+<title><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></title>
 <!-- Include global stylesheet for modern responsive design -->
 <link rel="stylesheet" href="style.css">
 <!-- Include pdf.js and its worker for client‑side PDF parsing -->
@@ -186,9 +186,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <?php if (in_array($role ?? '', ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny WO</a>
+            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Add link to the dashboard so users can access statistics -->
@@ -197,7 +197,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         <a class="logout-link" href="logout.php">Log ud</a>
     </nav>
     <div class="container">
-<h1><?php echo $edit_id ? 'Rediger Arbejdstilladelse / WO' : 'Opret ny Arbejdstilladelse (WO)'; ?></h1>
+<h1><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
 <!-- Modern form with organized sections -->
