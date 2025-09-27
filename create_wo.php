@@ -432,15 +432,18 @@ map.on('click', function(e) {
 document.getElementById('pdfFile').addEventListener('change', function() {
     const fileText = document.getElementById('fileText');
     const fileIcon = document.querySelector('.file-icon');
+    const fileDisplay = document.querySelector('.file-input-display');
     
     if (this.files && this.files.length > 0) {
         const fileName = this.files[0].name;
         fileText.textContent = fileName;
         fileText.classList.add('has-file');
+        fileDisplay.classList.add('has-file');
         fileIcon.textContent = '📄';
     } else {
         fileText.textContent = 'Klik for at vælge PDF fil...';
         fileText.classList.remove('has-file');
+        fileDisplay.classList.remove('has-file');
         fileIcon.textContent = '📁';
     }
 });

@@ -586,10 +586,10 @@ input[type="file"]:focus {
     background: var(--background-primary);
 }
 
-/* Modern file input styling */
+/* Modern file input styling - Streamlined and clean */
 .file-input-wrapper {
     position: relative;
-    display: inline-block;
+    display: block;
     width: 100%;
 }
 
@@ -604,49 +604,92 @@ input[type="file"]:focus {
 .file-input-display {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.75rem;
-    padding: 0.875rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    background: var(--background-primary);
+    padding: 1.5rem 1rem;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
     cursor: pointer;
     transition: var(--transition);
-    min-height: 52px;
+    min-height: 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.file-input-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: var(--transition);
 }
 
 .file-input-display:hover {
     border-color: var(--primary-color);
-    background: rgba(59, 130, 246, 0.02);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.02) 0%, rgba(59, 130, 246, 0.05) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-style: solid;
+}
+
+.file-input-display:hover::before {
+    left: 100%;
 }
 
 .file-input-display:active {
     transform: translateY(0);
+    box-shadow: var(--shadow-sm);
 }
 
 .file-input-wrapper:focus-within .file-input-display {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    border-style: solid;
 }
 
 .file-icon {
-    font-size: 1.25rem;
+    font-size: 2rem;
     color: var(--primary-color);
+    transition: var(--transition);
+    pointer-events: none;
+}
+
+.file-input-display:hover .file-icon {
+    transform: scale(1.1);
+    color: var(--primary-dark);
 }
 
 .file-text {
-    flex: 1;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    pointer-events: none;
+    user-select: none;
 }
 
 .file-text.has-file {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.file-text.has-file .file-icon {
+.file-text.has-file + .file-icon {
     color: var(--secondary-color);
+}
+
+/* Additional styling for when file is selected */
+.file-input-display.has-file {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.1) 100%);
+    border-color: var(--secondary-color);
+    border-style: solid;
+}
+
+.file-input-display.has-file:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.15) 100%);
 }
 
 input[type="text"]:hover,
