@@ -1,8 +1,8 @@
-# Work Order Management System
+# Arbejdstilladelsessystem
 
 ## Overview
 
-A web-based work order management system designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles work order creation, approval workflows, safety job analysis (SJA), and role-based access control. Built with PHP backend using JSON file storage for data persistence.
+A web-based arbejdstilladelsessystem designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles arbejdstilladelse creation, approval workflows, safety job analysis (SJA), and role-based access control. Built with PHP backend using JSON file storage for data persistence.
 
 ## User Preferences
 
@@ -34,7 +34,7 @@ Preferred communication style: Simple, everyday language.
 - **Status Management**: Work order status transitions based on approval completion
 
 ### Data Architecture
-- **Work Orders**: Structured data with approval status, location coordinates, and stakeholder information
+- **Arbejdstilladelser**: Structured data with approval status, location coordinates, and stakeholder information
 - **Safety Job Analysis**: Risk assessment forms with hazard identification and control measures
 - **User Management**: Role-based user accounts with company associations for entrepreneurs
 

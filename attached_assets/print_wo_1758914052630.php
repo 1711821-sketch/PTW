@@ -1,5 +1,5 @@
 <?php
-// Displays a single Work Order (WO) in a print friendly layout.  Requires
+// Displays a single arbejdstilladelse in a print friendly layout.  Requires
 // authentication and an `id` query parameter referencing the WO entry.
 
 session_start();
@@ -25,7 +25,7 @@ foreach ($entries as $e) {
     }
 }
 if (!$entry) {
-    echo '<p>WO ikke fundet.</p>';
+    echo '<p>Arbejdstilladelse ikke fundet.</p>';
     exit();
 }
 
@@ -46,7 +46,7 @@ if ($statusVal === 'planning') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vis/Print WO</title>
+    <title>Vis/Print arbejdstilladelse</title>
     <!-- Import global stylesheet for consistent typography and navigation -->
     <link rel="stylesheet" href="style.css">
     <style>
@@ -68,9 +68,9 @@ if ($statusVal === 'planning') {
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny WO</a>
+            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Include Dashboard link for consistency with other pages -->
@@ -80,16 +80,16 @@ if ($statusVal === 'planning') {
     </nav>
     <div class="container">
     <a href="#" class="print-btn" onclick="window.print();return false;">Print</a>
-    <h1>Arbejdstilladelse (WO)</h1>
+    <h1>Arbejdstilladelse</h1>
     <h2>Basisinformation</h2>
     <table>
-        <tr><th>WO Nr.</th><td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
+        <tr><th>Arbejdstilladelse Nr.</th><td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
         <tr><th>Beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
         <tr><th>P-nr beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
         <tr><th>Jobansvarlig</th><td><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
         <tr><th>Telefon</th><td><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
-        <tr><th>WO oprettet af</th><td><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
-        <tr><th>WO oprettet dato</th><td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
+        <tr><th>Arbejdstilladelse oprettet af</th><td><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
+        <tr><th>Arbejdstilladelse oprettet dato</th><td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
         <tr><th>Entreprenør firma</th><td><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
         <tr><th>Entreprenør kontakt</th><td><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
         <tr><th>Komponent nr.</th><td><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
@@ -148,9 +148,9 @@ if ($statusVal === 'planning') {
         <?php endforeach; ?>
         </ul>
     <?php else: ?>
-        <p>Ingen tilknyttede SJA'er fundet for WO <?php echo htmlspecialchars($entry['id']); ?>.</p>
+        <p>Ingen tilknyttede SJA'er fundet for arbejdstilladelse <?php echo htmlspecialchars($entry['id']); ?>.</p>
     <?php endif; ?>
-    <p><a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>">Opret ny SJA til denne WO</a></p>
+    <p><a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>">Opret ny SJA til denne arbejdstilladelse</a></p>
     <p><a href="view_wo.php">Tilbage til liste</a></p>
     </div><!-- /.container -->
 </body>
