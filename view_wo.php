@@ -1,5 +1,5 @@
 <?php
-// Displays a list of all Work Orders (WO) stored in the system. Entries can
+// Displays a list of all arbejdstilladelser stored in the system. Entries can
 // be filtered by status and edited or deleted (admin only). Only
 // authenticated users can access this page.
 
@@ -42,7 +42,7 @@ $now = date('Y-m-d H:i');
 
 // Handle approval actions: if an approval request is present and the
 // current user has permission to approve for that role, update the
-// corresponding WO entry. Approvals are stored in the entry's 'approvals'
+// corresponding arbejdstilladelse entry. Approvals are stored in the entry's 'approvals'
 // associative array keyed by role with the current date as the value. Only
 // administrators or users whose role matches the approval role may
 // approve.
@@ -131,9 +131,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             return true;
         });
         $entries = array_values($entries);
-        $msg = 'WO er blevet slettet.';
+        $msg = 'Arbejdstilladelse er blevet slettet.';
     } else {
-        $msg = 'Kunne ikke finde WO til sletning.';
+        $msg = 'Kunne ikke finde arbejdstilladelse til sletning.';
     }
 }
 ?>
@@ -142,16 +142,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Arbejdstilladelser / WO</title>
+    <title>Alle Arbejdstilladelser</title>
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny WO</a>
+            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Link to the dashboard for quick access to statistics -->
@@ -160,7 +160,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         <a class="logout-link" href="logout.php">Log ud</a>
     </nav>
     <div class="container">
-    <h1>Liste over Arbejdstilladelser (WO)</h1>
+    <h1>Liste over arbejdstilladelser</h1>
     <?php if ($msg): ?>
         <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
@@ -182,10 +182,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             </div>
         </div>
         <div class="table-wrapper">
-            <table id="woTable">
+            <table id="arbejdstilladelseTable">
                 <thead>
                     <tr>
-                        <th>🔢 WO Nr.</th>
+                        <th>🔢 Arbejdstilladelse Nr.</th>
                         <th>📋 Beskrivelse</th>
                         <th>📝 P-beskrivelse</th>
                         <th>👤 Jobansvarlig</th>
@@ -255,7 +255,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
                     <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
-                        <a class="button button-danger button-sm" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne WO?');">🗑️ Slet</a>
+                        <a class="button button-danger button-sm" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">🗑️ Slet</a>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -268,7 +268,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             var showPlanning = document.getElementById('filterPlanning').checked;
             var showActive = document.getElementById('filterActive').checked;
             var showCompleted = document.getElementById('filterCompleted').checked;
-            var rows = document.querySelectorAll('#woTable tr[data-status]');
+            var rows = document.querySelectorAll('#arbejdstilladelseTable tr[data-status]');
             rows.forEach(function(row) {
                 var status = row.getAttribute('data-status');
                 if ((status === 'planning' && !showPlanning) ||
@@ -286,10 +286,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         filterRows();
         </script>
     <?php else: ?>
-        <p>Der er endnu ingen WO'er oprettet.</p>
+        <p>Der er endnu ingen arbejdstilladelser oprettet.</p>
     <?php endif; ?>
     <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-        <p><a href="create_wo.php">Opret ny WO</a></p>
+        <p><a href="create_wo.php">Opret ny arbejdstilladelse</a></p>
     <?php endif; ?>
     <p><a href="map_wo.php">Se oversigtskort</a></p>
     <p><a href="index.php">Tilbage til forsiden</a></p>
