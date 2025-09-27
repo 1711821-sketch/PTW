@@ -26,9 +26,9 @@ $role     = $_SESSION['role'] ?? 'user';
         <a href="create_sja.php">Opret SJA</a>
         <a href="view_sja.php">SJA Oversigt</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret WO</a>
+            <a href="create_wo.php">Opret arbejdstilladelse</a>
         <?php endif; ?>
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <a href="map_wo.php">Kort</a>
         <a href="dashboard.php">Dashboard</a>
         <?php if ($role === 'admin'): ?>
@@ -40,7 +40,7 @@ $role     = $_SESSION['role'] ?? 'user';
 
     <div class="container">
         <h1>Velkommen, <?= htmlspecialchars($username) ?>!</h1>
-        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og Arbejdstilladelser (WO).</p>
+        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og arbejdstilladelser.</p>
         
         <!-- Modern card-based navigation -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
@@ -60,11 +60,11 @@ $role     = $_SESSION['role'] ?? 'user';
                     <h3 style="margin: 0; color: var(--primary-color);">📋 Arbejdstilladelser</h3>
                 </div>
                 <div class="card-body">
-                    <p style="margin-bottom: 1rem;">Administrer arbejdstilladelser og WO'er</p>
+                    <p style="margin-bottom: 1rem;">Administrer arbejdstilladelser</p>
                     <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                        <a href="create_wo.php" class="button button-success">Opret ny WO</a>
+                        <a href="create_wo.php" class="button button-success">Opret ny arbejdstilladelse</a>
                     <?php endif; ?>
-                    <a href="view_wo.php" class="button button-secondary">Se WO'er</a>
+                    <a href="view_wo.php" class="button button-secondary">Se arbejdstilladelser</a>
                 </div>
             </div>
 
