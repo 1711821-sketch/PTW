@@ -209,22 +209,22 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       <h3 style="margin: 0; color: var(--primary-color);">📄 PDF Upload</h3>
     </div>
     <div class="card-body">
-      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Upload en PDF-arbejdsordre for automatisk udfyldning af felter</p>
-      <div class="form-row">
-        <div class="form-group" style="flex: 2;">
-          <label for="pdfFile">Vælg PDF fil</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="pdfFile" accept="application/pdf" class="file-input">
-            <div class="file-input-display">
-              <span class="file-icon">📁</span>
-              <span class="file-text" id="fileText">Klik for at vælge PDF fil...</span>
-            </div>
+      <p style="margin-bottom: 1.5rem; color: var(--text-secondary); text-align: center;">Upload en PDF-arbejdsordre for automatisk udfyldning af felter</p>
+      
+      <!-- File upload area -->
+      <div class="form-group">
+        <div class="file-input-wrapper">
+          <input type="file" id="pdfFile" accept="application/pdf" class="file-input">
+          <div class="file-input-display">
+            <span class="file-icon">📁</span>
+            <span class="file-text" id="fileText">Klik for at vælge PDF fil...</span>
           </div>
         </div>
-        <div class="form-group" style="flex: 1;">
-          <label style="opacity: 0;">Parse</label>
-          <button type="button" id="parseBtn" class="button-lg" style="width: 100%;">Parse PDF</button>
-        </div>
+      </div>
+      
+      <!-- Parse button -->
+      <div class="form-group" style="text-align: center; margin-top: 1rem;">
+        <button type="button" id="parseBtn" class="button-lg">Parse PDF</button>
       </div>
     </div>
   </div>
