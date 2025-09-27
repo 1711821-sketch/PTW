@@ -2,8 +2,30 @@
 // Admin panel: list all users and allow admin to delete users (except self and other admins).
 // Also provides interface for managing information messages.
 // Only accessible to users with role "admin".
+// CSRF protection implemented for all state-changing operations.
 
 session_start();
+
+// CSRF Token Functions
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function requireCSRFToken() {
+    if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+        die('CSRF token validation failed. Refresh the page and try again.');
+    }
+}
+
+// Generate CSRF token for this session
+$csrf_token = generateCSRFToken();
 if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: index.php');
     exit();
@@ -69,9 +91,42 @@ function validateMessageInput($title, $content, $type) {
     return $errors;
 }
 
-// Handle message operations
+// Handle user operations (POST only with CSRF protection)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['create_message'])) {
+    // All POST operations require CSRF token validation
+    requireCSRFToken();
+    
+    if (isset($_POST['approve_user'])) {
+        // Handle user approval
+        $approve_user = $_POST['username'] ?? '';
+        foreach ($users as &$u) {
+            if ($u['username'] === $approve_user) {
+                $u['approved'] = true;
+                $message = 'Bruger "' . htmlspecialchars($approve_user) . '" er nu godkendt.';
+                break;
+            }
+        }
+        file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    } elseif (isset($_POST['delete_user'])) {
+        // Handle user deletion
+        $delete_user = $_POST['username'] ?? '';
+        $updated = [];
+        foreach ($users as $u) {
+            // Do not delete admin accounts
+            if ($u['username'] === $delete_user && $u['role'] !== 'admin') {
+                continue; // Skip this user to delete
+            }
+            $updated[] = $u;
+        }
+        // Check if deletion happened
+        if (count($updated) < count($users)) {
+            file_put_contents($users_file, json_encode($updated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+            $users = $updated;
+            $message = 'Bruger "' . htmlspecialchars($delete_user) . '" er blevet slettet.';
+        } else {
+            $message = 'Kunne ikke slette bruger. Administratorer kan ikke slettes.';
+        }
+    } elseif (isset($_POST['create_message'])) {
         // Create new message
         $title = trim($_POST['title'] ?? '');
         $content = trim($_POST['content'] ?? '');
@@ -131,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get message for editing
+// Get message for editing (GET is safe for read operations)
 $editing_message = null;
 if (isset($_GET['edit_message'])) {
     $edit_id = $_GET['edit_message'];
@@ -140,45 +195,6 @@ if (isset($_GET['edit_message'])) {
             $editing_message = $msg;
             break;
         }
-    }
-}
-
-// Handle approval via GET parameter.  When the admin clicks on a
-// ?approve=username link, the specified user's 'approved' flag is set
-// to true and the updated users list is saved back to users.json.
-if (isset($_GET['approve'])) {
-    $approve_user = $_GET['approve'];
-    foreach ($users as &$u) {
-        if ($u['username'] === $approve_user) {
-            // Set approved to true.  If the key does not exist it will be added.
-            $u['approved'] = true;
-            $message = 'Bruger "' . htmlspecialchars($approve_user) . '" er nu godkendt.';
-            break;
-        }
-    }
-    // Persist the modified users list.
-    file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
-
-// Handle deletion via GET parameter
-if (isset($_GET['delete'])) {
-    $delete_user = $_GET['delete'];
-    $updated = [];
-    foreach ($users as $u) {
-        // Do not delete admin accounts
-        if ($u['username'] === $delete_user && $u['role'] !== 'admin') {
-            // Skip this user to delete
-            continue;
-        }
-        $updated[] = $u;
-    }
-    // Check if deletion happened
-    if (count($updated) < count($users)) {
-        file_put_contents($users_file, json_encode($updated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $users = $updated;
-        $message = 'Bruger "' . htmlspecialchars($delete_user) . '" er blevet slettet.';
-    } else {
-        $message = 'Kunne ikke slette bruger. Administratorer kan ikke slettes.';
     }
 }
 ?>
@@ -420,11 +436,19 @@ if (isset($_GET['delete'])) {
                     </td>
                     <td>
                         <?php if (!$approved): ?>
-                            <a class="button button-success button-sm" href="?approve=<?php echo urlencode($u['username']); ?>">✅ Godkend</a>
+                            <form method="POST" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                <input type="hidden" name="username" value="<?php echo htmlspecialchars($u['username']); ?>">
+                                <button type="submit" name="approve_user" class="button button-success button-sm">✅ Godkend</button>
+                            </form>
                         <?php endif; ?>
                         <?php if ($u['role'] !== 'admin'): ?>
                             <?php if (!$approved) echo ' | '; ?>
-                            <a class="button button-danger button-sm" href="?delete=<?php echo urlencode($u['username']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne bruger?');">🗑️ Slet</a>
+                            <form method="POST" style="display: inline;" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                <input type="hidden" name="username" value="<?php echo htmlspecialchars($u['username']); ?>">
+                                <button type="submit" name="delete_user" class="button button-danger button-sm">🗑️ Slet</button>
+                            </form>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -446,6 +470,7 @@ if (isset($_GET['delete'])) {
             <form method="POST" class="message-form">
                 <h3><?php echo $editing_message ? '✏️ Rediger Meddelelse' : '➕ Opret Ny Meddelelse'; ?></h3>
                 
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                 <?php if ($editing_message): ?>
                     <input type="hidden" name="message_id" value="<?php echo htmlspecialchars($editing_message['id']); ?>">
                 <?php endif; ?>
@@ -541,6 +566,7 @@ if (isset($_GET['delete'])) {
                                         <a href="?edit_message=<?php echo urlencode($msg['id']); ?>" 
                                            class="button button-secondary button-sm">✏️ Rediger</a>
                                         <form method="POST" style="display: inline;" onsubmit="return confirm('Er du sikker på, at du vil slette denne meddelelse?');">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
                                             <input type="hidden" name="message_id" value="<?php echo htmlspecialchars($msg['id']); ?>">
                                             <button type="submit" name="delete_message" class="button button-danger button-sm">🗑️ Slet</button>
                                         </form>

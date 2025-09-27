@@ -210,6 +210,16 @@
         "status": "planning",
         "latitude": "55.205779",
         "longitude": "11.267445",
-        "notes": ""
+        "notes": "",
+        "approvals": {
+            "entreprenor": "2025-09-27"
+        },
+        "approval_history": [
+            {
+                "timestamp": "2025-09-27 09:25",
+                "user": "admin",
+                "role": "entreprenor"
+            }
+        ]
     }
 ]
