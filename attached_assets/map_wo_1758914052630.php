@@ -2,9 +2,9 @@
 // ---------------------------------------------------------------------------
 // map_wo.php
 //
-// Displays an overview map of all work orders (WO) using Leaflet.  Each WO
+// Displays an overview map of all arbejdstilladelser using Leaflet.  Each arbejdstilladelse
 // with valid latitude and longitude appears as a marker on the map.  The
-// markers are coloured based on the WO's status (green for active or
+// markers are coloured based on the arbejdstilladelse's status (green for active or
 // planning, blue for completed).  A search box allows filtering markers
 // by description, job responsible, contractor firm or contact.  Checkboxes
 // control whether active or completed markers are shown.
@@ -58,7 +58,7 @@ if (strtolower($role) === 'entreprenor') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oversigtskort over WO</title>
+    <title>Oversigtskort over arbejdstilladelser</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
@@ -71,7 +71,7 @@ if (strtolower($role) === 'entreprenor') {
 </head>
 <body>
     <div class="controls">
-        <input type="text" id="search" placeholder="Søg i beskrivelse eller jobansvarlig…">
+        <input type="text" id="search" placeholder="Søg i beskrivelse, jobansvarlig eller entreprenør…">
         <label><input type="checkbox" id="showPlanning" checked> Planlagte</label>
         <label><input type="checkbox" id="showActive" checked> Aktive</label>
         <label><input type="checkbox" id="showCompleted" checked> Afsluttede</label>

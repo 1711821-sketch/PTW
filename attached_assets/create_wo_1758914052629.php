@@ -18,6 +18,9 @@
 
 session_start();
 
+// Get the user role from session
+$role = $_SESSION['role'] ?? 'user';
+
 // Only allow authenticated users to create or edit WOs.  If the session
 // does not contain a 'user' key, redirect to the login page.
 if (!isset($_SESSION['user'])) {
@@ -142,7 +145,7 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title><?php echo $edit_id ? 'Rediger WO' : 'Opret ny WO'; ?></title>
+<title><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></title>
 <!-- Include global stylesheet for modern responsive design -->
 <link rel="stylesheet" href="style.css">
 <!-- Include pdf.js and its worker for client‑side PDF parsing -->
@@ -183,9 +186,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <?php if (in_array($role ?? '', ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny WO</a>
+            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Add link to the dashboard so users can access statistics -->
@@ -194,13 +197,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         <a class="logout-link" href="logout.php">Log ud</a>
     </nav>
     <div class="container">
-<h1><?php echo $edit_id ? 'Rediger Arbejdstilladelse / WO' : 'Opret ny Arbejdstilladelse (WO)'; ?></h1>
+<h1><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
 <!-- The form posts back to this page.  Use enctype="multipart/form-data" so that file inputs work when we introduce server‑side parsing in the future. -->
 <form method="post">
   <div>
-    <label for="pdfFile">Upload WO (PDF)</label>
+    <label for="pdfFile">Upload arbejdstilladelse (PDF)</label>
     <input type="file" id="pdfFile" accept="application/pdf">
     <button type="button" id="parseBtn">Parse PDF</button>
   </div>
@@ -234,11 +237,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <input type="tel" id="telefon" name="telefon" value="<?php echo htmlspecialchars($current['telefon']); ?>">
   </div>
   <div>
-    <label for="oprettet_af">WO oprettet af</label>
+    <label for="oprettet_af">Arbejdstilladelse oprettet af</label>
     <input type="text" id="oprettet_af" name="oprettet_af" value="<?php echo htmlspecialchars($current['oprettet_af']); ?>">
   </div>
   <div>
-    <label for="oprettet_dato">WO oprettet dato</label>
+    <label for="oprettet_dato">Arbejdstilladelse oprettet dato</label>
     <!-- Note: input type="date" expects ISO format (YYYY-MM-DD).  Values that cannot be parsed by browsers will be displayed as blank. -->
     <input type="date" id="oprettet_dato" name="oprettet_dato" value="<?php echo htmlspecialchars($current['oprettet_dato']); ?>">
   </div>
@@ -272,7 +275,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <label for="notes">Bemærkninger</label>
     <textarea id="notes" name="notes"><?php echo htmlspecialchars($current['notes']); ?></textarea>
   </div>
-  <button type="submit" name="save_wo">Gem Work Order</button>
+  <button type="submit" name="save_wo">Gem arbejdstilladelse</button>
 </form>
 
 <hr>

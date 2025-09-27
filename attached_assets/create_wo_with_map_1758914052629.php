@@ -76,7 +76,7 @@ $defaultLng = 11.25736;
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>Opret WO med kort</title>
+<title>Opret arbejdstilladelse med kort</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
 <!-- Leaflet CSS/JS for the interactive map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -101,10 +101,10 @@ $defaultLng = 11.25736;
 </style>
 </head>
 <body>
-<h1>Opret Work Order</h1>
+<h1>Opret arbejdstilladelse</h1>
 
 <form method="post">
-  <label for="wo_number">WO nummer</label>
+  <label for="wo_number">Arbejdstilladelse nummer</label>
   <input type="text" id="wo_number" name="wo_number" value="<?php echo htmlspecialchars($current['wo_number'] ?? ''); ?>">
 
   <label for="description">Beskrivelse</label>
@@ -144,7 +144,7 @@ $defaultLng = 11.25736;
   <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($current['latitude'] ?? ''); ?>">
   <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($current['longitude'] ?? ''); ?>">
 
-  <button type="submit" name="save_wo">Gem WO</button>
+  <button type="submit" name="save_wo">Gem arbejdstilladelse</button>
 </form>
 
 <hr>
