@@ -303,16 +303,23 @@ if (strtolower($role) === 'entreprenor') {
     </style>
 </head>
 <body>
-    <!-- Modern navigation bar -->
+    <!-- Modern navigation bar with hamburger menu -->
     <nav class="navbar">
-        <a href="view_wo.php">🔍 WO Oversigt</a>
-        <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">➕ Opret ny WO</a>
-        <?php endif; ?>
-        <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
-        <a href="dashboard.php">📊 Dashboard</a>
-        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
-        <a class="logout-link" href="logout.php">Log ud</a>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="navbar-links">
+            <a href="view_wo.php">🔍 WO Oversigt</a>
+            <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+                <a href="create_wo.php">➕ Opret ny WO</a>
+            <?php endif; ?>
+            <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
+            <a href="dashboard.php">📊 Dashboard</a>
+            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
+            <a class="logout-link" href="logout.php">Log ud</a>
+        </div>
     </nav>
     
     <div class="map-container">
