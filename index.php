@@ -20,22 +20,29 @@ $role     = $_SESSION['role'] ?? 'user';
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Modern navigation bar -->
+    <!-- Modern navigation bar with hamburger menu -->
     <nav class="navbar">
-        <a href="index.php">Forside</a>
-        <a href="create_sja.php">Opret SJA</a>
-        <a href="view_sja.php">SJA Oversigt</a>
-        <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret arbejdstilladelse</a>
-        <?php endif; ?>
-        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
-        <a href="map_wo.php">Kort</a>
-        <a href="dashboard.php">Dashboard</a>
-        <?php if ($role === 'admin'): ?>
-            <a href="admin.php">Admin</a>
-        <?php endif; ?>
-        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
-        <a class="logout-link" href="logout.php">Log ud</a>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="navbar-links">
+            <a href="index.php">Forside</a>
+            <a href="create_sja.php">Opret SJA</a>
+            <a href="view_sja.php">SJA Oversigt</a>
+            <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+                <a href="create_wo.php">Opret arbejdstilladelse</a>
+            <?php endif; ?>
+            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="map_wo.php">Kort</a>
+            <a href="dashboard.php">Dashboard</a>
+            <?php if ($role === 'admin'): ?>
+                <a href="admin.php">Admin</a>
+            <?php endif; ?>
+            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
+            <a class="logout-link" href="logout.php">Log ud</a>
+        </div>
     </nav>
 
     <div class="container">

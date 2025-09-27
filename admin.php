@@ -67,15 +67,22 @@ if (isset($_GET['delete'])) {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Navigation bar -->
+    <!-- Navigation bar with hamburger menu -->
     <nav class="navbar">
-        <a href="index.php">Forside</a>
-        <a href="dashboard.php">Dashboard</a>
-        <a href="view_wo.php">WO Oversigt</a>
-        <a href="view_sja.php">SJA Oversigt</a>
-        <a href="admin.php">Admin</a>
-        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
-        <a class="logout-link" href="logout.php">Log ud</a>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="navbar-links">
+            <a href="index.php">Forside</a>
+            <a href="dashboard.php">Dashboard</a>
+            <a href="view_wo.php">WO Oversigt</a>
+            <a href="view_sja.php">SJA Oversigt</a>
+            <a href="admin.php">Admin</a>
+            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
+            <a class="logout-link" href="logout.php">Log ud</a>
+        </div>
     </nav>
 
     <div class="container">

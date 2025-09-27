@@ -147,17 +147,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Top navigation bar -->
+    <!-- Top navigation bar with hamburger menu -->
     <nav class="navbar">
-        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
-        <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
-        <?php endif; ?>
-        <a href="map_wo.php">Kort</a>
-        <!-- Link to the dashboard for quick access to statistics -->
-        <a href="dashboard.php">Dashboard</a>
-        <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
-        <a class="logout-link" href="logout.php">Log ud</a>
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="navbar-links">
+            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+                <a href="create_wo.php">Opret ny arbejdstilladelse</a>
+            <?php endif; ?>
+            <a href="map_wo.php">Kort</a>
+            <!-- Link to the dashboard for quick access to statistics -->
+            <a href="dashboard.php">Dashboard</a>
+            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
+            <a class="logout-link" href="logout.php">Log ud</a>
+        </div>
     </nav>
     <div class="container">
     <h1>Liste over arbejdstilladelser</h1>
