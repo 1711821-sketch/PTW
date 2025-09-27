@@ -784,6 +784,31 @@ button[name="save_wo"]:hover {
     align-items: center;
 }
 
+/* Fix for status classes applied to select elements - ensure dropdown options are visible */
+select.status-planlagt,
+select.status-aktiv,
+select.status-afsluttet {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+select.status-planlagt option,
+select.status-aktiv option,
+select.status-afsluttet option {
+    color: var(--text-primary) !important;
+    background: var(--background-primary) !important;
+    padding: 0.5rem !important;
+    font-weight: normal !important;
+    text-transform: none !important;
+}
+
+select.status-planlagt option:hover,
+select.status-aktiv option:hover,
+select.status-afsluttet option:hover {
+    background: var(--primary-light) !important;
+    color: #ffffff !important;
+}
+
 /* Indicate parse log states used when parsing PDFs */
 .found {
     color: green;
