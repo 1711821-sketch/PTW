@@ -301,6 +301,7 @@ if (strtolower($role) === 'entreprenor') {
             }
         }
     </style>
+    <script src="navigation.js"></script>
 </head>
 <body>
     <!-- Modern navigation bar with hamburger menu -->

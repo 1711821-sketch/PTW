@@ -181,6 +181,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Include Leaflet for the interactive map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="navigation.js"></script>
 <!-- Remove page-specific inline styles; all base styling lives in style.css -->
 </head>
 <body>

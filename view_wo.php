@@ -145,6 +145,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <title>Alle Arbejdstilladelser</title>
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
+    <script src="navigation.js"></script>
 </head>
 <body>
     <!-- Top navigation bar with hamburger menu -->

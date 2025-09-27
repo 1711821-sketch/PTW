@@ -65,6 +65,7 @@ if (isset($_GET['delete'])) {
     <title>Brugeradministration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="navigation.js"></script>
 </head>
 <body>
     <!-- Navigation bar with hamburger menu -->

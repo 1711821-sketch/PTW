@@ -122,6 +122,7 @@ $medaljer = ["🥇", "🥈", "🥉"];
     <meta charset="UTF-8">
     <title>Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <script src="navigation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
