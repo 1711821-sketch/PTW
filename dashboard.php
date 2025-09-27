@@ -129,7 +129,7 @@ $medaljer = ["🥇", "🥈", "🥉"];
     <nav class="navbar">
         <a href="index.php">Forside</a>
         <a href="dashboard.php">Dashboard</a>
-        <a href="view_wo.php">WO Oversigt</a>
+        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
         <a href="view_sja.php">SJA Oversigt</a>
         <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
             <a href="admin.php">Admin</a>
@@ -149,14 +149,14 @@ $medaljer = ["🥇", "🥈", "🥉"];
             <div class="hof-card ansvarlig">
                 <h3>🏆 Top Opgaveansvarlig</h3>
                 <p><strong><?php echo htmlspecialchars($topAnsvarlig); ?></strong></p>
-                <p><?php echo $topAnsvarligData["wo_count"]; ?> WO</p>
-                <p>Gns.: <?php echo round($topAnsvarligData["days"] / $topAnsvarligData["wo_count"], 1); ?> dage pr. WO</p>
+                <p><?php echo $topAnsvarligData["wo_count"]; ?> arbejdstilladelser</p>
+                <p>Gns.: <?php echo round($topAnsvarligData["days"] / $topAnsvarligData["wo_count"], 1); ?> dage pr. arbejdstilladelse</p>
             </div>
             <div class="hof-card entreprenor">
                 <h3>🏆 Top Entreprenør</h3>
                 <p><strong><?php echo htmlspecialchars($topEntreprenor); ?></strong></p>
-                <p><?php echo $topEntreprenorData["wo_count"]; ?> WO</p>
-                <p>Gns.: <?php echo round($topEntreprenorData["days"] / $topEntreprenorData["wo_count"], 1); ?> dage pr. WO</p>
+                <p><?php echo $topEntreprenorData["wo_count"]; ?> arbejdstilladelser</p>
+                <p>Gns.: <?php echo round($topEntreprenorData["days"] / $topEntreprenorData["wo_count"], 1); ?> dage pr. arbejdstilladelse</p>
             </div>
         </div>
         </section>
@@ -187,9 +187,9 @@ $medaljer = ["🥇", "🥈", "🥉"];
         <section class="dashboard-section">
             <h2>📈 Datavisualisering</h2>
         <div class="charts">
-            <div class="chart-container"><h2>Status for WO</h2><canvas id="statusChart"></canvas></div>
-            <div class="chart-container"><h2>WO fordelt pr. entreprenør</h2><canvas id="entreprenorChart"></canvas></div>
-            <div class="chart-container"><h2>WO fordelt pr. opgaveansvarlig</h2><canvas id="ansvarligChart"></canvas></div>
+            <div class="chart-container"><h2>Status for arbejdstilladelser</h2><canvas id="statusChart"></canvas></div>
+            <div class="chart-container"><h2>Arbejdstilladelser fordelt pr. entreprenør</h2><canvas id="entreprenorChart"></canvas></div>
+            <div class="chart-container"><h2>Arbejdstilladelser fordelt pr. opgaveansvarlig</h2><canvas id="ansvarligChart"></canvas></div>
             <div class="chart-container" style="flex: 1 1 100%;"><h2>Udvikling over tid</h2><canvas id="timelineChart"></canvas></div>
         </div>
         </section>
@@ -200,12 +200,12 @@ $medaljer = ["🥇", "🥈", "🥉"];
         <h3>Top 3 Entreprenører</h3>
         <ol>
             <?php $i=0; foreach ($top3Entreprenorer as $firma => $data): ?>
-                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($firma); ?> – <?php echo $data["wo_count"]; ?> WO (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
+                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($firma); ?> – <?php echo $data["wo_count"]; ?> arbejdstilladelser (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
             <?php $i++; endforeach; ?>
         </ol>
         <div class="table-wrapper">
             <table class="stats">
-                <thead><tr><th>🏢 Entreprenørfirma</th><th>🔢 Antal WO</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. WO (dage)</th></tr></thead>
+                <thead><tr><th>🏢 Entreprenørfirma</th><th>🔢 Antal arbejdstilladelser</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. arbejdstilladelse (dage)</th></tr></thead>
                 <tbody>
                 <?php foreach ($entreprenorStats as $firma => $data): ?>
                     <tr><td><?php echo htmlspecialchars($firma); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
@@ -222,12 +222,12 @@ $medaljer = ["🥇", "🥈", "🥉"];
         <h3>Top 3 Opgaveansvarlige</h3>
         <ol>
             <?php $i=0; foreach ($top3Ansvarlige as $navn => $data): ?>
-                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($navn); ?> – <?php echo $data["wo_count"]; ?> WO (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
+                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($navn); ?> – <?php echo $data["wo_count"]; ?> arbejdstilladelser (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
             <?php $i++; endforeach; ?>
         </ol>
         <div class="table-wrapper">
             <table class="stats">
-                <thead><tr><th>👤 Opgaveansvarlig</th><th>🔢 Antal WO</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. WO (dage)</th></tr></thead>
+                <thead><tr><th>👤 Opgaveansvarlig</th><th>🔢 Antal arbejdstilladelser</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. arbejdstilladelse (dage)</th></tr></thead>
                 <tbody>
                 <?php foreach ($ansvarligStats as $navn => $data): ?>
                     <tr><td><?php echo htmlspecialchars($navn); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
@@ -264,10 +264,10 @@ $medaljer = ["🥇", "🥈", "🥉"];
             type: 'line',
             data: { labels: <?php echo json_encode($timelineLabels); ?>,
                 datasets: [
-                    { label: 'Akkumuleret oprettede WO', data: <?php echo json_encode($createdData); ?>, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 },
-                    { label: 'Akkumuleret afsluttede WO', data: <?php echo json_encode($completedData); ?>, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 }
+                    { label: 'Akkumuleret oprettede arbejdstilladelser', data: <?php echo json_encode($createdData); ?>, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 },
+                    { label: 'Akkumuleret afsluttede arbejdstilladelser', data: <?php echo json_encode($completedData); ?>, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 }
                 ]},
-            options: { responsive: true, scales: { x: { title: { display: true, text: 'Dato' } }, y: { beginAtZero: true, title: { display: true, text: 'Akkumuleret antal WO' } } }, plugins: { legend: { position: 'bottom' } } }
+            options: { responsive: true, scales: { x: { title: { display: true, text: 'Dato' } }, y: { beginAtZero: true, title: { display: true, text: 'Akkumuleret antal arbejdstilladelser' } } }, plugins: { legend: { position: 'bottom' } } }
         });
     </script>
 </body>
