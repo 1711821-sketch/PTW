@@ -80,6 +80,7 @@ if (isset($_GET['delete'])) {
             <a href="dashboard.php">Dashboard</a>
             <a href="view_wo.php">WO Oversigt</a>
             <a href="view_sja.php">SJA Oversigt</a>
+            <a href="info.php">Informationer</a>
             <a href="admin.php">Admin</a>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
             <a class="logout-link" href="logout.php">Log ud</a>

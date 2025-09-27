@@ -59,10 +59,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
+            <a href="index.php">Forside</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="create_sja.php">Opret ny SJA</a>
             <a href="view_wo.php">WO Oversigt</a>
             <a href="dashboard.php">Dashboard</a>
+            <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>

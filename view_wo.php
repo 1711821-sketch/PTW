@@ -156,13 +156,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
+            <a href="index.php">Forside</a>
             <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
                 <a href="create_wo.php">Opret ny arbejdstilladelse</a>
             <?php endif; ?>
             <a href="map_wo.php">Kort</a>
-            <!-- Link to the dashboard for quick access to statistics -->
             <a href="dashboard.php">Dashboard</a>
+            <a href="info.php">Informationer</a>
+            <?php if ($role === 'admin'): ?>
+                <a href="admin.php">Admin</a>
+            <?php endif; ?>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>

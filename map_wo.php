@@ -312,12 +312,17 @@ if (strtolower($role) === 'entreprenor') {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
+            <a href="index.php">Forside</a>
             <a href="view_wo.php">🔍 WO Oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
                 <a href="create_wo.php">➕ Opret ny WO</a>
             <?php endif; ?>
             <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
             <a href="dashboard.php">📊 Dashboard</a>
+            <a href="info.php">Informationer</a>
+            <?php if ($role === 'admin'): ?>
+                <a href="admin.php">Admin</a>
+            <?php endif; ?>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>

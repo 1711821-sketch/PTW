@@ -38,6 +38,7 @@ $role     = $_SESSION['role'] ?? 'user';
             <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
+            <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
