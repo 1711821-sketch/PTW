@@ -148,12 +148,6 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <title><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></title>
 <!-- Include global stylesheet for modern responsive design -->
 <link rel="stylesheet" href="style.css">
-<!-- Include pdf.js and its worker for client‑side PDF parsing -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-<script>
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
-</script>
   <!-- Script to update the status select styling based on its value -->
   <script>
     function updateStatusClass() {
@@ -198,36 +192,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </nav>
     <div class="container">
 <h1><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></h1>
-<p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
+<p>Udfyld formularen. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
 <!-- Modern form with organized sections -->
 <form method="post" style="background: transparent; padding: 0; box-shadow: none; border: none;">
   
-  <!-- PDF Upload Section -->
-  <div class="card" style="margin-bottom: 2rem;">
-    <div class="card-header">
-      <h3 style="margin: 0; color: var(--primary-color);">📄 PDF Upload</h3>
-    </div>
-    <div class="card-body">
-      <p style="margin-bottom: 1rem; color: var(--text-secondary);">Upload en PDF-arbejdsordre for automatisk udfyldning af felter</p>
-      <div class="form-row">
-        <div class="form-group" style="flex: 2;">
-          <label for="pdfFile">Vælg PDF fil</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="pdfFile" accept="application/pdf" class="file-input">
-            <div class="file-input-display">
-              <span class="file-icon">📁</span>
-              <span class="file-text" id="fileText">Klik for at vælge PDF fil...</span>
-            </div>
-          </div>
-        </div>
-        <div class="form-group" style="flex: 1;">
-          <label style="opacity: 0;">Parse</label>
-          <button type="button" id="parseBtn" class="button-lg" style="width: 100%;">Parse PDF</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Basic Information Section -->
   <div class="card" style="margin-bottom: 2rem;">
@@ -362,41 +331,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   <!-- Save Button -->
   <div style="text-align: center; margin: 2rem 0;">
     <button type="submit" name="save_wo" class="button-lg" style="padding: 1rem 3rem; font-size: 1.1rem;">
-      <?php echo $edit_id ? '💾 Gem ændringer' : '💾 Gem Work Order'; ?>
+      <?php echo $edit_id ? '💾 Gem ændringer' : '💾 Gem arbejdstilladelse'; ?>
     </button>
   </div>
 </form>
 
-<!-- PDF Parse Log Section -->
-<div class="card" style="margin-bottom: 2rem;">
-  <div class="card-header">
-    <h3 style="margin: 0; color: var(--accent-color);">📄 PDF Parse Log</h3>
-  </div>
-  <div class="card-body">
-    <p style="margin-bottom: 1rem; color: var(--text-secondary);">
-      Her vises resultatet af PDF parsing. Grønne felter blev fundet, røde mangler.
-    </p>
-    <div id="parseLog" style="min-height: 50px; max-height: 300px; overflow-y: auto;"></div>
-  </div>
-</div>
 
 <script>
-// Helper: mark fields as found or missing.  When a value is marked as
-// missing the existing value is cleared to avoid stale data from
-// previous parses or manual edits.
-function markField(fieldId, found, value = '') {
-  const el = document.getElementById(fieldId) || document.querySelector('[name="' + fieldId + '"]');
-  if (!el) return;
-  if (found) {
-    el.classList.remove('field-missing');
-    el.classList.add('field-ok');
-    if (value !== undefined && value !== null) el.value = value;
-  } else {
-    el.classList.remove('field-ok');
-    el.classList.add('field-missing');
-    el.value = '';
-  }
-}
 
 // Initialise the Leaflet map.  Use stored coordinates if available,
 // otherwise fall back to defaults defined in PHP.  A marker is added
@@ -428,261 +369,6 @@ map.on('click', function(e) {
     setMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
 });
 
-// Modern file input handling
-document.getElementById('pdfFile').addEventListener('change', function() {
-    const fileText = document.getElementById('fileText');
-    const fileIcon = document.querySelector('.file-icon');
-    
-    if (this.files && this.files.length > 0) {
-        const fileName = this.files[0].name;
-        fileText.textContent = fileName;
-        fileText.classList.add('has-file');
-        fileIcon.textContent = '📄';
-    } else {
-        fileText.textContent = 'Klik for at vælge PDF fil...';
-        fileText.classList.remove('has-file');
-        fileIcon.textContent = '📁';
-    }
-});
-
-// Make the file display clickable
-document.querySelector('.file-input-display').addEventListener('click', function() {
-    document.getElementById('pdfFile').click();
-});
-
-// PDF parsing logic.  This handler runs when the Parse PDF button is
-// clicked.  It uses pdf.js to extract the text from the selected PDF
-// and then applies regular expressions to find the various fields.  It
-// populates the form and displays a log showing which fields were
-// found or missing.  If a field is marked missing, its value is
-// cleared.
-document.getElementById('parseBtn').addEventListener('click', async function () {
-  const fileInput = document.getElementById('pdfFile');
-  if (!fileInput || !fileInput.files.length) {
-    alert('Vælg venligst en PDF-fil først.');
-    return;
-  }
-  const file = fileInput.files[0];
-  if (file.type !== 'application/pdf') {
-    alert('Filen skal være en PDF.');
-    return;
-  }
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  let rawText = '';
-  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-    const page = await pdf.getPage(pageNum);
-    const content = await page.getTextContent();
-    rawText += content.items.map(item => item.str).join(' ') + '\n';
-  }
-  const flat = rawText.replace(/\s+/g, ' ').trim();
-  let logLines = [];
-  // 1) Work order number (Arbejdstilladelse Nr.).  Try Danish and English labels.
-  let arMatch = flat.match(/Arbejdstilladelse\s*Nr\.?\s*([0-9][A-Za-z0-9\-]*)/i);
-  let enMatch = null;
-  if (!arMatch) enMatch = flat.match(/Work\s*Order\s*(?:No\.?|Number)?\s*([0-9][A-Za-z0-9\-]*)/i);
-  const woValue = arMatch ? arMatch[1] : (enMatch ? enMatch[1] : null);
-  if (woValue) {
-    markField('work_order_no', true, woValue);
-    logLines.push('<span class="found">✔ Arbejdstilladelse Nr.: ' + woValue + '</span>');
-  } else {
-    markField('work_order_no', false);
-    logLines.push('<span class="missing">✘ Arbejdstilladelse Nr. IKKE fundet</span>');
-  }
-  // 2) Beskrivelser: capture multiple "Beskrivelse" sections. The first
-  // occurrence is tied to the Work Order description and any second
-  // occurrence (after status) is tied to the P‑number description. Use
-  // a global regular expression to find all matches.
-  const descRegex = /Beskrivelse\s*:?:?\s*(?:P\s*\d+\s*)?(.*?)(?=Jobansvarlig|Komponent|MPS|Entreprenør|Oprettet|WO\s*oprettet|Status|Planning|\b\w+\s*ansvarlig|$)/gi;
-  let descMatches = [];
-  let m;
-  while ((m = descRegex.exec(flat)) !== null) {
-    descMatches.push(m[1]);
-  }
-  if (descMatches.length > 0) {
-    // Clean and assign the first description
-    let d1 = descMatches[0].replace(/\s*(?:Afhjælpende|Ekstraordinært)\s*\(Z[^)]*\)/gi, '').trim();
-    markField('description', true, d1);
-    logLines.push('<span class="found">✔ Beskrivelse fundet</span>');
-  } else {
-    markField('description', false);
-    logLines.push('<span class="missing">✘ Beskrivelse IKKE fundet</span>');
-  }
-  if (descMatches.length > 1) {
-    // Assign second description to P-number description
-    let d2 = descMatches[1].trim();
-    
-    // Remove unwanted text patterns if present
-    d2 = d2.replace(/\bINDLEDENDE\s+GODKENDELSE\s+Beskrivelse\b/gi, '').trim();
-    d2 = d2.replace(/\bVis\s+instruktioner\b/gi, '').trim();
-    // Clean up any extra whitespace that might be left
-    d2 = d2.replace(/\s+/g, ' ').trim();
-    
-    markField('p_description', true, d2);
-    logLines.push('<span class="found">✔ P‑nr. beskrivelse fundet</span>');
-  } else {
-    markField('p_description', false);
-    logLines.push('<span class="missing">✘ P‑nr. beskrivelse IKKE fundet</span>');
-  }
-  // 3) P-nummer
-  let pMatch = flat.match(/\bP\s*([0-9]{5,})\b/i);
-  if (pMatch) {
-    const pNum = 'P' + pMatch[1];
-    markField('p_number', true, pNum);
-    logLines.push('<span class="found">✔ P-nummer: ' + pNum + '</span>');
-  } else {
-    markField('p_number', false);
-    logLines.push('<span class="missing">✘ P-nummer IKKE fundet</span>');
-  }
-  // 4) MPS-nummer with validation
-  let mpsMatch = flat.match(/MPS[\s-]*nr\.?\s*:??\s*([A-Za-z0-9.\-\/]+)/i);
-  if (mpsMatch) {
-    markField('mps_nr', true, mpsMatch[1]);
-    logLines.push('<span class="found">✔ MPS-nr.: ' + mpsMatch[1] + '</span>');
-  } else {
-    markField('mps_nr', false);
-    logLines.push('<span class="missing">✘ MPS-nr. IKKE fundet</span>');
-  }
-  // Validate MPS: reject values without a hyphen and fewer than three digits
-  try {
-    const mpsEl = document.getElementById('mps_nr');
-    if (mpsEl && mpsEl.value) {
-      const mpsVal = mpsEl.value;
-      const digitsOnly = mpsVal.replace(/[^0-9]/g, '');
-      if (!mpsVal.includes('-') && digitsOnly.length < 3) {
-        markField('mps_nr', false);
-        logLines.push('<span class="missing">✘ MPS-nr. IKKE fundet</span>');
-      }
-    }
-  } catch (ex) {}
-  // 5) Jobansvarlig and phone
-  let jobMatch = flat.match(/Jobansvarlig\s*:?:?\s*([A-Za-zÆØÅæøå.,\-\s]{2,}?)(?=Telefon|Tlf\.?|Mobil|Mob\.?|Email|E-mail|MPS|P\s*\d|Entreprenør|Komponent|Oprettet|Status|Planning|Beskrivelse|$)/i);
-  if (jobMatch) {
-    let name = jobMatch[1].trim().replace(/[\s,;:.]+$/, '').trim();
-    markField('jobansvarlig', true, name);
-    logLines.push('<span class="found">✔ Jobansvarlig: ' + name + '</span>');
-  } else {
-    markField('jobansvarlig', false);
-    logLines.push('<span class="missing">✘ Jobansvarlig IKKE fundet</span>');
-  }
-  let phoneMatch = flat.match(/(?:Telefon|Tlf\.?|Mobil|Mob\.?)\s*[:.]?\s*([0-9\s()+\-]{6,})/i);
-  if (phoneMatch) {
-    let phoneRaw = phoneMatch[1];
-    let phone = phoneRaw.replace(/[^0-9+]/g, '');
-    markField('telefon', true, phone);
-    logLines.push('<span class="found">✔ Jobansvarlig telefon: ' + phone + '</span>');
-  } else {
-    markField('telefon', false);
-    logLines.push('<span class="missing">✘ Jobansvarlig telefon IKKE fundet</span>');
-  }
-  // 6) Oprettet af
-  let createdByMatch = flat.match(/(?:WO\s*oprettet\s*af|Oprettet\s*af|Created\s*by)\s*:??\s*([A-Za-zÆØÅæøå0-9.,\-\s]{2,}?)(?=\s*(?:WO\s*oprettet|Oprettet\s*dato|Created\s*date|Date|Dato|Komponent|Jobansvarlig|Status|Beskrivelse|$))/i);
-  if (createdByMatch) {
-    let cb = createdByMatch[1].trim();
-    markField('oprettet_af', true, cb);
-    logLines.push('<span class="found">✔ Oprettet af: ' + cb + '</span>');
-  } else {
-    markField('oprettet_af', false);
-    logLines.push('<span class="missing">✘ Oprettet af IKKE fundet</span>');
-  }
-  // 7) Oprettet dato (date) with fallback
-  let dateMatch = flat.match(/(?:WO\s*oprettet\s*dato|WO\s*oprettet\s*Dato|Oprettet\s*dato|Created\s*date|Date)\s*:??\s*([0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}|[0-9]{4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2})/i);
-  if (dateMatch) {
-    let d = dateMatch[1].trim();
-    // Convert dd-mm-yy or dd-mm-yyyy to ISO (YYYY-MM-DD)
-    if (/^[0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2}$/.test(d)) {
-      const parts = d.split(/[\/\.\-]/);
-      let y = parseInt(parts[2], 10);
-      y = y < 50 ? 2000 + y : 1900 + y;
-      d = `${y}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-    } else if (/^[0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{4}$/.test(d)) {
-      const parts = d.split(/[\/\.\-]/);
-      d = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-    } else if (/^[0-9]{4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2}$/.test(d)) {
-      // Already ISO but ensure proper padding
-      const parts = d.split(/[\/\.\-]/);
-      d = `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
-    }
-    markField('oprettet_dato', true, d);
-    logLines.push('<span class="found">✔ Oprettet dato: ' + d + '</span>');
-  } else {
-    markField('oprettet_dato', false);
-    logLines.push('<span class="missing">✘ Oprettet dato IKKE fundet</span>');
-  }
-  // Fallback: if no date found, search for any date pattern in the text
-  try {
-    const dateField = document.getElementById('oprettet_dato');
-    if (dateField && !dateField.value) {
-      const fallbackMatch = flat.match(/([0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2,4}|[0-9]{4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2})/);
-      if (fallbackMatch) {
-        let fd = fallbackMatch[1] || fallbackMatch[0];
-        if (/^[0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2}$/.test(fd)) {
-          const parts = fd.split(/[\/\.\-]/);
-          let y = parseInt(parts[2], 10);
-          y = y < 50 ? 2000 + y : 1900 + y;
-          fd = `${y}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-        } else if (/^[0-9]{2}[\/\.\-][0-9]{2}[\/\.\-][0-9]{4}$/.test(fd)) {
-          const parts = fd.split(/[\/\.\-]/);
-          fd = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
-        } else if (/^[0-9]{4}[\/\.\-][0-9]{2}[\/\.\-][0-9]{2}$/.test(fd)) {
-          const parts = fd.split(/[\/\.\-]/);
-          fd = `${parts[0]}-${parts[1].padStart(2,'0')}-${parts[2].padStart(2,'0')}`;
-        }
-        markField('oprettet_dato', true, fd);
-        logLines.push('<span class="found">✔ Oprettet dato (fallback): ' + fd + '</span>');
-      }
-    }
-  } catch (ex) {
-    console.error('Date fallback error', ex);
-  }
-  // 8) Components
-  let compMatch = flat.match(/Komponent\s*nr\.?\s*:??\s*([\s\S]*?)(?=Entreprenør|Jobansvarlig|MPS|P\s*\d|WO\s*oprettet|Oprettet|Status|Planning|Beskrivelse|HSE|Vis\s*instruktioner|Terminal|$)/i);
-  if (compMatch) {
-    let comps = compMatch[1].trim();
-    comps = comps.replace(/\s*[A-ZÆØÅ\s]{3,}\s*$/, '').trim();
-    comps = comps.replace(/\s*[,;]\s*/g, '\n');
-    markField('components', true, comps);
-    logLines.push('<span class="found">✔ Komponent nr. fundet</span>');
-  } else {
-    markField('components', false);
-    logLines.push('<span class="missing">✘ Komponent nr. IKKE fundet</span>');
-  }
-  // 9) Entreprenør firm name
-  let entMatch = flat.match(/Entreprenør\s*:??\s*([\s\S]*?)(?=\s*(?:Entreprenør\s*kontaktperson|Kontaktperson|Jobansvarlig|MPS|P\s*\d|WO\s*oprettet|Oprettet|Komponent|Vis\s*instruktioner|Status|Planning|Beskrivelse|HSE|Terminal|INDLEDENDE|DAGLIG|Daily|$))/i);
-  if (entMatch) {
-    let ent = entMatch[1].trim();
-    const cutTokens = ['Entreprenør kontaktperson','Kontaktperson','Status','Planning','Beskrivelse','Komponent','Vis','INDLEDENDE','DAGLIG','Daily'];
-    for (const tok of cutTokens) {
-      const idx = ent.toLowerCase().indexOf(tok.toLowerCase());
-      if (idx > -1) {
-        ent = ent.substring(0, idx).trim();
-      }
-    }
-    ent = ent.replace(/[,:;]+$/,'').trim();
-    markField('entreprenor_firma', true, ent);
-    logLines.push('<span class="found">✔ Entreprenør: ' + ent + '</span>');
-  } else {
-    markField('entreprenor_firma', false);
-    logLines.push('<span class="missing">✘ Entreprenør IKKE fundet</span>');
-  }
-  // 10) Entreprenør kontaktperson
-  let contactMatch = flat.match(/Entreprenør\s*kontaktperson\s*:??\s*([A-Za-zÆØÅæøå.,\-\s]{2,}?)(?=Telefon|Tlf\.?|Mobil|Mob\.?|Email|E-mail|Jobansvarlig|MPS|P\s*\d|WO\s*oprettet|Oprettet|Komponent|Vis\s*instruktioner|Status|Planning|Beskrivelse|HSE|Terminal|$)/i);
-  if (contactMatch) {
-    let cp = contactMatch[1].trim();
-    if (/^(status|planning)/i.test(cp)) {
-      markField('entreprenor_kontakt', false);
-      logLines.push('<span class="missing">✘ Entreprenør kontaktperson IKKE fundet</span>');
-    } else {
-      markField('entreprenor_kontakt', true, cp);
-      logLines.push('<span class="found">✔ Entreprenør kontaktperson: ' + cp + '</span>');
-    }
-  } else {
-    markField('entreprenor_kontakt', false);
-    logLines.push('<span class="missing">✘ Entreprenør kontaktperson IKKE fundet</span>');
-  }
-  // Display the parse log
-  document.getElementById('parseLog').innerHTML = logLines.join('\n');
-});
 </script>
     </div><!-- /.container -->
 </body>
