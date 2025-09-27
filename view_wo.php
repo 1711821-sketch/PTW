@@ -172,7 +172,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
     </nav>
     <div class="container">
-    <h1>Liste over arbejdstilladelser</h1>
+    <div class="header-section">
+        <h1>Oversigt over arbejdstilladelser</h1>
+        <div class="view-toggle">
+            <button id="listViewBtn" class="view-btn active" data-view="list">
+                📋 Liste
+            </button>
+            <button id="cardViewBtn" class="view-btn" data-view="card">
+                🗂️ Kort
+            </button>
+        </div>
+    </div>
     <?php if ($msg): ?>
         <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
@@ -193,7 +203,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </label>
             </div>
         </div>
-        <div class="table-wrapper">
+        <!-- List View -->
+        <div id="listView" class="table-wrapper">
             <table id="arbejdstilladelseTable">
                 <thead>
                     <tr>
@@ -275,11 +286,154 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </tbody>
             </table>
         </div>
+        
+        <!-- Card View -->
+        <div id="cardView" class="card-view" style="display: none;">
+            <?php foreach ($entries as $entry):
+                $status = $entry['status'] ?? 'planning';
+                // Map internal status codes to Danish labels and CSS classes
+                if ($status === 'planning') {
+                    $statusLabel = 'Planlagt';
+                    $statusClass = 'status-planlagt';
+                } elseif ($status === 'active') {
+                    $statusLabel = 'Aktiv';
+                    $statusClass = 'status-aktiv';
+                } else { // completed
+                    $statusLabel = 'Afsluttet';
+                    $statusClass = 'status-afsluttet';
+                }
+                // Fetch approvals for the current day for this entry
+                $approvals = $entry['approvals'] ?? [];
+                $oaApproved = (isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today);
+                $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
+                $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
+                
+                $firma = $entry['entreprenor_firma'] ?? '';
+                $kontakt = $entry['entreprenor_kontakt'] ?? '';
+            ?>
+            <div class="work-permit-card" data-status="<?php echo htmlspecialchars($status); ?>">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
+                        <span class="card-status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
+                    </div>
+                    <div class="card-id">ID: <?php echo htmlspecialchars($entry['id'] ?? ''); ?></div>
+                </div>
+                
+                <div class="card-content">
+                    <div class="card-description">
+                        <h4>📋 Beskrivelse</h4>
+                        <p><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
+                        <?php if (!empty($entry['p_description'])): ?>
+                            <div class="p-description">
+                                <strong>P-beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="card-details">
+                        <div class="detail-item">
+                            <span class="detail-label">👤 Jobansvarlig:</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">🏢 Entreprenør:</span>
+                            <span class="detail-value">
+                                <?php echo htmlspecialchars($firma); ?>
+                                <?php if ($kontakt): ?>
+                                    <br><small><?php echo htmlspecialchars($kontakt); ?></small>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <?php if (!empty($entry['telefon'])): ?>
+                        <div class="detail-item">
+                            <span class="detail-label">📞 Telefon:</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($entry['telefon']); ?></span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="card-approvals">
+                        <h4>✅ Godkendelser</h4>
+                        <div class="approval-grid">
+                            <div class="approval-item">
+                                <span class="approval-label">OA:</span>
+                                <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>">
+                                    <?php echo $oaApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
+                                </span>
+                                <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
+                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">✓ Godkend</a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="approval-item">
+                                <span class="approval-label">Drift:</span>
+                                <span class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>">
+                                    <?php echo $driftApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
+                                </span>
+                                <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
+                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">✓ Godkend</a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="approval-item">
+                                <span class="approval-label">Ent:</span>
+                                <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>">
+                                    <?php echo $entApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
+                                </span>
+                                <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
+                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">✓ Godkend</a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
+                    <?php if ($role !== 'entreprenor'): ?>
+                        <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
+                    <?php endif; ?>
+                    <?php if ($role === 'admin'): ?>
+                        <a class="button button-danger button-sm" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">🗑️ Slet</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        
         <script>
-        function filterRows() {
+        // View switching functionality
+        function switchView(viewType) {
+            const listView = document.getElementById('listView');
+            const cardView = document.getElementById('cardView');
+            const listBtn = document.getElementById('listViewBtn');
+            const cardBtn = document.getElementById('cardViewBtn');
+            
+            if (viewType === 'list') {
+                listView.style.display = 'block';
+                cardView.style.display = 'none';
+                listBtn.classList.add('active');
+                cardBtn.classList.remove('active');
+            } else {
+                listView.style.display = 'none';
+                cardView.style.display = 'block';
+                listBtn.classList.remove('active');
+                cardBtn.classList.add('active');
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('workPermitViewType', viewType);
+            
+            // Apply filters to the current view
+            filterItems();
+        }
+        
+        // Updated filter function to work with both views
+        function filterItems() {
             var showPlanning = document.getElementById('filterPlanning').checked;
             var showActive = document.getElementById('filterActive').checked;
             var showCompleted = document.getElementById('filterCompleted').checked;
+            
+            // Filter table rows
             var rows = document.querySelectorAll('#arbejdstilladelseTable tr[data-status]');
             rows.forEach(function(row) {
                 var status = row.getAttribute('data-status');
@@ -291,11 +445,41 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     row.style.display = '';
                 }
             });
+            
+            // Filter cards
+            var cards = document.querySelectorAll('.work-permit-card[data-status]');
+            cards.forEach(function(card) {
+                var status = card.getAttribute('data-status');
+                if ((status === 'planning' && !showPlanning) ||
+                    (status === 'active' && !showActive) ||
+                    (status === 'completed' && !showCompleted)) {
+                    card.style.display = 'none';
+                } else {
+                    card.style.display = 'block';
+                }
+            });
         }
-        document.getElementById('filterPlanning').addEventListener('change', filterRows);
-        document.getElementById('filterActive').addEventListener('change', filterRows);
-        document.getElementById('filterCompleted').addEventListener('change', filterRows);
-        filterRows();
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up view toggle event listeners
+            document.getElementById('listViewBtn').addEventListener('click', function() {
+                switchView('list');
+            });
+            
+            document.getElementById('cardViewBtn').addEventListener('click', function() {
+                switchView('card');
+            });
+            
+            // Set up filter event listeners
+            document.getElementById('filterPlanning').addEventListener('change', filterItems);
+            document.getElementById('filterActive').addEventListener('change', filterItems);
+            document.getElementById('filterCompleted').addEventListener('change', filterItems);
+            
+            // Load saved view preference
+            const savedView = localStorage.getItem('workPermitViewType') || 'list';
+            switchView(savedView);
+        });
         </script>
     <?php else: ?>
         <p>Der er endnu ingen arbejdstilladelser oprettet.</p>
