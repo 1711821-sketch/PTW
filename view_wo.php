@@ -4,6 +4,98 @@
 // authenticated users can access this page.
 
 session_start();
+
+// Handle AJAX approval requests
+if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
+    header('Content-Type: application/json');
+    
+    $approveId = $_POST['approve_id'];
+    $approveRole = $_POST['role'];
+    $sessionRole = $_SESSION['role'] ?? '';
+    
+    // Normalize role names to lowercase for comparison
+    $approveRoleLc = strtolower($approveRole);
+    $sessionRoleLc = strtolower($sessionRole);
+    
+    // Check permissions
+    if ($sessionRoleLc !== 'admin' && $sessionRoleLc !== $approveRoleLc) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Du har ikke tilladelse til at godkende som denne rolle.'
+        ]);
+        exit();
+    }
+    
+    $data_file = __DIR__ . '/wo_data.json';
+    $allEntries = [];
+    if (file_exists($data_file)) {
+        $allEntries = json_decode(file_get_contents($data_file), true);
+        if (!is_array($allEntries)) {
+            $allEntries = [];
+        }
+    }
+    
+    $found = false;
+    $today = date('Y-m-d');
+    $now = date('Y-m-d H:i');
+    
+    foreach ($allEntries as &$entry) {
+        if ((string)($entry['id'] ?? '') === (string)$approveId) {
+            // Ensure the approvals array exists
+            if (!isset($entry['approvals']) || !is_array($entry['approvals'])) {
+                $entry['approvals'] = [];
+            }
+            // Ensure the approval_history array exists
+            if (!isset($entry['approval_history']) || !is_array($entry['approval_history'])) {
+                $entry['approval_history'] = [];
+            }
+            
+            // Check if already approved
+            if (isset($entry['approvals'][$approveRoleLc]) && $entry['approvals'][$approveRoleLc] === $today) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Arbejdstilladelsen er allerede godkendt for denne rolle i dag.'
+                ]);
+                exit();
+            }
+            
+            // Append a new record to the approval history
+            $entry['approval_history'][] = [
+                'timestamp' => $now,
+                'user' => $_SESSION['user'] ?? $sessionRole,
+                'role' => $approveRoleLc
+            ];
+            
+            // Set approval for today for the role
+            $entry['approvals'][$approveRoleLc] = $today;
+            
+            // Persist ALL entries back to the JSON file
+            if (file_put_contents($data_file, json_encode($allEntries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                $found = true;
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Arbejdstilladelsen er blevet godkendt som ' . ucfirst($approveRole) . '.'
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Fejl ved gemning af godkendelse.'
+                ]);
+            }
+            break;
+        }
+    }
+    
+    if (!$found) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Arbejdstilladelse ikke fundet.'
+        ]);
+    }
+    
+    exit();
+}
+
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
@@ -183,6 +275,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             </button>
         </div>
     </div>
+    
+    <!-- Notification system for AJAX feedback -->
+    <div id="notificationContainer" class="notification-container"></div>
     <?php if ($msg): ?>
         <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
@@ -357,30 +452,45 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <h4>✅ Godkendelser</h4>
                         <div class="approval-grid">
                             <div class="approval-item">
-                                <span class="approval-label">OA:</span>
-                                <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>">
+                                <span class="approval-label">Opgaveansvarlig:</span>
+                                <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>" id="oa-status-<?php echo $entry['id']; ?>">
                                     <?php echo $oaApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig">✓ Godkend</a>
+                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
+                                            data-role="opgaveansvarlig"
+                                            id="oa-btn-<?php echo $entry['id']; ?>">
+                                        ✓ Godkend som Opgaveansvarlig
+                                    </button>
                                 <?php endif; ?>
                             </div>
                             <div class="approval-item">
                                 <span class="approval-label">Drift:</span>
-                                <span class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>">
+                                <span class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>" id="drift-status-<?php echo $entry['id']; ?>">
                                     <?php echo $driftApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift">✓ Godkend</a>
+                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
+                                            data-role="drift"
+                                            id="drift-btn-<?php echo $entry['id']; ?>">
+                                        ✓ Godkend som Drift
+                                    </button>
                                 <?php endif; ?>
                             </div>
                             <div class="approval-item">
-                                <span class="approval-label">Ent:</span>
-                                <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>">
+                                <span class="approval-label">Entreprenør:</span>
+                                <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>" id="ent-status-<?php echo $entry['id']; ?>">
                                     <?php echo $entApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                                    <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor">✓ Godkend</a>
+                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
+                                            data-role="entreprenor"
+                                            id="ent-btn-<?php echo $entry['id']; ?>">
+                                        ✓ Godkend som Entreprenør
+                                    </button>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -401,6 +511,85 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         
         <script>
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icon = type === 'success' ? '✅' : '❌';
+            notification.innerHTML = `
+                <span class="notification-icon">${icon}</span>
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.add('notification-show');
+            }, 100);
+        }
+        
+        // AJAX approval function
+        function approveWorkPermit(id, role, buttonElement) {
+            // Disable button and show loading state
+            buttonElement.disabled = true;
+            const originalText = buttonElement.textContent;
+            buttonElement.textContent = '⏳ Godkender...';
+            
+            // Create FormData for POST request
+            const formData = new FormData();
+            formData.append('ajax_approve', '1');
+            formData.append('approve_id', id);
+            formData.append('role', role);
+            
+            fetch('view_wo.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update status display
+                    const statusElement = document.getElementById(`${role === 'opgaveansvarlig' ? 'oa' : role}-status-${id}`);
+                    if (statusElement) {
+                        statusElement.textContent = '✅ Godkendt';
+                        statusElement.className = 'approval-status approved';
+                    }
+                    
+                    // Hide the button
+                    buttonElement.style.display = 'none';
+                    
+                    // Show success notification
+                    showNotification(data.message, 'success');
+                } else {
+                    // Show error notification
+                    showNotification(data.message, 'error');
+                    
+                    // Re-enable button
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Der opstod en fejl ved godkendelsen. Prøv igen.', 'error');
+                
+                // Re-enable button
+                buttonElement.disabled = false;
+                buttonElement.textContent = originalText;
+            });
+        }
+        
         // View switching functionality
         function switchView(viewType) {
             const listView = document.getElementById('listView');
@@ -475,6 +664,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             document.getElementById('filterPlanning').addEventListener('change', filterItems);
             document.getElementById('filterActive').addEventListener('change', filterItems);
             document.getElementById('filterCompleted').addEventListener('change', filterItems);
+            
+            // Set up AJAX approval button listeners
+            document.querySelectorAll('.ajax-approve-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const role = this.getAttribute('data-role');
+                    approveWorkPermit(id, role, this);
+                });
+            });
             
             // Load saved view preference
             const savedView = localStorage.getItem('workPermitViewType') || 'list';
