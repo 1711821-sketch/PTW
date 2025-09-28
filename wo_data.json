@@ -269,5 +269,24 @@
         "latitude": "55.201882",
         "longitude": "11.267658",
         "notes": ""
+    },
+    {
+        "id": "40",
+        "work_order_no": "2561067",
+        "p_number": "",
+        "mps_nr": "",
+        "description": "Vask af svøb 70'tanke Forebyggende (ZPRE)",
+        "p_description": "",
+        "jobansvarlig": "Arman Bjelonja",
+        "telefon": "",
+        "oprettet_af": "12640",
+        "oprettet_dato": "2025-09-03",
+        "components": "",
+        "entreprenor_firma": "",
+        "entreprenor_kontakt": "",
+        "status": "active",
+        "latitude": "55.206087",
+        "longitude": "11.265711",
+        "notes": ""
     }
 ]
