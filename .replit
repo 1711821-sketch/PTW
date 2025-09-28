@@ -1,7 +1,7 @@
 run = "php -S 0.0.0.0:8000 -t ."
 
 entrypoint = "index.php"
-modules = ["php-8.2"]
+modules = ["php-8.2", "postgresql-16"]
 
 [nix]
 channel = "stable-22_11"
