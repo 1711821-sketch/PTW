@@ -133,6 +133,41 @@ try {
             width: 16px;
             height: 16px;
         }
+
+        /* Custom marker styles for SJA indicators with black circles */
+        .custom-marker-black {
+            width: 25px;
+            height: 41px;
+            position: relative;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .custom-marker-black::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #000;
+            border-radius: 50%;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .marker-green-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png');
+        }
+
+        .marker-blue-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png');
+        }
+
+        .marker-gray-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png');
+        }
         
         .status-indicator {
             display: inline-flex;
@@ -408,6 +443,28 @@ try {
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
+    });
+
+    // Define custom DivIcon markers with black circles for SJA indicators
+    var greenIconBlack = L.divIcon({
+        className: 'custom-marker-black marker-green-black',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34]
+    });
+    
+    var blueIconBlack = L.divIcon({
+        className: 'custom-marker-black marker-blue-black',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34]
+    });
+    
+    var grayIconBlack = L.divIcon({
+        className: 'custom-marker-black marker-gray-black',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34]
     });
 
     var allMarkers = [];
