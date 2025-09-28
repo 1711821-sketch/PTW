@@ -388,14 +388,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <table id="arbejdstilladelseTable">
                 <thead>
                     <tr>
-                        <th title="Arbejdstilladelse NR.">🔢 A nr.</th>
-                        <th>📋 Beskrivelse</th>
-                        <th>📝 P-beskrivelse</th>
-                        <th>👤 Jobansvarlig</th>
-                        <th>🏢 Entreprenør</th>
-                        <th>📊 Status</th>
-                        <th>✅ Godkendelser<br>(dagens status)</th>
-                        <th>⚡ Handlinger</th>
+                        <th title="Arbejdstilladelse NR.">A nr.</th>
+                        <th>Beskrivelse</th>
+                        <th>P-beskrivelse</th>
+                        <th>Jobansvarlig</th>
+                        <th>Entreprenør</th>
+                        <th>Status</th>
+                        <th>Godkendelser<br>(dagens status)</th>
+                        <th>Handlinger</th>
                     </tr>
                 </thead>
                 <tbody>
