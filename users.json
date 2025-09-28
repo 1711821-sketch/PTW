@@ -105,5 +105,12 @@
         "role": "entreprenor",
         "approved": true,
         "entreprenor_firma": "DI-Teknik A\/S"
+    },
+    {
+        "username": "delp",
+        "password_hash": "$2y$10$VGz9J\/IQGIJ2\/UTTYN2r.eLx6pwHj97vIYoQxRZgws.C6gmfpcNCW",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "DELPRO A\/S"
     }
 ]
