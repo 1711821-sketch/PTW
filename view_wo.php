@@ -585,6 +585,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <div class="card-time-tracking">
                         <h4>⏱️ Tidsregistrering</h4>
                         <div class="time-entry-section" id="time-section-<?php echo $entry['id']; ?>">
+                            
+                            <?php if (in_array($role, ['admin', 'entreprenor'])): ?>
+                            <!-- Time entry form - only for admin and entreprenor -->
                             <div class="time-entry-form">
                                 <div class="time-input-group">
                                     <label for="time-date-<?php echo $entry['id']; ?>">📅 Dato:</label>
@@ -625,6 +628,21 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                     </button>
                                 </div>
                             </div>
+                            <?php else: ?>
+                            <!-- View-only for opgaveansvarlig and drift -->
+                            <div class="time-view-only">
+                                <p class="time-view-notice">📋 Du kan se tidshistorik og totale timer, men ikke indtaste nye timer.</p>
+                                <div class="time-actions">
+                                    <button type="button" 
+                                            class="button button-primary button-sm show-all-times-btn" 
+                                            onclick="toggleTimeHistory(<?php echo $entry['id']; ?>)">
+                                        📊 Vis tidshistorik og totale timer
+                                    </button>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <!-- Time history section - available for all authorized roles -->
                             <div class="time-history" id="time-history-<?php echo $entry['id']; ?>" style="display: none;">
                                 <h5>📈 Tidshistorik</h5>
                                 <div class="time-history-content">

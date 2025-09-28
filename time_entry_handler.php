@@ -93,9 +93,9 @@ try {
                     echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer på denne arbejdstilladelse.']);
                     exit();
                 }
-            } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+            } elseif (!in_array($currentRole, ['admin'])) {
                 error_log("Unauthorized time entry attempt - User: $currentUser, Role: $currentRole, Work Order: $workOrderId");
-                echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer.']);
+                echo json_encode(['success' => false, 'message' => 'Kun admin og entreprenører kan registrere timer.']);
                 exit();
             }
             
