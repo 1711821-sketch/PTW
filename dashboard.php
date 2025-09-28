@@ -2,238 +2,368 @@
 session_start();
 require_once 'database.php';
 
-// Ensure the user is logged in.  The session key 'user' is set in login.php.
+// Ensure the user is logged in
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
+$username = $_SESSION['user'];
+$role = $_SESSION['role'] ?? 'user';
+
 try {
     $db = Database::getInstance();
-    $timeEntry = new TimeEntry();
     
-    // Load work orders from database
-    $woData = $db->fetchAll("
-        SELECT wo.*, 
-               STRING_AGG(DISTINCT a.role || ':' || a.approved_date, '|') as approvals_data
-        FROM work_orders wo 
-        LEFT JOIN approvals a ON wo.id = a.work_order_id 
-        GROUP BY wo.id
-        ORDER BY wo.id
+    // === CORE STATISTICS QUERIES ===
+    
+    // 1. Work Order Statistics
+    $totalWorkOrders = $db->fetch("SELECT COUNT(*) as count FROM work_orders")['count'];
+    $activeWorkOrders = $db->fetch("SELECT COUNT(*) as count FROM work_orders WHERE status = 'active'")['count'];
+    $completedWorkOrders = $db->fetch("SELECT COUNT(*) as count FROM work_orders WHERE status = 'completed'")['count'];
+    
+    // 2. Work Orders by Status
+    $statusData = $db->fetchAll("
+        SELECT status, COUNT(*) as count 
+        FROM work_orders 
+        GROUP BY status 
+        ORDER BY count DESC
     ");
     
-    // Convert approval data to match old JSON format
-    foreach ($woData as &$wo) {
-        $wo['approvals'] = [];
-        if ($wo['approvals_data']) {
-            $approvals = explode('|', $wo['approvals_data']);
-            foreach ($approvals as $approval) {
-                $parts = explode(':', $approval);
-                if (count($parts) == 2) {
-                    $wo['approvals'][$parts[0]] = $parts[1];
-                }
-            }
-        }
-        unset($wo['approvals_data']);
-    }
+    // 3. Recent Work Orders (last 30 days)
+    $recentWorkOrders = $db->fetchAll("
+        SELECT work_order_no, description, status, created_at, entreprenor_firma
+        FROM work_orders 
+        WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+        ORDER BY created_at DESC 
+        LIMIT 5
+    ");
+    
+    // 4. Work Orders by Entrepreneur
+    $entrepreneurStats = $db->fetchAll("
+        SELECT 
+            entreprenor_firma as firma,
+            COUNT(*) as total_work_orders,
+            COUNT(CASE WHEN status = 'active' THEN 1 END) as active_orders,
+            COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_orders
+        FROM work_orders 
+        WHERE entreprenor_firma IS NOT NULL AND entreprenor_firma != ''
+        GROUP BY entreprenor_firma 
+        ORDER BY total_work_orders DESC
+    ");
+    
+    // 5. Time Entry Statistics
+    $totalHours = $db->fetch("SELECT COALESCE(SUM(hours), 0) as total FROM time_entries")['total'];
+    $totalEntriesThisMonth = $db->fetch("
+        SELECT COUNT(*) as count 
+        FROM time_entries 
+        WHERE entry_date >= DATE_TRUNC('month', CURRENT_DATE)
+    ")['count'];
+    
+    // 6. Top Time Contributors
+    $topContributors = $db->fetchAll("
+        SELECT 
+            u.username,
+            u.entreprenor_firma,
+            SUM(te.hours) as total_hours,
+            COUNT(te.id) as total_entries
+        FROM time_entries te 
+        JOIN users u ON te.user_id = u.id 
+        GROUP BY u.id, u.username, u.entreprenor_firma
+        ORDER BY total_hours DESC 
+        LIMIT 5
+    ");
+    
+    // 7. User Statistics
+    $totalUsers = $db->fetch("SELECT COUNT(*) as count FROM users")['count'];
+    $activeUsersThisMonth = $db->fetch("
+        SELECT COUNT(DISTINCT te.user_id) as count 
+        FROM time_entries te 
+        WHERE te.entry_date >= DATE_TRUNC('month', CURRENT_DATE)
+    ")['count'];
+    
+    // 8. SJA Statistics (from PostgreSQL database)
+    $sjaStats = $db->fetch("
+        SELECT 
+            COUNT(DISTINCT wo.id) as total_work_orders,
+            COUNT(DISTINCT sja.work_order_id) as work_orders_with_sja,
+            COUNT(sja.id) as total_sjas
+        FROM work_orders wo
+        LEFT JOIN sja_entries sja ON wo.id = sja.work_order_id
+    ");
+    
+    $totalSJAs = $sjaStats ? $sjaStats['total_sjas'] : 0;
+    $workOrdersWithSJA = $sjaStats ? $sjaStats['work_orders_with_sja'] : 0;
+    
+    // Ensure SJA compliance rate cannot exceed 100% by using distinct work order count
+    $sjaComplianceRate = $totalWorkOrders > 0 ? round(($workOrdersWithSJA / $totalWorkOrders) * 100, 1) : 0;
+    $sjaComplianceRate = min($sjaComplianceRate, 100); // Cap at 100%
+    
+    // 9. Safety Statistics - Days since last accident
+    $accidentData = $db->fetch("SELECT *, CURRENT_DATE - last_accident_date as days_since_accident FROM accident_counter LIMIT 1");
+    $daysSinceAccident = $accidentData ? $accidentData['days_since_accident'] : 0;
     
 } catch (Exception $e) {
-    // Fallback to JSON if database fails
-    if (file_exists("wo_data.json")) {
-        $woData = json_decode(file_get_contents("wo_data.json"), true);
-    } else {
-        $woData = [];
-    }
+    // Fallback values if database query fails
+    $totalWorkOrders = 0;
+    $activeWorkOrders = 0;
+    $completedWorkOrders = 0;
+    $statusData = [];
+    $recentWorkOrders = [];
+    $entrepreneurStats = [];
+    $totalHours = 0;
+    $totalEntriesThisMonth = 0;
+    $topContributors = [];
+    $totalUsers = 0;
+    $activeUsersThisMonth = 0;
+    $totalSJAs = 0;
+    $workOrdersWithSJA = 0;
+    $sjaComplianceRate = 0;
+    $daysSinceAccident = 0;
+    $error_message = "Database fejl: " . $e->getMessage();
 }
 
-// --- STATUS TÆLLING ---
-$counts = ["planning" => 0, "active" => 0, "completed" => 0];
-foreach ($woData as $wo) {
-    if (isset($wo["status"])) {
-        $counts[$wo["status"]] = ($counts[$wo["status"]] ?? 0) + 1;
-    }
-}
-
-// --- ENTREPRENØR STATISTIK ---
-$entreprenorStats = [];
-$today = new DateTime();
-foreach ($woData as $wo) {
-    if (!empty($wo["entreprenor_firma"]) && isset($wo["approvals"]["entreprenor"])) {
-        $firma = $wo["entreprenor_firma"];
-        $startDate = new DateTime($wo["approvals"]["entreprenor"]);
-
-        if ($wo["status"] === "completed") {
-            $endDate = !empty($wo["approvals"]["drift"]) ? new DateTime($wo["approvals"]["drift"]) : $today;
-        } else {
-            $endDate = $today;
-        }
-
-        $days = $endDate->diff($startDate)->days;
-
-        if (!isset($entreprenorStats[$firma])) {
-            $entreprenorStats[$firma] = ["wo_count" => 0, "days" => 0];
-        }
-        $entreprenorStats[$firma]["wo_count"] += 1;
-        $entreprenorStats[$firma]["days"] += $days;
-    }
-}
-
-// --- OPGAVEANSVARLIGE STATISTIK ---
-$ansvarligStats = [];
-foreach ($woData as $wo) {
-    if (!empty($wo["jobansvarlig"]) && isset($wo["approvals"]["entreprenor"])) {
-        $navn = $wo["jobansvarlig"];
-        $startDate = new DateTime($wo["approvals"]["entreprenor"]);
-
-        if ($wo["status"] === "completed") {
-            $endDate = !empty($wo["approvals"]["drift"]) ? new DateTime($wo["approvals"]["drift"]) : $today;
-        } else {
-            $endDate = $today;
-        }
-
-        $days = $endDate->diff($startDate)->days;
-
-        if (!isset($ansvarligStats[$navn])) {
-            $ansvarligStats[$navn] = ["wo_count" => 0, "days" => 0];
-        }
-        $ansvarligStats[$navn]["wo_count"] += 1;
-        $ansvarligStats[$navn]["days"] += $days;
-    }
-}
-
-// --- TOP 3 LISTERS & HALL OF FAME ---
-$sortedEntreprenorer = $entreprenorStats;
-uasort($sortedEntreprenorer, fn($a, $b) => $b["wo_count"] <=> $a["wo_count"]);
-$top3Entreprenorer = array_slice($sortedEntreprenorer, 0, 3, true);
-
-$sortedAnsvarlige = $ansvarligStats;
-uasort($sortedAnsvarlige, fn($a, $b) => $b["wo_count"] <=> $a["wo_count"]);
-$top3Ansvarlige = array_slice($sortedAnsvarlige, 0, 3, true);
-
-$topAnsvarlig = array_key_first($top3Ansvarlige);
-$topAnsvarligData = reset($top3Ansvarlige);
-$topEntreprenor = array_key_first($top3Entreprenorer);
-$topEntreprenorData = reset($top3Entreprenorer);
-
-// --- TIMELINE (AKKUMULERET) ---
-$createdTimeline = [];
-$completedTimeline = [];
-foreach ($woData as $wo) {
-    if (!empty($wo["oprettet_dato"])) {
-        $date = $wo["oprettet_dato"];
-        $createdTimeline[$date] = ($createdTimeline[$date] ?? 0) + 1;
-    }
-    if ($wo["status"] === "completed" && !empty($wo["approvals"]["entreprenor"])) {
-        $date = $wo["approvals"]["entreprenor"];
-        $completedTimeline[$date] = ($completedTimeline[$date] ?? 0) + 1;
-    }
-}
-$allDates = array_unique(array_merge(array_keys($createdTimeline), array_keys($completedTimeline)));
-sort($allDates);
-
-$createdData = [];
-$completedData = [];
-$createdSum = 0;
-$completedSum = 0;
-foreach ($allDates as $date) {
-    $createdSum += $createdTimeline[$date] ?? 0;
-    $completedSum += $completedTimeline[$date] ?? 0;
-    $createdData[] = $createdSum;
-    $completedData[] = $completedSum;
-}
-$timelineLabels = $allDates;
-
-// --- DATA TIL CHARTS ---
-$statusLabels = ['Planlagt', 'Aktiv', 'Afsluttet'];
-$statusData = [$counts['planning'], $counts['active'], $counts['completed']];
-$entreprenorLabels = array_keys($entreprenorStats);
-$entreprenorData = array_column($entreprenorStats, 'wo_count');
-$ansvarligLabels = array_keys($ansvarligStats);
-$ansvarligData = array_column($ansvarligStats, 'wo_count');
-
-// --- TIDSREGISTRERING STATISTIK ---
-$timeStats = [];
-$workOrderHours = [];
-try {
-    // Get total hours per work order
-    $hoursByWO = $db->fetchAll("
-        SELECT wo.id, wo.work_order_no, wo.description, wo.entreprenor_firma,
-               COALESCE(SUM(te.hours), 0) as total_hours,
-               COUNT(DISTINCT te.user_id) as unique_users
-        FROM work_orders wo
-        LEFT JOIN time_entries te ON wo.id = te.work_order_id
-        GROUP BY wo.id, wo.work_order_no, wo.description, wo.entreprenor_firma
-        ORDER BY total_hours DESC
-    ");
-    
-    foreach ($hoursByWO as $wo) {
-        $workOrderHours[] = [
-            'id' => $wo['id'],
-            'work_order_no' => $wo['work_order_no'],
-            'description' => $wo['description'],
-            'entreprenor_firma' => $wo['entreprenor_firma'],
-            'total_hours' => floatval($wo['total_hours']),
-            'unique_users' => intval($wo['unique_users'])
-        ];
-    }
-    
-    // Get time stats by contractor
-    $timeByContractor = $db->fetchAll("
-        SELECT wo.entreprenor_firma,
-               COALESCE(SUM(te.hours), 0) as total_hours,
-               COUNT(DISTINCT CASE WHEN te.hours IS NOT NULL THEN te.work_order_id END) as work_orders_with_time,
-               COUNT(DISTINCT te.user_id) as unique_workers
-        FROM work_orders wo
-        LEFT JOIN time_entries te ON wo.id = te.work_order_id
-        WHERE wo.entreprenor_firma IS NOT NULL AND wo.entreprenor_firma != ''
-        GROUP BY wo.entreprenor_firma
-        ORDER BY total_hours DESC
-    ");
-    
-    // Get total unique workers across all time entries
-    $totalActiveWorkers = $db->fetch("
-        SELECT COUNT(DISTINCT te.user_id) as total_workers
-        FROM time_entries te
-    ");
-    $totalActiveWorkersCount = $totalActiveWorkers ? intval($totalActiveWorkers['total_workers']) : 0;
-    
-    foreach ($timeByContractor as $contractor) {
-        $timeStats[$contractor['entreprenor_firma']] = [
-            'total_hours' => floatval($contractor['total_hours']),
-            'work_orders_with_time' => intval($contractor['work_orders_with_time']),
-            'unique_workers' => intval($contractor['unique_workers']),
-            'avg_hours_per_wo' => $contractor['work_orders_with_time'] > 0 ? 
-                round(floatval($contractor['total_hours']) / intval($contractor['work_orders_with_time']), 1) : 0
-        ];
-    }
-    
-} catch (Exception $e) {
-    // If database fails, use empty arrays
-    $workOrderHours = [];
-    $timeStats = [];
-}
-
-// Top work orders by hours
-$topWorkOrdersByHours = array_slice($workOrderHours, 0, 5);
-
-// Top contractors by hours
-$sortedTimeStats = $timeStats;
-uasort($sortedTimeStats, fn($a, $b) => $b['total_hours'] <=> $a['total_hours']);
-$topContractorsByHours = array_slice($sortedTimeStats, 0, 3, true);
-
-$medaljer = ["🥇", "🥈", "🥉"];
+// Prepare data for JavaScript charts
+$statusLabels = array_column($statusData, 'status');
+$statusCounts = array_column($statusData, 'count');
+$entrepreneurLabels = array_column($entrepreneurStats, 'firma');
+$entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
 ?>
 <!DOCTYPE html>
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Dashboard - Arbejdstilladelsessystem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Modern Dashboard Specific Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .kpi-card.success::before { background: var(--success-color); }
+        .kpi-card.warning::before { background: var(--warning-color); }
+        .kpi-card.danger::before { background: var(--danger-color); }
+        .kpi-card.info::before { background: var(--primary-light); }
+        
+        .kpi-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+        
+        .kpi-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+        
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .kpi-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+        
+        .chart-card {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        
+        .chart-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .recent-activity {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+        }
+        
+        .activity-details {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .safety-highlight {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            margin: 2rem 0;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .safety-days {
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 0.5rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+        
+        .progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring circle {
+            fill: transparent;
+            stroke-width: 8;
+        }
+        
+        .progress-ring .background {
+            stroke: var(--border-color);
+        }
+        
+        .progress-ring .progress {
+            stroke: var(--success-color);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-light);
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .kpi-number {
+                font-size: 2rem;
+            }
+            
+            .safety-days {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation bar with hamburger menu -->
+    <!-- Navigation -->
     <nav class="navbar">
         <button class="navbar-toggle" aria-label="Toggle navigation">
             <span class="hamburger-line"></span>
@@ -242,235 +372,292 @@ $medaljer = ["🥇", "🥈", "🥉"];
         </button>
         <div class="navbar-links">
             <a href="index.php">Forside</a>
-            <a href="dashboard.php">Dashboard</a>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="create_sja.php">Opret SJA</a>
             <a href="view_sja.php">SJA Oversigt</a>
+            <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+                <a href="create_wo.php">Opret arbejdstilladelse</a>
+            <?php endif; ?>
+            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="map_wo.php">Kort</a>
+            <a href="dashboard.php" class="active">Dashboard</a>
             <a href="info.php">Informationer</a>
-            <?php if (($_SESSION['role'] ?? '') === 'admin'): ?>
+            <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
-            <span class="nav-user">
-                Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($_SESSION['role'] ?? 'user'); ?>)
-            </span>
+            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>
 
     <div class="container">
-        <h1>📊 Dashboard</h1>
+        <h1>📊 System Dashboard</h1>
+        <p>Overblik over arbejdstilladelser, sikkerhed og aktivitet</p>
+        
+        <?php if (isset($error_message)): ?>
+            <div class="alert alert-danger">
+                <strong>Advarsel:</strong> <?= htmlspecialchars($error_message) ?>
+            </div>
+        <?php endif; ?>
 
-        <!-- Hall of Fame -->
-        <section class="dashboard-section">
-        <div class="hall-of-fame">
-            <div class="hof-card ansvarlig">
-                <h3>🏆 Top Opgaveansvarlig</h3>
-                <p><strong><?php echo htmlspecialchars($topAnsvarlig); ?></strong></p>
-                <p><?php echo $topAnsvarligData["wo_count"]; ?> arbejdstilladelser</p>
-                <p>Gns.: <?php echo round($topAnsvarligData["days"] / $topAnsvarligData["wo_count"], 1); ?> dage pr. arbejdstilladelse</p>
-            </div>
-            <div class="hof-card entreprenor">
-                <h3>🏆 Top Entreprenør</h3>
-                <p><strong><?php echo htmlspecialchars($topEntreprenor); ?></strong></p>
-                <p><?php echo $topEntreprenorData["wo_count"]; ?> arbejdstilladelser</p>
-                <p>Gns.: <?php echo round($topEntreprenorData["days"] / $topEntreprenorData["wo_count"], 1); ?> dage pr. arbejdstilladelse</p>
-            </div>
+        <!-- Safety Highlight -->
+        <div class="safety-highlight">
+            <h2 style="margin: 0; font-size: 1.5rem;">🛡️ SIKKERHEDSREKORD</h2>
+            <div class="safety-days"><?= $daysSinceAccident ?></div>
+            <div style="font-size: 1.1rem; font-weight: 600;">DAGE SIDEN SIDSTE UHELD</div>
         </div>
-        </section>
 
-        <!-- Status bokse -->
-        <section class="dashboard-section">
-            <h2>📊 Oversigt over Arbejdstilladelser</h2>
-        <div class="dashboard">
-            <div class="card planlagt">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">📋</div>
-                <div>Planlagte</div>
-                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["planning"]; ?></div>
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card info">
+                <div class="kpi-icon">📋</div>
+                <div class="kpi-number"><?= $totalWorkOrders ?></div>
+                <div class="kpi-label">Total Arbejdstilladelser</div>
+                <div class="kpi-subtitle">Alle registrerede</div>
             </div>
-            <div class="card aktiv">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🔥</div>
-                <div>Aktive</div>
-                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["active"]; ?></div>
-            </div>
-            <div class="card afsluttet">
-                <div style="font-size: 3rem; margin-bottom: 0.5rem;">✅</div>
-                <div>Afsluttede</div>
-                <div style="font-size: 2rem; margin-top: 0.5rem;"><?php echo $counts["completed"]; ?></div>
-            </div>
-        </div>
-        </section>
-
-        <!-- Grafer -->
-        <section class="dashboard-section">
-            <h2>📈 Datavisualisering</h2>
-        <div class="charts">
-            <div class="chart-container"><h2>Status for arbejdstilladelser</h2><canvas id="statusChart"></canvas></div>
-            <div class="chart-container"><h2>Arbejdstilladelser fordelt pr. entreprenør</h2><canvas id="entreprenorChart"></canvas></div>
-            <div class="chart-container"><h2>Arbejdstilladelser fordelt pr. opgaveansvarlig</h2><canvas id="ansvarligChart"></canvas></div>
-            <div class="chart-container" style="flex: 1 1 100%;"><h2>Udvikling over tid</h2><canvas id="timelineChart"></canvas></div>
-        </div>
-        </section>
-
-        <!-- Tidsregistrering Oversigt -->
-        <section class="dashboard-section">
-            <h2>⏱️ Tidsregistrering Oversigt</h2>
             
-            <?php if (!empty($topWorkOrdersByHours) && $topWorkOrdersByHours[0]['total_hours'] > 0): ?>
-            <div class="time-overview">
-                <div class="time-stats-cards">
-                    <div class="time-card total-hours">
-                        <div class="time-card-icon">⏰</div>
-                        <div class="time-card-content">
-                            <h3>Total Timer</h3>
-                            <div class="time-value">
-                                <?php echo array_sum(array_column($workOrderHours, 'total_hours')); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="time-card active-workers">
-                        <div class="time-card-icon">👥</div>
-                        <div class="time-card-content">
-                            <h3>Aktive Arbejdere</h3>
-                            <div class="time-value">
-                                <?php echo $totalActiveWorkersCount; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="time-card projects-with-time">
-                        <div class="time-card-icon">📊</div>
-                        <div class="time-card-content">
-                            <h3>Projekter med Timer</h3>
-                            <div class="time-value">
-                                <?php echo count(array_filter($workOrderHours, fn($wo) => $wo['total_hours'] > 0)); ?>
-                            </div>
-                        </div>
-                    </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon">🟢</div>
+                <div class="kpi-number"><?= $activeWorkOrders ?></div>
+                <div class="kpi-label">Aktive Arbejdstilladelser</div>
+                <div class="kpi-subtitle">I gang nu</div>
+            </div>
+            
+            <div class="kpi-card warning">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-number"><?= $completedWorkOrders ?></div>
+                <div class="kpi-label">Fuldførte</div>
+                <div class="kpi-subtitle">Afsluttede opgaver</div>
+            </div>
+            
+            <div class="kpi-card <?= $sjaComplianceRate >= 80 ? 'success' : ($sjaComplianceRate >= 50 ? 'warning' : 'danger') ?>">
+                <div class="kpi-icon">🛡️</div>
+                <div class="kpi-number"><?= $sjaComplianceRate ?>%</div>
+                <div class="kpi-label">SJA Compliance</div>
+                <div class="kpi-subtitle"><?= $workOrdersWithSJA ?> af <?= $totalWorkOrders ?> har SJA</div>
+            </div>
+            
+            <div class="kpi-card info">
+                <div class="kpi-icon">⏱️</div>
+                <div class="kpi-number"><?= number_format($totalHours, 1) ?></div>
+                <div class="kpi-label">Total Timer</div>
+                <div class="kpi-subtitle">Registreret tid</div>
+            </div>
+            
+            <div class="kpi-card success">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-number"><?= $activeUsersThisMonth ?></div>
+                <div class="kpi-label">Aktive Brugere</div>
+                <div class="kpi-subtitle">Denne måned</div>
+            </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="dashboard-grid">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">📊 Status Distribution</h3>
                 </div>
-                
-                <div class="top-work-orders-by-hours">
-                    <h3>🏆 Top Arbejdstilladelser efter Timer</h3>
-                    <div class="top-list">
-                        <?php foreach ($topWorkOrdersByHours as $index => $wo): ?>
-                            <?php if ($wo['total_hours'] > 0): ?>
-                            <div class="top-item">
-                                <span class="medal"><?php echo $medaljer[$index] ?? '🔸'; ?></span>
-                                <div class="top-content">
-                                    <div class="top-title"><?php echo htmlspecialchars($wo['work_order_no']); ?></div>
-                                    <div class="top-subtitle"><?php echo htmlspecialchars($wo['entreprenor_firma']); ?></div>
-                                    <div class="top-stats">
-                                        <span class="hours"><?php echo $wo['total_hours']; ?> timer</span>
-                                        <span class="workers"><?php echo $wo['unique_users']; ?> arbejdere</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
+                <?php if (!empty($statusData)): ?>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
                     </div>
-                </div>
-                
-                <?php if (!empty($topContractorsByHours)): ?>
-                <div class="top-contractors-by-hours">
-                    <h3>🏢 Top Entreprenører efter Timer</h3>
-                    <div class="top-list">
-                        <?php $index = 0; foreach ($topContractorsByHours as $firma => $stats): ?>
-                            <?php if ($stats['total_hours'] > 0): ?>
-                            <div class="top-item">
-                                <span class="medal"><?php echo $medaljer[$index] ?? '🔸'; ?></span>
-                                <div class="top-content">
-                                    <div class="top-title"><?php echo htmlspecialchars($firma); ?></div>
-                                    <div class="top-stats">
-                                        <span class="hours"><?php echo $stats['total_hours']; ?> timer</span>
-                                        <span class="projects"><?php echo $stats['work_orders_with_time']; ?> projekter</span>
-                                        <span class="avg"><?php echo $stats['avg_hours_per_wo']; ?> timer/projekt</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        <?php $index++; endforeach; ?>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Ingen statusdata tilgængelig endnu</p>
                     </div>
-                </div>
                 <?php endif; ?>
             </div>
-            <?php else: ?>
-            <div class="no-time-data">
-                <p>📋 Ingen tidsregistreringer endnu. Entreprenører kan registrere timer direkte på arbejdstilladelserne.</p>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">🏢 Entreprenører</h3>
+                </div>
+                <?php if (!empty($entrepreneurStats)): ?>
+                    <div class="chart-container">
+                        <canvas id="entrepreneurChart"></canvas>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏢</div>
+                        <p>Ingen entreprenørdata endnu</p>
+                    </div>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
-        </section>
-
-        <!-- Entreprenør statistik -->
-        <section class="dashboard-section">
-        <h2>Entreprenør statistik</h2>
-        <h3>Top 3 Entreprenører</h3>
-        <ol>
-            <?php $i=0; foreach ($top3Entreprenorer as $firma => $data): ?>
-                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($firma); ?> – <?php echo $data["wo_count"]; ?> arbejdstilladelser (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
-            <?php $i++; endforeach; ?>
-        </ol>
-        <div class="table-wrapper">
-            <table class="stats">
-                <thead><tr><th>🏢 Entreprenørfirma</th><th>🔢 Antal arbejdstilladelser</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. arbejdstilladelse (dage)</th></tr></thead>
-                <tbody>
-                <?php foreach ($entreprenorStats as $firma => $data): ?>
-                    <tr><td><?php echo htmlspecialchars($firma); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
         </div>
 
-        </section>
-
-        <!-- Opgaveansvarlige statistik -->
-        <section class="dashboard-section">
-        <h2>Opgaveansvarlige statistik</h2>
-        <h3>Top 3 Opgaveansvarlige</h3>
-        <ol>
-            <?php $i=0; foreach ($top3Ansvarlige as $navn => $data): ?>
-                <li><?php echo $medaljer[$i]; ?> <?php echo htmlspecialchars($navn); ?> – <?php echo $data["wo_count"]; ?> arbejdstilladelser (gns. <?php echo round($data["days"] / $data["wo_count"], 1); ?> dage)</li>
-            <?php $i++; endforeach; ?>
-        </ol>
-        <div class="table-wrapper">
-            <table class="stats">
-                <thead><tr><th>👤 Opgaveansvarlig</th><th>🔢 Antal arbejdstilladelser</th><th>📅 Samlet arbejdsdage</th><th>📊 Gns. pr. arbejdstilladelse (dage)</th></tr></thead>
-                <tbody>
-                <?php foreach ($ansvarligStats as $navn => $data): ?>
-                    <tr><td><?php echo htmlspecialchars($navn); ?></td><td><?php echo $data["wo_count"]; ?></td><td><?php echo $data["days"]; ?></td><td><?php echo round($data["days"] / $data["wo_count"], 1); ?></td></tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
+        <!-- Recent Activity and Top Contributors -->
+        <div class="dashboard-grid">
+            <div class="recent-activity">
+                <div class="chart-header">
+                    <h3 class="chart-title">🕒 Seneste Arbejdstilladelser</h3>
+                </div>
+                <?php if (!empty($recentWorkOrders)): ?>
+                    <?php foreach ($recentWorkOrders as $wo): ?>
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--primary-light); color: white;">
+                                📋
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <?= htmlspecialchars($wo['work_order_no'] ?? 'Ingen WO#') ?>
+                                </div>
+                                <div class="activity-details">
+                                    <?= htmlspecialchars(substr($wo['description'] ?? 'Ingen beskrivelse', 0, 60)) ?><?= strlen($wo['description'] ?? '') > 60 ? '...' : '' ?>
+                                    <br>
+                                    <strong><?= htmlspecialchars($wo['entreprenor_firma'] ?? 'Ingen firma') ?></strong> • 
+                                    <?= date('d/m/Y', strtotime($wo['created_at'])) ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <p>Ingen seneste aktivitet</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <div class="recent-activity">
+                <div class="chart-header">
+                    <h3 class="chart-title">🏆 Top Timeregistrering</h3>
+                </div>
+                <?php if (!empty($topContributors)): ?>
+                    <?php foreach ($topContributors as $index => $contributor): ?>
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: var(--success-color); color: white;">
+                                #<?= $index + 1 ?>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">
+                                    <?= htmlspecialchars($contributor['username']) ?>
+                                </div>
+                                <div class="activity-details">
+                                    <?= number_format($contributor['total_hours'], 1) ?> timer • 
+                                    <?= $contributor['total_entries'] ?> registreringer
+                                    <br>
+                                    <strong><?= htmlspecialchars($contributor['entreprenor_firma'] ?? 'Intern') ?></strong>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏱️</div>
+                        <p>Ingen timeregistreringer endnu</p>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-        </section>
     </div>
 
     <script>
-        new Chart(document.getElementById('statusChart'), {
-            type: 'bar',
-            data: { labels: <?php echo json_encode($statusLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($statusData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280'] }]},
-            options: { responsive: true, plugins: { legend: { display: false } } }
-        });
+        // Chart.js Configuration and Data
+        const chartColors = {
+            primary: '#1e40af',
+            success: '#22c55e',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            info: '#3b82f6',
+            secondary: '#10b981'
+        };
 
-        new Chart(document.getElementById('entreprenorChart'), {
-            type: 'pie',
-            data: { labels: <?php echo json_encode($entreprenorLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($entreprenorData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280','#f59e0b','#06b6d4','#ef4444'] }]},
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
+        // Status Distribution Pie Chart
+        <?php if (!empty($statusData)): ?>
+        const statusCtx = document.getElementById('statusChart');
+        if (statusCtx) {
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: <?= json_encode(array_map('ucfirst', $statusLabels)) ?>,
+                    datasets: [{
+                        data: <?= json_encode($statusCounts) ?>,
+                        backgroundColor: [
+                            chartColors.success,
+                            chartColors.warning,
+                            chartColors.danger,
+                            chartColors.info
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        <?php endif; ?>
 
-        new Chart(document.getElementById('ansvarligChart'), {
-            type: 'pie',
-            data: { labels: <?php echo json_encode($ansvarligLabels); ?>,
-                datasets: [{ data: <?php echo json_encode($ansvarligData); ?>, backgroundColor: ['#3b82f6','#10b981','#6b7280','#f59e0b','#06b6d4','#ef4444'] }]},
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
+        // Entrepreneur Bar Chart
+        <?php if (!empty($entrepreneurStats)): ?>
+        const entrepreneurCtx = document.getElementById('entrepreneurChart');
+        if (entrepreneurCtx) {
+            new Chart(entrepreneurCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?= json_encode(array_map(function($label) { 
+                        return strlen($label) > 15 ? substr($label, 0, 15) . '...' : $label; 
+                    }, $entrepreneurLabels)) ?>,
+                    datasets: [{
+                        label: 'Arbejdstilladelser',
+                        data: <?= json_encode($entrepreneurCounts) ?>,
+                        backgroundColor: chartColors.primary,
+                        borderColor: chartColors.primary,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        <?php endif; ?>
 
-        new Chart(document.getElementById('timelineChart'), {
-            type: 'line',
-            data: { labels: <?php echo json_encode($timelineLabels); ?>,
-                datasets: [
-                    { label: 'Akkumuleret oprettede arbejdstilladelser', data: <?php echo json_encode($createdData); ?>, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 },
-                    { label: 'Akkumuleret afsluttede arbejdstilladelser', data: <?php echo json_encode($completedData); ?>, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 3 }
-                ]},
-            options: { responsive: true, scales: { x: { title: { display: true, text: 'Dato' } }, y: { beginAtZero: true, title: { display: true, text: 'Akkumuleret antal arbejdstilladelser' } } }, plugins: { legend: { position: 'bottom' } } }
+        // Add smooth entrance animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.kpi-card, .chart-card, .recent-activity');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
         });
     </script>
 </body>
