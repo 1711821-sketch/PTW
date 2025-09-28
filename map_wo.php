@@ -29,24 +29,21 @@ if (!isset($_SESSION['user'])) {
 // Determine the role of the current user
 $role = $_SESSION['role'] ?? '';
 
-// Load work orders from JSON file
-$entries = [];
-$data_file = __DIR__ . '/wo_data.json';
-if (file_exists($data_file)) {
-    $data = json_decode(file_get_contents($data_file), true);
-    if (is_array($data)) {
-        $entries = $data;
-    }
-}
+// Include database connection
+require_once 'database.php';
+
+// Load work orders from PostgreSQL database
+$db = Database::getInstance();
+$entries = $db->fetchAll("SELECT * FROM work_orders ORDER BY created_at DESC");
 
 // If the user is an entrepreneur, restrict entries to their own firm
 if (strtolower($role) === 'entreprenor') {
     $firma = $_SESSION['entreprenor_firma'] ?? '';
     if ($firma !== '') {
-        $entries = array_filter($entries, function ($e) use ($firma) {
-            return isset($e['entreprenor_firma']) && $e['entreprenor_firma'] === $firma;
-        });
-        $entries = array_values($entries);
+        $entries = $db->fetchAll(
+            "SELECT * FROM work_orders WHERE entreprenor_firma = ? ORDER BY created_at DESC", 
+            [$firma]
+        );
     } else {
         // If no firm is defined, show nothing
         $entries = [];
