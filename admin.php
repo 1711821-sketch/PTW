@@ -418,6 +418,7 @@ if (isset($_GET['edit_message'])) {
             <tr>
                 <th>Brugernavn</th>
                 <th>Rolle</th>
+                <th>Firma</th>
                 <th>Status</th>
                 <th>Handling</th>
             </tr>
@@ -425,6 +426,15 @@ if (isset($_GET['edit_message'])) {
                 <tr>
                     <td><?php echo htmlspecialchars($u['username']); ?></td>
                     <td><?php echo htmlspecialchars($u['role']); ?></td>
+                    <td>
+                        <?php 
+                            if ($u['role'] === 'entreprenor' && isset($u['entreprenor_firma']) && !empty($u['entreprenor_firma'])) {
+                                echo htmlspecialchars($u['entreprenor_firma']);
+                            } else {
+                                echo '<span style="color: #999;">-</span>';
+                            }
+                        ?>
+                    </td>
                     <td>
                         <?php
                             $approved = true;
