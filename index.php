@@ -10,6 +10,17 @@ if (!isset($_SESSION['user'])) {
 
 $username = $_SESSION['user'];
 $role     = $_SESSION['role'] ?? 'user';
+
+// Get accident counter data
+require_once 'database.php';
+try {
+    $db = Database::getInstance();
+    $counterData = $db->fetch("SELECT *, CURRENT_DATE - last_accident_date as days_since_accident FROM accident_counter LIMIT 1");
+    $daysSinceAccident = $counterData ? $counterData['days_since_accident'] : 0;
+} catch (Exception $e) {
+    // Fallback if database is not available
+    $daysSinceAccident = 502;
+}
 ?>
 <!DOCTYPE html>
 <html lang="da">
@@ -50,6 +61,14 @@ $role     = $_SESSION['role'] ?? 'user';
     <div class="container">
         <h1>Velkommen, <?= htmlspecialchars($username) ?>!</h1>
         <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og arbejdstilladelser.</p>
+        
+        <!-- Digital Safety Sign -->
+        <div class="safety-sign">
+            <div class="safety-sign-content">
+                <div class="safety-sign-number"><?= $daysSinceAccident ?></div>
+                <div class="safety-sign-text">DAGE SIDEN SIDSTE UHELD</div>
+            </div>
+        </div>
         
         <!-- Modern card-based navigation -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">

@@ -69,6 +69,88 @@ body {
     margin-bottom: 2rem;
 }
 
+/* Digital Safety Sign */
+.safety-sign {
+    background: #000000;
+    border: 8px solid #dc2626;
+    border-radius: 12px;
+    margin: 2rem 0;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3), 
+                0 0 20px rgba(220, 38, 38, 0.2),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.safety-sign::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 49%, rgba(220, 38, 38, 0.1) 50%, transparent 51%);
+    pointer-events: none;
+}
+
+.safety-sign-content {
+    position: relative;
+    z-index: 2;
+}
+
+.safety-sign-number {
+    font-family: 'Inter', 'Arial Black', sans-serif;
+    font-size: clamp(4rem, 8vw, 8rem);
+    font-weight: 900;
+    color: #dc2626;
+    text-shadow: 
+        0 0 10px #dc2626,
+        0 0 20px #dc2626,
+        0 0 30px #dc2626,
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000;
+    margin-bottom: 0.5rem;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+}
+
+.safety-sign-text {
+    font-family: 'Inter', 'Arial Black', sans-serif;
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 800;
+    color: #dc2626;
+    text-shadow: 
+        0 0 5px #dc2626,
+        0 0 10px #dc2626,
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .safety-sign {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        border-width: 6px;
+    }
+    
+    .safety-sign-number {
+        font-size: clamp(3rem, 12vw, 6rem);
+    }
+    
+    .safety-sign-text {
+        font-size: clamp(1rem, 4vw, 1.5rem);
+    }
+}
+
 /* Modern navigation bar */
 .navbar {
     display: flex;
