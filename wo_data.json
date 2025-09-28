@@ -288,5 +288,24 @@
         "latitude": "55.206087",
         "longitude": "11.265711",
         "notes": ""
+    },
+    {
+        "id": "41",
+        "work_order_no": "",
+        "p_number": "",
+        "mps_nr": "",
+        "description": "",
+        "p_description": "",
+        "jobansvarlig": "",
+        "telefon": "",
+        "oprettet_af": "",
+        "oprettet_dato": "",
+        "components": "",
+        "entreprenor_firma": "",
+        "entreprenor_kontakt": "",
+        "status": "active",
+        "latitude": "55.211308",
+        "longitude": "11.241384",
+        "notes": ""
     }
 ]

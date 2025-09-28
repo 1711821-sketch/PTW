@@ -28,18 +28,16 @@ if (!isset($_SESSION['user'])) {
 // Get user role for permission checks
 $role = $_SESSION['role'] ?? 'user';
 
+// Include database functionality
+require_once 'database.php';
+
 // Path to the JSON file where work orders are stored.  If this file
 // doesn’t exist it will be created on first save.
-$data_file = __DIR__ . '/wo_data.json';
+// Get database instance
+$db = Database::getInstance();
 
-// Load existing entries from the data file.
-$entries = [];
-if (file_exists($data_file)) {
-    $data = json_decode(file_get_contents($data_file), true);
-    if (is_array($data)) {
-        $entries = $data;
-    }
-}
+// Load existing entries from the database
+$entries = $db->fetchAll("SELECT * FROM work_orders ORDER BY created_at DESC");
 
 // Determine if we're editing an existing work order.  If the id query
 // parameter is present, try to locate the corresponding entry in the data
@@ -105,29 +103,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
     $current['latitude']            = trim($_POST['latitude'] ?? '');
     $current['longitude']           = trim($_POST['longitude'] ?? '');
 
-    // When editing an existing entry, update it in place.  Otherwise
-    // assign a new id sequentially and append the entry to the list.
+    // When editing an existing entry, update it in the database
     if ($edit_id) {
-        foreach ($entries as &$entry) {
-            if ((string)$entry['id'] === (string)$edit_id) {
-                $entry = $current;
-                break;
-            }
-        }
+        $db->query(
+            "UPDATE work_orders SET 
+                work_order_no = ?, p_number = ?, mps_nr = ?, description = ?, p_description = ?, 
+                jobansvarlig = ?, telefon = ?, oprettet_af = ?, oprettet_dato = ?, components = ?, 
+                entreprenor_firma = ?, entreprenor_kontakt = ?, status = ?, 
+                latitude = ?, longitude = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?",
+            [
+                $current['work_order_no'], $current['p_number'], $current['mps_nr'],
+                $current['description'], $current['p_description'], $current['jobansvarlig'],
+                $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
+                $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
+                $current['status'], 
+                !empty($current['latitude']) ? floatval($current['latitude']) : null,
+                !empty($current['longitude']) ? floatval($current['longitude']) : null,
+                $current['notes'], $edit_id
+            ]
+        );
     } else {
-        // Determine next id by inspecting existing entries.  If no entries
-        // exist, start at 1.  Cast ids to integers for comparison.
-        $max_id = 0;
-        foreach ($entries as $entry) {
-            $id_int = isset($entry['id']) ? (int)$entry['id'] : 0;
-            if ($id_int > $max_id) $max_id = $id_int;
-        }
-        $current['id'] = (string)($max_id + 1);
-        $entries[] = $current;
+        // Insert new work order into database
+        $db->query(
+            "INSERT INTO work_orders (
+                work_order_no, p_number, mps_nr, description, p_description, jobansvarlig, 
+                telefon, oprettet_af, oprettet_dato, components, entreprenor_firma, 
+                entreprenor_kontakt, status, latitude, longitude, notes
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $current['work_order_no'], $current['p_number'], $current['mps_nr'],
+                $current['description'], $current['p_description'], $current['jobansvarlig'],
+                $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
+                $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
+                $current['status'], 
+                !empty($current['latitude']) ? floatval($current['latitude']) : null,
+                !empty($current['longitude']) ? floatval($current['longitude']) : null,
+                $current['notes']
+            ]
+        );
     }
-    // Persist entries to the JSON file.  Use JSON_PRETTY_PRINT for
-    // readability and ensure the file is created if it doesn't exist.
-    file_put_contents($data_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
     // Redirect to the overview page after saving to prevent duplicate
     // submissions if the user refreshes the page.
