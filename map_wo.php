@@ -50,6 +50,16 @@ if (strtolower($role) === 'entreprenor') {
     }
 }
 
+// Get list of work order IDs that have associated SJAs
+$workOrdersWithSJA = [];
+try {
+    $sjaResults = $db->fetchAll("SELECT DISTINCT work_order_id FROM sja_entries WHERE work_order_id IS NOT NULL");
+    $workOrdersWithSJA = array_column($sjaResults, 'work_order_id');
+} catch (Exception $e) {
+    // If SJA table doesn't exist or query fails, continue without SJA data
+    $workOrdersWithSJA = [];
+}
+
 ?><!DOCTYPE html>
 <html lang="da">
 <head>
@@ -360,6 +370,9 @@ if (strtolower($role) === 'entreprenor') {
     // Initialise the list of entries passed from PHP.  JSON_UNESCAPED_UNICODE
     // ensures that Danish characters are output correctly.
     var entries = <?php echo json_encode($entries, JSON_UNESCAPED_UNICODE); ?>;
+    
+    // List of work order IDs that have associated SJAs
+    var workOrdersWithSJA = <?php echo json_encode($workOrdersWithSJA); ?>;
 
     // Create the map centred on Stigsnæs Gulfhavn Olie Terminal.  Adjust the
     // zoom level to show enough detail.
