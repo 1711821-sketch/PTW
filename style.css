@@ -1717,11 +1717,20 @@ p {
 /* Card view container - Adaptive responsive layout */
 .card-view {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adaptive columns based on available space */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Maximum 2 cards on desktop */
+    max-width: 100%;
     gap: 1rem;
     margin-bottom: 1.5rem;
     width: 100%;
     align-items: start;
+}
+
+/* Ensure maximum 2 columns on larger screens */
+@media (min-width: 769px) {
+    .card-view {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
 }
 
 /* Individual work permit card - Balanced compact design */
