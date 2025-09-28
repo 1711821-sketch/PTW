@@ -92,5 +92,11 @@
         "role": "entreprenor",
         "approved": true,
         "entreprenor_firma": "CG Jensen A\/S"
+    },
+    {
+        "username": "Edin Zubcevic",
+        "password_hash": "$2y$10$gT.yQwZgKiZP7b6reAauXO3xC9vqUW5rp6TecLbtIvle7w6yCgbIG",
+        "role": "opgaveansvarlig",
+        "approved": true
     }
 ]
