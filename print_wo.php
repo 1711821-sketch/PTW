@@ -145,7 +145,14 @@ if ($statusVal === 'planning') {
             <?php foreach ($entry['approval_history'] as $hist): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
-                    <td><?php echo htmlspecialchars($hist['user'] ?? ''); ?></td>
+                    <td><?php 
+                        $userDisplay = htmlspecialchars($hist['user'] ?? '');
+                        // If this is an entrepreneur approval and company name is available, show it
+                        if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
+                            $userDisplay .= ' (' . htmlspecialchars($hist['company']) . ')';
+                        }
+                        echo $userDisplay;
+                    ?></td>
                     <td><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
                 </tr>
             <?php endforeach; ?>
