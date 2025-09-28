@@ -1,13 +1,50 @@
 <?php
 session_start();
+require_once 'database.php';
+
 // Ensure the user is logged in.  The session key 'user' is set in login.php.
 if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit();
 }
 
-// Indlæs data
-$woData = json_decode(file_get_contents("wo_data.json"), true);
+try {
+    $db = Database::getInstance();
+    $timeEntry = new TimeEntry();
+    
+    // Load work orders from database
+    $woData = $db->fetchAll("
+        SELECT wo.*, 
+               STRING_AGG(DISTINCT a.role || ':' || a.approved_date, '|') as approvals_data
+        FROM work_orders wo 
+        LEFT JOIN approvals a ON wo.id = a.work_order_id 
+        GROUP BY wo.id
+        ORDER BY wo.id
+    ");
+    
+    // Convert approval data to match old JSON format
+    foreach ($woData as &$wo) {
+        $wo['approvals'] = [];
+        if ($wo['approvals_data']) {
+            $approvals = explode('|', $wo['approvals_data']);
+            foreach ($approvals as $approval) {
+                $parts = explode(':', $approval);
+                if (count($parts) == 2) {
+                    $wo['approvals'][$parts[0]] = $parts[1];
+                }
+            }
+        }
+        unset($wo['approvals_data']);
+    }
+    
+} catch (Exception $e) {
+    // Fallback to JSON if database fails
+    if (file_exists("wo_data.json")) {
+        $woData = json_decode(file_get_contents("wo_data.json"), true);
+    } else {
+        $woData = [];
+    }
+}
 
 // --- STATUS TÆLLING ---
 $counts = ["planning" => 0, "active" => 0, "completed" => 0];
@@ -114,6 +151,76 @@ $entreprenorData = array_column($entreprenorStats, 'wo_count');
 $ansvarligLabels = array_keys($ansvarligStats);
 $ansvarligData = array_column($ansvarligStats, 'wo_count');
 
+// --- TIDSREGISTRERING STATISTIK ---
+$timeStats = [];
+$workOrderHours = [];
+try {
+    // Get total hours per work order
+    $hoursByWO = $db->fetchAll("
+        SELECT wo.id, wo.work_order_no, wo.description, wo.entreprenor_firma,
+               COALESCE(SUM(te.hours), 0) as total_hours,
+               COUNT(DISTINCT te.user_id) as unique_users
+        FROM work_orders wo
+        LEFT JOIN time_entries te ON wo.id = te.work_order_id
+        GROUP BY wo.id, wo.work_order_no, wo.description, wo.entreprenor_firma
+        ORDER BY total_hours DESC
+    ");
+    
+    foreach ($hoursByWO as $wo) {
+        $workOrderHours[] = [
+            'id' => $wo['id'],
+            'work_order_no' => $wo['work_order_no'],
+            'description' => $wo['description'],
+            'entreprenor_firma' => $wo['entreprenor_firma'],
+            'total_hours' => floatval($wo['total_hours']),
+            'unique_users' => intval($wo['unique_users'])
+        ];
+    }
+    
+    // Get time stats by contractor
+    $timeByContractor = $db->fetchAll("
+        SELECT wo.entreprenor_firma,
+               COALESCE(SUM(te.hours), 0) as total_hours,
+               COUNT(DISTINCT CASE WHEN te.hours IS NOT NULL THEN te.work_order_id END) as work_orders_with_time,
+               COUNT(DISTINCT te.user_id) as unique_workers
+        FROM work_orders wo
+        LEFT JOIN time_entries te ON wo.id = te.work_order_id
+        WHERE wo.entreprenor_firma IS NOT NULL AND wo.entreprenor_firma != ''
+        GROUP BY wo.entreprenor_firma
+        ORDER BY total_hours DESC
+    ");
+    
+    // Get total unique workers across all time entries
+    $totalActiveWorkers = $db->fetch("
+        SELECT COUNT(DISTINCT te.user_id) as total_workers
+        FROM time_entries te
+    ");
+    $totalActiveWorkersCount = $totalActiveWorkers ? intval($totalActiveWorkers['total_workers']) : 0;
+    
+    foreach ($timeByContractor as $contractor) {
+        $timeStats[$contractor['entreprenor_firma']] = [
+            'total_hours' => floatval($contractor['total_hours']),
+            'work_orders_with_time' => intval($contractor['work_orders_with_time']),
+            'unique_workers' => intval($contractor['unique_workers']),
+            'avg_hours_per_wo' => $contractor['work_orders_with_time'] > 0 ? 
+                round(floatval($contractor['total_hours']) / intval($contractor['work_orders_with_time']), 1) : 0
+        ];
+    }
+    
+} catch (Exception $e) {
+    // If database fails, use empty arrays
+    $workOrderHours = [];
+    $timeStats = [];
+}
+
+// Top work orders by hours
+$topWorkOrdersByHours = array_slice($workOrderHours, 0, 5);
+
+// Top contractors by hours
+$sortedTimeStats = $timeStats;
+uasort($sortedTimeStats, fn($a, $b) => $b['total_hours'] <=> $a['total_hours']);
+$topContractorsByHours = array_slice($sortedTimeStats, 0, 3, true);
+
 $medaljer = ["🥇", "🥈", "🥉"];
 ?>
 <!DOCTYPE html>
@@ -201,6 +308,93 @@ $medaljer = ["🥇", "🥈", "🥉"];
             <div class="chart-container"><h2>Arbejdstilladelser fordelt pr. opgaveansvarlig</h2><canvas id="ansvarligChart"></canvas></div>
             <div class="chart-container" style="flex: 1 1 100%;"><h2>Udvikling over tid</h2><canvas id="timelineChart"></canvas></div>
         </div>
+        </section>
+
+        <!-- Tidsregistrering Oversigt -->
+        <section class="dashboard-section">
+            <h2>⏱️ Tidsregistrering Oversigt</h2>
+            
+            <?php if (!empty($topWorkOrdersByHours) && $topWorkOrdersByHours[0]['total_hours'] > 0): ?>
+            <div class="time-overview">
+                <div class="time-stats-cards">
+                    <div class="time-card total-hours">
+                        <div class="time-card-icon">⏰</div>
+                        <div class="time-card-content">
+                            <h3>Total Timer</h3>
+                            <div class="time-value">
+                                <?php echo array_sum(array_column($workOrderHours, 'total_hours')); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="time-card active-workers">
+                        <div class="time-card-icon">👥</div>
+                        <div class="time-card-content">
+                            <h3>Aktive Arbejdere</h3>
+                            <div class="time-value">
+                                <?php echo $totalActiveWorkersCount; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="time-card projects-with-time">
+                        <div class="time-card-icon">📊</div>
+                        <div class="time-card-content">
+                            <h3>Projekter med Timer</h3>
+                            <div class="time-value">
+                                <?php echo count(array_filter($workOrderHours, fn($wo) => $wo['total_hours'] > 0)); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="top-work-orders-by-hours">
+                    <h3>🏆 Top Arbejdstilladelser efter Timer</h3>
+                    <div class="top-list">
+                        <?php foreach ($topWorkOrdersByHours as $index => $wo): ?>
+                            <?php if ($wo['total_hours'] > 0): ?>
+                            <div class="top-item">
+                                <span class="medal"><?php echo $medaljer[$index] ?? '🔸'; ?></span>
+                                <div class="top-content">
+                                    <div class="top-title"><?php echo htmlspecialchars($wo['work_order_no']); ?></div>
+                                    <div class="top-subtitle"><?php echo htmlspecialchars($wo['entreprenor_firma']); ?></div>
+                                    <div class="top-stats">
+                                        <span class="hours"><?php echo $wo['total_hours']; ?> timer</span>
+                                        <span class="workers"><?php echo $wo['unique_users']; ?> arbejdere</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                
+                <?php if (!empty($topContractorsByHours)): ?>
+                <div class="top-contractors-by-hours">
+                    <h3>🏢 Top Entreprenører efter Timer</h3>
+                    <div class="top-list">
+                        <?php $index = 0; foreach ($topContractorsByHours as $firma => $stats): ?>
+                            <?php if ($stats['total_hours'] > 0): ?>
+                            <div class="top-item">
+                                <span class="medal"><?php echo $medaljer[$index] ?? '🔸'; ?></span>
+                                <div class="top-content">
+                                    <div class="top-title"><?php echo htmlspecialchars($firma); ?></div>
+                                    <div class="top-stats">
+                                        <span class="hours"><?php echo $stats['total_hours']; ?> timer</span>
+                                        <span class="projects"><?php echo $stats['work_orders_with_time']; ?> projekter</span>
+                                        <span class="avg"><?php echo $stats['avg_hours_per_wo']; ?> timer/projekt</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        <?php $index++; endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php else: ?>
+            <div class="no-time-data">
+                <p>📋 Ingen tidsregistreringer endnu. Entreprenører kan registrere timer direkte på arbejdstilladelserne.</p>
+            </div>
+            <?php endif; ?>
         </section>
 
         <!-- Entreprenør statistik -->

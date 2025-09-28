@@ -2447,3 +2447,190 @@ p {
         flex-direction: column;
     }
 }
+
+/* Dashboard Time Tracking Styles */
+.time-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.time-stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.time-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.time-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.time-card.total-hours {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.time-card.active-workers {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.time-card.projects-with-time {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.time-card-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.time-card-content h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.time-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.top-work-orders-by-hours,
+.top-contractors-by-hours {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.top-work-orders-by-hours h3,
+.top-contractors-by-hours h3 {
+    margin: 0 0 1rem 0;
+    color: #374151;
+    font-size: 1.2rem;
+}
+
+.top-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+}
+
+.top-item:hover {
+    background: #e2e8f0;
+}
+
+.top-item .medal {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.top-content {
+    flex: 1;
+}
+
+.top-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.top-subtitle {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.top-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.top-stats span {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.top-stats .hours {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.top-stats .workers,
+.top-stats .projects {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.top-stats .avg {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.no-time-data {
+    text-align: center;
+    padding: 3rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e0;
+}
+
+.no-time-data p {
+    color: #6b7280;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Responsive adjustments for dashboard time tracking */
+@media (max-width: 768px) {
+    .time-stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-overview {
+        gap: 1rem;
+    }
+    
+    .top-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .top-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    
+    .top-item .medal {
+        align-self: center;
+    }
+}
