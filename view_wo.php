@@ -495,6 +495,60 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                             </div>
                         </div>
                     </div>
+                    
+                    <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
+                    <div class="card-time-tracking">
+                        <h4>⏱️ Tidsregistrering</h4>
+                        <div class="time-entry-section" id="time-section-<?php echo $entry['id']; ?>">
+                            <div class="time-entry-form">
+                                <div class="time-input-group">
+                                    <label for="time-date-<?php echo $entry['id']; ?>">📅 Dato:</label>
+                                    <input type="date" 
+                                           id="time-date-<?php echo $entry['id']; ?>" 
+                                           class="time-date-input" 
+                                           value="<?php echo date('Y-m-d'); ?>"
+                                           max="<?php echo date('Y-m-d'); ?>"
+                                           onchange="loadTimeEntry(<?php echo $entry['id']; ?>, this.value)">
+                                </div>
+                                <div class="time-input-group">
+                                    <label for="time-hours-<?php echo $entry['id']; ?>">🕐 Timer:</label>
+                                    <input type="number" 
+                                           id="time-hours-<?php echo $entry['id']; ?>" 
+                                           class="time-hours-input" 
+                                           min="0" 
+                                           max="24" 
+                                           step="0.25" 
+                                           placeholder="0.00">
+                                </div>
+                                <div class="time-input-group full-width">
+                                    <label for="time-desc-<?php echo $entry['id']; ?>">📝 Beskrivelse (valgfri):</label>
+                                    <input type="text" 
+                                           id="time-desc-<?php echo $entry['id']; ?>" 
+                                           class="time-desc-input" 
+                                           placeholder="Beskrivelse af arbejdet...">
+                                </div>
+                                <div class="time-actions">
+                                    <button type="button" 
+                                            class="button button-success button-sm save-time-btn" 
+                                            onclick="saveTimeEntry(<?php echo $entry['id']; ?>)">
+                                        💾 Gem timer
+                                    </button>
+                                    <button type="button" 
+                                            class="button button-secondary button-sm show-all-times-btn" 
+                                            onclick="toggleTimeHistory(<?php echo $entry['id']; ?>)">
+                                        📊 Vis alle timer
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="time-history" id="time-history-<?php echo $entry['id']; ?>" style="display: none;">
+                                <h5>📈 Tidshistorik</h5>
+                                <div class="time-history-content">
+                                    <div class="loading">Indlæser...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="card-actions">
@@ -539,6 +593,179 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }, 100);
         }
         
+        // Time Entry Functions
+        function saveTimeEntry(workOrderId) {
+            const dateInput = document.getElementById(`time-date-${workOrderId}`);
+            const hoursInput = document.getElementById(`time-hours-${workOrderId}`);
+            const descInput = document.getElementById(`time-desc-${workOrderId}`);
+            const saveBtn = document.querySelector(`#time-section-${workOrderId} .save-time-btn`);
+            
+            const entryDate = dateInput.value;
+            const hours = parseFloat(hoursInput.value) || 0;
+            const description = descInput.value.trim();
+            
+            // Validate input
+            if (!entryDate) {
+                showNotification('Vælg venligst en dato.', 'error');
+                return;
+            }
+            
+            if (hours <= 0) {
+                showNotification('Indtast venligst et antal timer større end 0.', 'error');
+                return;
+            }
+            
+            if (hours > 24) {
+                showNotification('Timer kan ikke være større end 24.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = '⏳ Gemmer...';
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('action', 'save_time_entry');
+            formData.append('work_order_id', workOrderId);
+            formData.append('entry_date', entryDate);
+            formData.append('hours', hours);
+            formData.append('description', description);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Reset hours input, keep date and description
+                    hoursInput.value = '';
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Der opstod en fejl ved gemning af timer. Prøv igen.', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            });
+        }
+        
+        function loadTimeEntry(workOrderId, date) {
+            const hoursInput = document.getElementById(`time-hours-${workOrderId}`);
+            const descInput = document.getElementById(`time-desc-${workOrderId}`);
+            
+            if (!date) {
+                hoursInput.value = '';
+                descInput.value = '';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('action', 'get_user_time_entry');
+            formData.append('work_order_id', workOrderId);
+            formData.append('entry_date', date);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    hoursInput.value = data.data.hours || '';
+                    descInput.value = data.data.description || '';
+                } else {
+                    hoursInput.value = '';
+                    descInput.value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading time entry:', error);
+            });
+        }
+        
+        function toggleTimeHistory(workOrderId) {
+            const historyDiv = document.getElementById(`time-history-${workOrderId}`);
+            const button = document.querySelector(`#time-section-${workOrderId} .show-all-times-btn`);
+            
+            if (historyDiv.style.display === 'none') {
+                // Show history and load data
+                historyDiv.style.display = 'block';
+                button.textContent = '📊 Skjul timer';
+                loadTimeHistory(workOrderId);
+            } else {
+                // Hide history
+                historyDiv.style.display = 'none';
+                button.textContent = '📊 Vis alle timer';
+            }
+        }
+        
+        function loadTimeHistory(workOrderId) {
+            const contentDiv = document.querySelector(`#time-history-${workOrderId} .time-history-content`);
+            contentDiv.innerHTML = '<div class="loading">Indlæser...</div>';
+            
+            const formData = new FormData();
+            formData.append('action', 'get_time_entries');
+            formData.append('work_order_id', workOrderId);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const entries = data.data.entries;
+                    const totalHours = data.data.total_hours;
+                    
+                    if (entries.length === 0) {
+                        contentDiv.innerHTML = '<p>Ingen tidsregistreringer fundet.</p>';
+                        return;
+                    }
+                    
+                    let html = `<div class="time-summary"><strong>Total timer: ${totalHours}</strong></div>`;
+                    html += '<div class="time-entries-list">';
+                    
+                    entries.forEach(entry => {
+                        html += `
+                            <div class="time-entry-item">
+                                <div class="time-entry-date">${entry.entry_date}</div>
+                                <div class="time-entry-hours">${entry.hours} timer</div>
+                                <div class="time-entry-user">${entry.username}</div>
+                                ${entry.description ? `<div class="time-entry-desc">${entry.description}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                } else {
+                    contentDiv.innerHTML = `<p class="error">Fejl: ${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading time history:', error);
+                contentDiv.innerHTML = '<p class="error">Der opstod en fejl ved indlæsning af tidshistorik.</p>';
+            });
+        }
+        
+        // Initialize time entries for today's date when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInputs = document.querySelectorAll('.time-date-input');
+            dateInputs.forEach(input => {
+                const workOrderId = input.id.replace('time-date-', '');
+                loadTimeEntry(workOrderId, input.value);
+            });
+        });
+
         // AJAX approval function
         function approveWorkPermit(id, role, buttonElement) {
             // Disable button and show loading state

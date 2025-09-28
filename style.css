@@ -2294,3 +2294,156 @@ p {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
+
+/* Time Tracking Styles */
+.card-time-tracking {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.card-time-tracking h4 {
+    margin: 0 0 1rem 0;
+    color: #495057;
+    font-size: 1.1rem;
+}
+
+.time-entry-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.time-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.time-input-group label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.time-date-input,
+.time-hours-input,
+.time-desc-input {
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.time-date-input:focus,
+.time-hours-input:focus,
+.time-desc-input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.time-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+}
+
+.time-history {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.time-history h5 {
+    margin: 0 0 1rem 0;
+    color: #495057;
+    font-size: 1rem;
+}
+
+.time-summary {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.time-entries-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.time-entry-item {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 1rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    align-items: center;
+}
+
+.time-entry-date {
+    font-weight: 600;
+    color: #495057;
+}
+
+.time-entry-hours {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.time-entry-user {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.time-entry-desc {
+    grid-column: 1 / -1;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.loading {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.error {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Responsive adjustments for time tracking */
+@media (max-width: 768px) {
+    .time-entry-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .time-entry-item {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .time-entry-desc {
+        grid-column: 1;
+    }
+    
+    .time-actions {
+        flex-direction: column;
+    }
+}
