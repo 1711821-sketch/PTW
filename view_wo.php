@@ -388,7 +388,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <table id="arbejdstilladelseTable">
                 <thead>
                     <tr>
-                        <th>🔢 Arbejdstilladelse Nr.</th>
+                        <th title="Arbejdstilladelse NR.">🔢 A nr.</th>
                         <th>📋 Beskrivelse</th>
                         <th>📝 P-beskrivelse</th>
                         <th>👤 Jobansvarlig</th>
