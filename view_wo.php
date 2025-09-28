@@ -5,6 +5,9 @@
 
 session_start();
 
+// Set Danish timezone
+date_default_timezone_set('Europe/Copenhagen');
+
 // SECURITY FIX: Handle AJAX approval requests with database access control
 if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
     header('Content-Type: application/json');
@@ -57,8 +60,8 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
             }
         }
         
-        $today = date('Y-m-d');
-        $now = date('Y-m-d H:i');
+        $today = date('d-m-Y');
+        $now = date('d-m-Y H:i');
         
         // Parse existing approvals and approval history
         $approvals = json_decode($workOrder['approvals'] ?? '{}', true) ?? [];
@@ -191,8 +194,8 @@ try {
 // For legacy compatibility, also set the data_file variable for approval handling
 $data_file = __DIR__ . '/wo_data.json';
 
-$today = date('Y-m-d');
-$now = date('Y-m-d H:i');
+$today = date('d-m-Y');
+$now = date('d-m-Y H:i');
 
 // Handle approval actions: if an approval request is present and the
 // current user has permission to approve for that role, update the
