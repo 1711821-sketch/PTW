@@ -3,9 +3,9 @@
 session_start();
 
 // Define file paths.  Users will be stored in users.json and
-// the list of available contractors will be extracted from wo_data.json.
+// the list of available contractors will be extracted from the database.
 $users_file = __DIR__ . '/users.json';
-$wo_file    = __DIR__ . '/wo_data.json';
+require_once 'database.php';
 
 // Ensure users.json exists.  If it doesn't, create an empty array.
 if (!file_exists($users_file)) {
@@ -18,20 +18,22 @@ if (!is_array($users)) {
     $users = [];
 }
 
-// Extract unique contractor firm names from WO data.  Contractors are
-// specified by the key "entreprenor_firma" in wo_data.json.  If there are
-// no contractors in the file, the array will remain empty.
+// Extract unique contractor firm names from the database.  Contractors are
+// specified by the "entreprenor_firma" column in work_orders table.
 $contractors = [];
-if (file_exists($wo_file)) {
-    $wo_data = json_decode(file_get_contents($wo_file), true);
-    if (is_array($wo_data)) {
-        foreach ($wo_data as $wo) {
-            if (isset($wo['entreprenor_firma']) && $wo['entreprenor_firma'] !== '') {
-                $contractors[] = $wo['entreprenor_firma'];
-            }
-        }
-        $contractors = array_values(array_unique($contractors));
+try {
+    $db = Database::getInstance();
+    $result = $db->fetchAll(
+        "SELECT DISTINCT entreprenor_firma FROM work_orders 
+         WHERE entreprenor_firma IS NOT NULL AND entreprenor_firma != '' 
+         ORDER BY entreprenor_firma ASC"
+    );
+    foreach ($result as $row) {
+        $contractors[] = $row['entreprenor_firma'];
     }
+} catch (Exception $e) {
+    // If database access fails, contractors array remains empty
+    error_log('Database error in register.php: ' . $e->getMessage());
 }
 
 // Define which roles are allowed.  The role names used here should match
