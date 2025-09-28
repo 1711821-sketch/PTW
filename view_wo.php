@@ -78,11 +78,18 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         // Add new approval
         $approvals[$approveRoleLc] = $today;
-        $approvalHistory[] = [
+        $historyEntry = [
             'timestamp' => $now,
             'user' => $currentUser,
             'role' => $approveRoleLc
         ];
+        
+        // For entrepreneurs, add company name to approval history
+        if ($sessionRoleLc === 'entreprenor') {
+            $historyEntry['company'] = $_SESSION['entreprenor_firma'] ?? '';
+        }
+        
+        $approvalHistory[] = $historyEntry;
         
         // Update database
         $updated = $db->execute("
@@ -237,11 +244,18 @@ if (isset($_GET['approve_id']) && isset($_GET['role'])) {
             
             // Add new approval
             $approvals[$approveRoleLc] = $today;
-            $approvalHistory[] = [
+            $historyEntry = [
                 'timestamp' => $now,
                 'user' => $_SESSION['user'] ?? $sessionRole,
                 'role' => $approveRoleLc
             ];
+            
+            // For entrepreneurs, add company name to approval history
+            if ($sessionRoleLc === 'entreprenor') {
+                $historyEntry['company'] = $_SESSION['entreprenor_firma'] ?? '';
+            }
+            
+            $approvalHistory[] = $historyEntry;
             
             // Update database
             $updated = $db->execute("
