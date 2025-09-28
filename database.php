@@ -55,6 +55,16 @@ class Database {
         return $stmt->fetchAll();
     }
     
+    public function execute($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $result = $stmt->execute($params);
+            return $result;
+        } catch (PDOException $e) {
+            throw new Exception("Execute failed: " . $e->getMessage());
+        }
+    }
+    
     public function lastInsertId() {
         return $this->connection->lastInsertId();
     }
