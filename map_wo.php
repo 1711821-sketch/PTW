@@ -488,7 +488,7 @@ try {
                 var status = e.status ? e.status : 'planning';
                 
                 // Check if this work order has SJA
-                var hasSJA = workOrdersWithSJA.includes(parseInt(e.id));
+                var hasSJA = workOrdersWithSJA.includes(String(e.id));
                 
                 // Choose icon based on status and SJA presence
                 var icon;
