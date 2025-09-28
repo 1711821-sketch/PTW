@@ -486,13 +486,18 @@ try {
             var lng = e.longitude;
             if (lat && lng) {
                 var status = e.status ? e.status : 'planning';
+                
+                // Check if this work order has SJA
+                var hasSJA = workOrdersWithSJA.includes(parseInt(e.id));
+                
+                // Choose icon based on status and SJA presence
                 var icon;
                 if (status === 'planning') {
-                    icon = blueIcon;
+                    icon = hasSJA ? blueIconBlack : blueIcon;
                 } else if (status === 'active') {
-                    icon = greenIcon;
+                    icon = hasSJA ? greenIconBlack : greenIcon;
                 } else {
-                    icon = grayIcon;
+                    icon = hasSJA ? grayIconBlack : grayIcon;
                 }
                 var marker = L.marker([parseFloat(lat), parseFloat(lng)], { icon: icon });
                 
