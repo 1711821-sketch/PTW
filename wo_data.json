@@ -250,5 +250,24 @@
         "latitude": "55.196701",
         "longitude": "11.246697",
         "notes": ""
+    },
+    {
+        "id": "39",
+        "work_order_no": "2560809",
+        "p_number": "P6251356",
+        "mps_nr": "360125-03",
+        "description": "D5 Out of service",
+        "p_description": "Veltec. Etablering af montegeåbning",
+        "jobansvarlig": "Tim Marcher Andersen",
+        "telefon": "24664209",
+        "oprettet_af": "12817",
+        "oprettet_dato": "2025-06-19",
+        "components": "OIT36 EGD50BB001 TANK 5 D-GRUPPE 48000 m3x",
+        "entreprenor_firma": "Veltec Industrial Services A\/S",
+        "entreprenor_kontakt": "",
+        "status": "active",
+        "latitude": "55.201882",
+        "longitude": "11.267658",
+        "notes": ""
     }
 ]
