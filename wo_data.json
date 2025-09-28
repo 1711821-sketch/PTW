@@ -19,7 +19,7 @@
         "notes": "",
         "approvals": {
             "entreprenor": "2025-09-26",
-            "opgaveansvarlig": "2025-09-26",
+            "opgaveansvarlig": "2025-09-28",
             "drift": "2025-09-26"
         },
         "approval_history": [
@@ -37,6 +37,11 @@
                 "timestamp": "2025-09-26 22:14",
                 "user": "admin",
                 "role": "drift"
+            },
+            {
+                "timestamp": "2025-09-28 07:48",
+                "user": "admin",
+                "role": "opgaveansvarlig"
             }
         ]
     },
