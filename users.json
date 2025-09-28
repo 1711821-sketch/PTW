@@ -98,5 +98,12 @@
         "password_hash": "$2y$10$gT.yQwZgKiZP7b6reAauXO3xC9vqUW5rp6TecLbtIvle7w6yCgbIG",
         "role": "opgaveansvarlig",
         "approved": true
+    },
+    {
+        "username": "di",
+        "password_hash": "$2y$10$\/pJrQgZEPMoHE.svqlg0JuJJieW5JBCPLJCfi735le4Ol6GDHcMty",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "DI-Teknik A\/S"
     }
 ]
