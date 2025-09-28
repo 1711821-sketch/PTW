@@ -453,7 +453,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     </div>
                 </td>
                 <td>
-                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
+                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">🖨️ Print</a>
                     <?php if ($role !== 'entreprenor'): ?>
                         <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
                     <?php endif; ?>
@@ -655,7 +655,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </div>
                 
                 <div class="card-actions">
-                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
+                    <a class="button button-secondary button-sm" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">🖨️ Print</a>
                     <?php if ($role !== 'entreprenor'): ?>
                         <a class="button button-sm" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
                     <?php endif; ?>
