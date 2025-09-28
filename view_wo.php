@@ -5,13 +5,14 @@
 
 session_start();
 
-// Handle AJAX approval requests
+// SECURITY FIX: Handle AJAX approval requests with database access control
 if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
     header('Content-Type: application/json');
     
     $approveId = $_POST['approve_id'];
     $approveRole = $_POST['role'];
     $sessionRole = $_SESSION['role'] ?? '';
+    $currentUser = $_SESSION['user'] ?? '';
     
     // Normalize role names to lowercase for comparison
     $approveRoleLc = strtolower($approveRole);
@@ -19,6 +20,7 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
     
     // Check permissions
     if ($sessionRoleLc !== 'admin' && $sessionRoleLc !== $approveRoleLc) {
+        error_log("AJAX approval denied - Insufficient permissions - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Required Role: $approveRoleLc");
         echo json_encode([
             'success' => false,
             'message' => 'Du har ikke tilladelse til at godkende som denne rolle.'
@@ -26,70 +28,89 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         exit();
     }
     
-    $data_file = __DIR__ . '/wo_data.json';
-    $allEntries = [];
-    if (file_exists($data_file)) {
-        $allEntries = json_decode(file_get_contents($data_file), true);
-        if (!is_array($allEntries)) {
-            $allEntries = [];
+    try {
+        require_once 'database.php';
+        $db = Database::getInstance();
+        
+        // CRITICAL SECURITY FIX: Use database with proper access control
+        $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$approveId]);
+        
+        if (!$workOrder) {
+            error_log("AJAX approval failed - Work order not found - User: $currentUser, WO ID: $approveId");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Arbejdstilladelse ikke fundet.'
+            ]);
+            exit();
         }
-    }
-    
-    $found = false;
-    $today = date('Y-m-d');
-    $now = date('Y-m-d H:i');
-    
-    foreach ($allEntries as &$entry) {
-        if ((string)($entry['id'] ?? '') === (string)$approveId) {
-            // Ensure the approvals array exists
-            if (!isset($entry['approvals']) || !is_array($entry['approvals'])) {
-                $entry['approvals'] = [];
-            }
-            // Ensure the approval_history array exists
-            if (!isset($entry['approval_history']) || !is_array($entry['approval_history'])) {
-                $entry['approval_history'] = [];
-            }
-            
-            // Check if already approved
-            if (isset($entry['approvals'][$approveRoleLc]) && $entry['approvals'][$approveRoleLc] === $today) {
+        
+        // CRITICAL: Check if entrepreneur is trying to approve another firm's work order
+        if ($sessionRoleLc === 'entreprenor') {
+            $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+            if ($workOrder['entreprenor_firma'] !== $userFirma) {
+                error_log("SECURITY VIOLATION: Entrepreneur attempted AJAX approval of another firm's work order - User: $currentUser, User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma'] . ", WO ID: $approveId");
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Arbejdstilladelsen er allerede godkendt for denne rolle i dag.'
+                    'message' => 'Du har ikke tilladelse til at godkende denne arbejdstilladelse.'
                 ]);
                 exit();
             }
-            
-            // Append a new record to the approval history
-            $entry['approval_history'][] = [
-                'timestamp' => $now,
-                'user' => $_SESSION['user'] ?? $sessionRole,
-                'role' => $approveRoleLc
-            ];
-            
-            // Set approval for today for the role
-            $entry['approvals'][$approveRoleLc] = $today;
-            
-            // Persist ALL entries back to the JSON file
-            if (file_put_contents($data_file, json_encode($allEntries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
-                $found = true;
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Arbejdstilladelsen er blevet godkendt som ' . ucfirst($approveRole) . '.'
-                ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Fejl ved gemning af godkendelse.'
-                ]);
-            }
-            break;
         }
-    }
-    
-    if (!$found) {
+        
+        $today = date('Y-m-d');
+        $now = date('Y-m-d H:i');
+        
+        // Parse existing approvals and approval history
+        $approvals = json_decode($workOrder['approvals'] ?? '{}', true) ?? [];
+        $approvalHistory = json_decode($workOrder['approval_history'] ?? '[]', true) ?? [];
+        
+        // Check if already approved today
+        if (isset($approvals[$approveRoleLc]) && $approvals[$approveRoleLc] === $today) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Arbejdstilladelsen er allerede godkendt for denne rolle i dag.'
+            ]);
+            exit();
+        }
+        
+        // Add new approval
+        $approvals[$approveRoleLc] = $today;
+        $approvalHistory[] = [
+            'timestamp' => $now,
+            'user' => $currentUser,
+            'role' => $approveRoleLc
+        ];
+        
+        // Update database
+        $updated = $db->execute("
+            UPDATE work_orders 
+            SET approvals = ?, approval_history = ?, updated_at = NOW()
+            WHERE id = ?
+        ", [
+            json_encode($approvals),
+            json_encode($approvalHistory),
+            $approveId
+        ]);
+        
+        if ($updated) {
+            error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
+            echo json_encode([
+                'success' => true,
+                'message' => 'Arbejdstilladelsen er blevet godkendt som ' . ucfirst($approveRole) . '.'
+            ]);
+        } else {
+            error_log("AJAX approval failed - Database update failed - User: $currentUser, WO ID: $approveId");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Fejl ved gemning af godkendelse.'
+            ]);
+        }
+        
+    } catch (Exception $e) {
+        error_log("AJAX approval error - User: $currentUser, WO ID: $approveId, Error: " . $e->getMessage());
         echo json_encode([
             'success' => false,
-            'message' => 'Arbejdstilladelse ikke fundet.'
+            'message' => 'Der opstod en fejl ved godkendelse. Prøv igen.'
         ]);
     }
     
@@ -102,32 +123,73 @@ if (!isset($_SESSION['user'])) {
 }
 
 $role = $_SESSION['role'] ?? 'user';
-$data_file = __DIR__ . '/wo_data.json';
+
+// Enhanced access control using database instead of JSON files
+require_once 'database.php';
+
 $entries = [];
-if (file_exists($data_file)) {
-    $entries = json_decode(file_get_contents($data_file), true);
-    if (!is_array($entries)) {
+$currentUser = $_SESSION['user'] ?? '';
+$currentRole = $_SESSION['role'] ?? '';
+
+try {
+    $db = Database::getInstance();
+    
+    // Apply role-based access control at database level
+    if ($currentRole === 'entreprenor') {
+        $firma = $_SESSION['entreprenor_firma'] ?? '';
+        if ($firma !== '') {
+            // Only load work orders for this entrepreneur's firm
+            $entries = $db->fetchAll("
+                SELECT * FROM work_orders 
+                WHERE entreprenor_firma = ? 
+                ORDER BY created_at DESC
+            ", [$firma]);
+            
+            error_log("Work order access - Entrepreneur: $currentUser, Firma: $firma, Count: " . count($entries));
+        } else {
+            // If no firm is defined, show no entries
+            $entries = [];
+            error_log("Work order access denied - Entrepreneur: $currentUser, No firma defined");
+        }
+    } elseif (in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+        // Admin, opgaveansvarlig and drift can see all work orders
+        $entries = $db->fetchAll("
+            SELECT * FROM work_orders 
+            ORDER BY created_at DESC
+        ");
+        
+        error_log("Work order access - User: $currentUser, Role: $currentRole, Count: " . count($entries));
+    } else {
+        // Unknown or unauthorized role
         $entries = [];
+        error_log("Work order access denied - User: $currentUser, Role: $currentRole, Unauthorized role");
     }
+    
+    // Convert database result to format expected by frontend
+    foreach ($entries as &$entry) {
+        // Ensure all expected fields exist
+        if (!isset($entry['approvals'])) {
+            $entry['approvals'] = [];
+        }
+        if (!isset($entry['approval_history'])) {
+            $entry['approval_history'] = [];
+        }
+        // Convert JSON strings back to arrays if needed
+        if (is_string($entry['approvals'])) {
+            $entry['approvals'] = json_decode($entry['approvals'], true) ?? [];
+        }
+        if (is_string($entry['approval_history'])) {
+            $entry['approval_history'] = json_decode($entry['approval_history'], true) ?? [];
+        }
+    }
+    
+} catch (Exception $e) {
+    error_log("Database error in view_wo.php: " . $e->getMessage());
+    $entries = [];
 }
 
-// If the logged-in user is an entrepreneur, restrict entries to only those
-// work orders that belong to their own contractor firm.  The firm name is
-// stored in the session at login time.  This prevents entrepreneurs from
-// viewing work orders belonging to other companies.
-if (($role ?? '') === 'entreprenor') {
-    $firma = $_SESSION['entreprenor_firma'] ?? '';
-    if ($firma !== '') {
-        $entries = array_filter($entries, function ($entry) use ($firma) {
-            return isset($entry['entreprenor_firma']) && $entry['entreprenor_firma'] === $firma;
-        });
-        // Re-index the array so foreach loops operate on sequential keys
-        $entries = array_values($entries);
-    } else {
-        // If no firm is defined for the entrepreneur, show no entries at all
-        $entries = [];
-    }
-}
+// For legacy compatibility, also set the data_file variable for approval handling
+$data_file = __DIR__ . '/wo_data.json';
 
 $today = date('Y-m-d');
 $now = date('Y-m-d H:i');
@@ -145,87 +207,110 @@ if (isset($_GET['approve_id']) && isset($_GET['role'])) {
     // Normalise role names to lowercase for comparison
     $approveRoleLc = strtolower($approveRole);
     $sessionRoleLc = strtolower($sessionRole);
-if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
-        // CRITICAL FIX: Load ALL entries from file to avoid filtering issues
-        // DO NOT use the filtered $entries array as it may be limited to entrepreneur's WOs
-        $allEntries = [];
-        if (file_exists($data_file)) {
-            $allEntries = json_decode(file_get_contents($data_file), true);
-            if (!is_array($allEntries)) {
-                $allEntries = [];
+    if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
+        try {
+            // SECURITY FIX: Use database with proper access control for approvals
+            $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$approveId]);
+            
+            if (!$workOrder) {
+                error_log("Approval attempt failed - Work order not found - User: $currentUser, WO ID: $approveId");
+                header('Location: view_wo.php?error=not_found');
+                exit();
             }
-        }
-        
-        foreach ($allEntries as &$entry) {
-            // Skip entries whose ID does not match the approval request
-            if ((string)($entry['id'] ?? '') !== (string)$approveId) {
-                continue;
+            
+            // CRITICAL: Check if entrepreneur is trying to approve another firm's work order
+            if ($sessionRoleLc === 'entreprenor') {
+                $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+                if ($workOrder['entreprenor_firma'] !== $userFirma) {
+                    error_log("SECURITY VIOLATION: Entrepreneur attempted to approve another firm's work order - User: $currentUser, User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma'] . ", WO ID: $approveId");
+                    header('Location: view_wo.php?error=unauthorized');
+                    exit();
+                }
             }
-            // Ensure the approvals array exists
-            if (!isset($entry['approvals']) || !is_array($entry['approvals'])) {
-                $entry['approvals'] = [];
-            }
-            // Ensure the approval_history array exists
-            if (!isset($entry['approval_history']) || !is_array($entry['approval_history'])) {
-                $entry['approval_history'] = [];
-            }
-            // Append a new record to the approval history with timestamp, user and role
-            $entry['approval_history'][] = [
+            
+            // Parse existing approvals and approval history
+            $approvals = json_decode($workOrder['approvals'] ?? '{}', true) ?? [];
+            $approvalHistory = json_decode($workOrder['approval_history'] ?? '[]', true) ?? [];
+            
+            // Add new approval
+            $approvals[$approveRoleLc] = $today;
+            $approvalHistory[] = [
                 'timestamp' => $now,
                 'user' => $_SESSION['user'] ?? $sessionRole,
                 'role' => $approveRoleLc
             ];
-            // Set approval for today for the role
-            $entry['approvals'][$approveRoleLc] = $today;
-            // Persist ALL entries back to the JSON file (not just filtered ones)
-            file_put_contents($data_file, json_encode($allEntries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            break;
+            
+            // Update database
+            $updated = $db->execute("
+                UPDATE work_orders 
+                SET approvals = ?, approval_history = ?, updated_at = NOW()
+                WHERE id = ?
+            ", [
+                json_encode($approvals),
+                json_encode($approvalHistory),
+                $approveId
+            ]);
+            
+            if ($updated) {
+                error_log("Approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
+            } else {
+                error_log("Approval failed - Database update failed - User: $currentUser, WO ID: $approveId");
+            }
+            
+        } catch (Exception $e) {
+            error_log("Approval error - User: $currentUser, WO ID: $approveId, Error: " . $e->getMessage());
         }
+    } else {
+        error_log("Approval denied - Insufficient permissions - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Required Role: $approveRoleLc");
     }
     header('Location: view_wo.php');
     exit();
 }
 
-// Handle deletion (admin only)
+// Handle deletion (admin only) - SECURITY FIX: Use database with proper access control
 $msg = '';
 if ($role === 'admin' && isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
     
-    // CRITICAL FIX: Load ALL entries from file to avoid filtering issues
-    $allEntries = [];
-    if (file_exists($data_file)) {
-        $allEntries = json_decode(file_get_contents($data_file), true);
-        if (!is_array($allEntries)) {
-            $allEntries = [];
-        }
-    }
-    
-    $new_entries = [];
-    $deleted = false;
-    foreach ($allEntries as $entry) {
-        if (isset($entry['id']) && (string)$entry['id'] === (string)$delete_id) {
-            $deleted = true;
-            continue;
-        }
-        $new_entries[] = $entry;
-    }
-    if ($deleted) {
-        file_put_contents($data_file, json_encode($new_entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        // Update the filtered entries for display purposes
-        $entries = array_filter($new_entries, function ($entry) use ($role) {
-            if (($role ?? '') === 'entreprenor') {
-                $firma = $_SESSION['entreprenor_firma'] ?? '';
-                if ($firma !== '') {
-                    return isset($entry['entreprenor_firma']) && $entry['entreprenor_firma'] === $firma;
+    try {
+        // SECURITY FIX: Use database with proper access control for deletions
+        $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$delete_id]);
+        
+        if (!$workOrder) {
+            error_log("Delete attempt failed - Work order not found - User: $currentUser, WO ID: $delete_id");
+            $msg = 'Kunne ikke finde arbejdstilladelse til sletning.';
+        } else {
+            // Delete work order and all related time entries
+            $db->execute("DELETE FROM time_entries WHERE work_order_id = ?", [$delete_id]);
+            $deleted = $db->execute("DELETE FROM work_orders WHERE id = ?", [$delete_id]);
+            
+            if ($deleted) {
+                error_log("Work order deleted successfully - User: $currentUser, WO ID: $delete_id, WO Firma: " . $workOrder['entreprenor_firma']);
+                
+                // Update the entries array for display purposes by reloading from database
+                if ($currentRole === 'entreprenor') {
+                    $firma = $_SESSION['entreprenor_firma'] ?? '';
+                    if ($firma !== '') {
+                        $entries = $db->fetchAll("SELECT * FROM work_orders WHERE entreprenor_firma = ? ORDER BY created_at DESC", [$firma]);
+                    } else {
+                        $entries = [];
+                    }
+                } elseif (in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+                    $entries = $db->fetchAll("SELECT * FROM work_orders ORDER BY created_at DESC");
+                } else {
+                    $entries = [];
                 }
-                return false;
+                
+                $msg = 'Arbejdstilladelse er blevet slettet.';
+            } else {
+                error_log("Delete failed - Database error - User: $currentUser, WO ID: $delete_id");
+                $msg = 'Fejl ved sletning af arbejdstilladelse.';
             }
-            return true;
-        });
-        $entries = array_values($entries);
-        $msg = 'Arbejdstilladelse er blevet slettet.';
-    } else {
-        $msg = 'Kunne ikke finde arbejdstilladelse til sletning.';
+        }
+        
+    } catch (Exception $e) {
+        error_log("Delete error - User: $currentUser, WO ID: $delete_id, Error: " . $e->getMessage());
+        $msg = 'Fejl ved sletning af arbejdstilladelse.';
     }
 }
 ?>
@@ -601,22 +686,46 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             const saveBtn = document.querySelector(`#time-section-${workOrderId} .save-time-btn`);
             
             const entryDate = dateInput.value;
-            const hours = parseFloat(hoursInput.value) || 0;
+            const hours = parseFloat(hoursInput.value);
+            
+            // Check for invalid hours input (NaN from empty field)
+            if (isNaN(hours) || hours <= 0) {
+                showNotification('Indtast venligst et gyldigt antal timer større end 0.', 'error');
+                return;
+            }
             const description = descInput.value.trim();
             
-            // Validate input
+            // Enhanced input validation to match backend
             if (!entryDate) {
                 showNotification('Vælg venligst en dato.', 'error');
                 return;
             }
             
-            if (hours <= 0) {
-                showNotification('Indtast venligst et antal timer større end 0.', 'error');
+            // Date validation - no future dates, no dates older than 1 year
+            const entryDateObj = new Date(entryDate);
+            const today = new Date();
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            
+            if (entryDateObj > today) {
+                showNotification('Dato kan ikke være i fremtiden.', 'error');
                 return;
             }
             
-            if (hours > 24) {
-                showNotification('Timer kan ikke være større end 24.', 'error');
+            if (entryDateObj < oneYearAgo) {
+                showNotification('Dato skal være inden for det sidste år.', 'error');
+                return;
+            }
+            
+            if (hours < 0 || hours > 24) {
+                showNotification('Timer skal være mellem 0 og 24.', 'error');
+                return;
+            }
+            
+            // Check for quarter-hour increments (0, 0.25, 0.5, 0.75, 1.0, etc.)
+            const quarterHours = hours * 4;
+            if (quarterHours !== Math.floor(quarterHours)) {
+                showNotification('Timer skal være i kvarte-times intervaller (0.25, 0.5, 0.75, osv.).', 'error');
                 return;
             }
             

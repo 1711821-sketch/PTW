@@ -52,26 +52,71 @@ try {
                 exit();
             }
             
+            // Enhanced date validation - no future dates beyond today, no dates older than 1 year
+            $entryDateTime = DateTime::createFromFormat('Y-m-d', $entryDate);
+            $today = new DateTime();
+            $oneYearAgo = (new DateTime())->sub(new DateInterval('P1Y'));
+            
+            if (!$entryDateTime || $entryDateTime > $today || $entryDateTime < $oneYearAgo) {
+                echo json_encode(['success' => false, 'message' => 'Dato skal være inden for det sidste år og ikke i fremtiden.']);
+                exit();
+            }
+            
+            // Enhanced hours validation - allow quarter-hour increments, reasonable daily limits
             if ($hours < 0 || $hours > 24) {
                 echo json_encode(['success' => false, 'message' => 'Timer skal være mellem 0 og 24.']);
+                exit();
+            }
+            
+            // Check for quarter-hour increments (0, 0.25, 0.5, 0.75, 1.0, etc.)
+            $quarterHours = $hours * 4;
+            if ($quarterHours !== floor($quarterHours)) {
+                echo json_encode(['success' => false, 'message' => 'Timer skal være i kvarte-times intervaller (0.25, 0.5, 0.75, osv.).']);
+                exit();
+            }
+            
+            // Sanitize description input
+            $description = htmlspecialchars(strip_tags($description), ENT_QUOTES, 'UTF-8');
+            
+            // Enhanced work order access validation
+            $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
+            if (!$workOrder) {
+                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
                 exit();
             }
             
             // Check if user has permission to register time for this work order
             if ($currentRole === 'entreprenor') {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
-                $woCheck = $db->fetch("SELECT id FROM work_orders WHERE id = ? AND entreprenor_firma = ?", [$workOrderId, $firma]);
-                if (!$woCheck) {
+                if ($workOrder['entreprenor_firma'] !== $firma) {
+                    error_log("Unauthorized time entry attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
                     echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer på denne arbejdstilladelse.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+                error_log("Unauthorized time entry attempt - User: $currentUser, Role: $currentRole, Work Order: $workOrderId");
                 echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer.']);
+                exit();
+            }
+            
+            // Rate limiting check - max 10 time entries per user per minute
+            $recentEntries = $db->fetch("
+                SELECT COUNT(*) as count 
+                FROM time_entries 
+                WHERE user_id = ? AND created_at > NOW() - INTERVAL '1 minute'
+            ", [$userId]);
+            
+            if ($recentEntries && $recentEntries['count'] >= 10) {
+                error_log("Rate limit exceeded - User: $currentUser, Recent entries: " . $recentEntries['count']);
+                echo json_encode(['success' => false, 'message' => 'For mange registreringer. Vent venligst et øjeblik.']);
                 exit();
             }
             
             // Save time entry
             $timeEntry->addTimeEntry($workOrderId, $userId, $entryDate, $hours, $description);
+            
+            // Log successful time entry for audit trail
+            error_log("Time entry saved - User: $currentUser ($currentRole), Work Order: $workOrderId, Date: $entryDate, Hours: $hours");
             
             echo json_encode([
                 'success' => true, 
@@ -93,15 +138,23 @@ try {
                 exit();
             }
             
+            // Enhanced work order validation for viewing
+            $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
+            if (!$workOrder) {
+                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
+                exit();
+            }
+            
             // Check permission to view time entries
             if ($currentRole === 'entreprenor') {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
-                $woCheck = $db->fetch("SELECT id FROM work_orders WHERE id = ? AND entreprenor_firma = ?", [$workOrderId, $firma]);
-                if (!$woCheck) {
+                if ($workOrder['entreprenor_firma'] !== $firma) {
+                    error_log("Unauthorized time view attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
                     echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne arbejdstilladelse.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+                error_log("Unauthorized time view attempt - User: $currentUser, Role: $currentRole, Work Order: $workOrderId");
                 echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer.']);
                 exit();
             }
@@ -127,15 +180,23 @@ try {
                 exit();
             }
             
+            // Enhanced work order validation for user time entry
+            $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
+            if (!$workOrder) {
+                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
+                exit();
+            }
+            
             // Check permission
             if ($currentRole === 'entreprenor') {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
-                $woCheck = $db->fetch("SELECT id FROM work_orders WHERE id = ? AND entreprenor_firma = ?", [$workOrderId, $firma]);
-                if (!$woCheck) {
+                if ($workOrder['entreprenor_firma'] !== $firma) {
+                    error_log("Unauthorized user time entry view attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
                     echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne arbejdstilladelse.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+                error_log("Unauthorized user time entry view attempt - User: $currentUser, Role: $currentRole, Work Order: $workOrderId");
                 echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer.']);
                 exit();
             }
