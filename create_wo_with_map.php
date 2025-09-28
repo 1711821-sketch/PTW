@@ -289,6 +289,22 @@ document.querySelectorAll('input, textarea').forEach(function(el) {
     }
   });
 });
+
+// Status confirmation dialog for AKTIV selection
+document.getElementById('status').addEventListener('change', function(e) {
+  if (e.target.value === 'active') {
+    // Show confirmation dialog
+    const confirmed = confirm('Jeg har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger så opgaven kan aktiveres');
+    
+    if (!confirmed) {
+      // Reset to previous value (planning by default)
+      e.target.value = 'planning';
+      
+      // Show error message
+      alert('Du kan ikke oprette arbejdstilladelse da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
+    }
+  }
+});
 </script>
 </body>
 </html>
