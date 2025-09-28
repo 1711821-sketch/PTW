@@ -537,7 +537,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <h4>✅ Godkendelser</h4>
                         <div class="approval-grid">
                             <div class="approval-item">
-                                <span class="approval-label">Opgaveansvarlig:</span>
+                                <span class="approval-label" title="Opgaveansvarlige">Opgaveansvarlig:</span>
                                 <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>" id="oa-status-<?php echo $entry['id']; ?>">
                                     <?php echo $oaApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
@@ -551,7 +551,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <?php endif; ?>
                             </div>
                             <div class="approval-item">
-                                <span class="approval-label">Drift:</span>
+                                <span class="approval-label" title="Driften">Drift:</span>
                                 <span class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>" id="drift-status-<?php echo $entry['id']; ?>">
                                     <?php echo $driftApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
@@ -565,7 +565,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <?php endif; ?>
                             </div>
                             <div class="approval-item">
-                                <span class="approval-label">Entreprenør:</span>
+                                <span class="approval-label" title="Entreprenør">Entreprenør:</span>
                                 <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>" id="ent-status-<?php echo $entry['id']; ?>">
                                     <?php echo $entApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
