@@ -8,24 +8,34 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$data_file = __DIR__ . '/wo_data.json';
-$entries = [];
-if (file_exists($data_file)) {
-    $entries = json_decode(file_get_contents($data_file), true);
-    if (!is_array($entries)) {
-        $entries = [];
-    }
-}
+// Use database instead of JSON files
+require_once 'database.php';
+
 $id = $_GET['id'] ?? '';
 $entry = null;
-foreach ($entries as $e) {
-    if (isset($e['id']) && (string)$e['id'] === (string)$id) {
-        $entry = $e;
-        break;
+
+try {
+    $db = Database::getInstance();
+    $entry = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$id]);
+    
+    if (!$entry) {
+        echo '<p>Arbejdstilladelse ikke fundet.</p>';
+        echo '<p><a href="view_wo.php">Tilbage til oversigt</a></p>';
+        exit();
     }
-}
-if (!$entry) {
-    echo '<p>WO ikke fundet.</p>';
+    
+    // Convert JSON strings back to arrays if needed
+    if (is_string($entry['approvals'] ?? '')) {
+        $entry['approvals'] = json_decode($entry['approvals'], true) ?? [];
+    }
+    if (is_string($entry['approval_history'] ?? '')) {
+        $entry['approval_history'] = json_decode($entry['approval_history'], true) ?? [];
+    }
+    
+} catch (Exception $e) {
+    error_log("Error loading work order for print: " . $e->getMessage());
+    echo '<p>Fejl ved indlæsning af arbejdstilladelse.</p>';
+    echo '<p><a href="view_wo.php">Tilbage til oversigt</a></p>';
     exit();
 }
 
@@ -56,9 +66,29 @@ if ($statusVal === 'planning') {
         table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
         th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; vertical-align: top; }
         th { background-color: #f5f5f5; width: 25%; }
-        .print-btn { padding: 0.5rem 1rem; background-color: #0070C0; color: #fff; text-decoration: none; border-radius: 3px; margin-bottom: 1rem; display: inline-block; }
+        
+        /* Action buttons styling */
+        .action-buttons { 
+            display: flex; 
+            gap: 0.5rem; 
+            margin-bottom: 1rem; 
+            flex-wrap: wrap;
+        }
+        .action-btn { 
+            padding: 0.5rem 1rem; 
+            color: #fff; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-primary { background-color: #007bff; }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-secondary:hover { background-color: #545b62; }
+        
         @media print {
-            .print-btn { display: none; }
+            .action-buttons, .navbar { display: none; }
             body { margin: 0; }
             h1 { font-size: 1.4em; }
             h2 { font-size: 1.2em; border-color: #000; }
@@ -79,7 +109,11 @@ if ($statusVal === 'planning') {
         <a class="logout-link" href="logout.php">Log ud</a>
     </nav>
     <div class="container">
-    <a href="#" class="print-btn" onclick="window.print();return false;">Print</a>
+    <!-- Action buttons for better navigation -->
+    <div class="action-buttons">
+        <a href="view_wo.php" class="action-btn btn-secondary">← Tilbage til oversigt</a>
+        <a href="#" class="action-btn btn-primary" onclick="window.print();return false;">🖨️ Print</a>
+    </div>
     <h1>Arbejdstilladelse</h1>
     <h2>Basisinformation</h2>
     <table>
@@ -124,34 +158,38 @@ if ($statusVal === 'planning') {
     <!-- Section for displaying SJA entries linked to this WO -->
     <h2>Tilknyttede SJA'er</h2>
     <?php
-        // Load all SJA entries
-        $sja_file = __DIR__ . '/sja_data.json';
-        $sja_entries = [];
-        if (file_exists($sja_file)) {
-            $sja_entries = json_decode(file_get_contents($sja_file), true);
-            if (!is_array($sja_entries)) {
-                $sja_entries = [];
-            }
-        }
-        // Filter SJA entries that reference this work order
+        // Load SJA entries from database that reference this work order
         $attached_sja = [];
-        foreach ($sja_entries as $sja) {
-            if (!empty($sja['wo_id']) && (string)$sja['wo_id'] === (string)$entry['id']) {
-                $attached_sja[] = $sja;
-            }
+        try {
+            // Check if sja_entries table exists and get related SJAs
+            $attached_sja = $db->fetchAll("
+                SELECT * FROM sja_entries 
+                WHERE work_order_id = ? 
+                ORDER BY created_at DESC
+            ", [$entry['id']]);
+        } catch (Exception $e) {
+            // SJA table might not exist yet, that's okay
+            error_log("SJA table not available: " . $e->getMessage());
         }
     ?>
     <?php if (!empty($attached_sja)): ?>
-        <ul>
-        <?php foreach ($attached_sja as $sja): ?>
-            <li><a href="print_sja.php?id=<?php echo urlencode($sja['id']); ?>"><?php echo htmlspecialchars($sja['basic']['opgave'] ?? ('SJA ' . $sja['id'])); ?></a></li>
-        <?php endforeach; ?>
-        </ul>
+        <table>
+            <tr><th>SJA ID</th><th>Opgave</th><th>Oprettet</th><th>Handlinger</th></tr>
+            <?php foreach ($attached_sja as $sja): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($sja['id']); ?></td>
+                    <td><?php echo htmlspecialchars($sja['opgave'] ?? 'SJA'); ?></td>
+                    <td><?php echo htmlspecialchars($sja['created_at'] ?? ''); ?></td>
+                    <td><a href="print_sja.php?id=<?php echo urlencode($sja['id']); ?>">Se SJA</a></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
     <?php else: ?>
-        <p>Ingen tilknyttede SJA'er fundet for WO <?php echo htmlspecialchars($entry['id']); ?>.</p>
+        <p>Ingen tilknyttede SJA'er fundet for denne arbejdstilladelse.</p>
     <?php endif; ?>
-    <p><a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>">Opret ny SJA til denne WO</a></p>
-    <p><a href="view_wo.php">Tilbage til liste</a></p>
+    <div class="action-buttons" style="margin-top: 2rem;">
+        <a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>" class="action-btn btn-primary">Opret ny SJA til denne WO</a>
+    </div>
     </div><!-- /.container -->
 </body>
 </html>
