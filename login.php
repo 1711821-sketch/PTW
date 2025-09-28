@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <form method="post" action="" class="login-form">
                 <div class="form-group">
-                    <label for="username">Brugernavn</label>
+                    <label for="username">Brugernavn (Din navn og efternavn)</label>
                     <input type="text" id="username" name="username" required>
                 </div>
                 <div class="form-group">

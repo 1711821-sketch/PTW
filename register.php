@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <form method="post">
             <label>
-                Brugernavn
+                Brugernavn (Din navn og efternavn)
                 <input type="text" name="username" required>
             </label>
             <label>
