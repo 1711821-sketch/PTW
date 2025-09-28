@@ -14,18 +14,8 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-// Path to the JSON data store
-$data_file = __DIR__ . '/sja_data.json';
-
-// Load existing entries from the JSON file or initialise an empty array
-if (file_exists($data_file)) {
-    $entries = json_decode(file_get_contents($data_file), true);
-    if (!is_array($entries)) {
-        $entries = [];
-    }
-} else {
-    $entries = [];
-}
+// Use database instead of JSON files
+require_once 'database.php';
 
 // Determine if we are editing an existing entry
 $edit_id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -132,11 +122,30 @@ $status_options = [
 
 // If editing, load existing values into $current
 if ($edit_id) {
-    foreach ($entries as $e) {
-        if (isset($e['id']) && $e['id'] === $edit_id) {
-            $current = $e;
-            break;
+    try {
+        $db = Database::getInstance();
+        $entry = $db->fetch("SELECT * FROM sja_entries WHERE id = ?", [$edit_id]);
+        
+        if ($entry) {
+            // Convert database format back to form format
+            $current = [
+                'id' => $entry['id'],
+                'basic' => json_decode($entry['basic_info'] ?? '{}', true) ?: [],
+                'risici' => json_decode($entry['risks'] ?? '{}', true) ?: [],
+                'tilladelser' => json_decode($entry['permissions'] ?? '{}', true) ?: [],
+                'vaernemidler' => json_decode($entry['ppe'] ?? '{}', true) ?: [],
+                'udstyr' => json_decode($entry['equipment'] ?? '{}', true) ?: [],
+                'taenkt' => json_decode($entry['considerations'] ?? '{}', true) ?: [],
+                'cancer' => json_decode($entry['cancer_substances'] ?? '{}', true) ?: [],
+                'bem' => $entry['remarks'] ?? '',
+                'deltagere' => json_decode($entry['participants'] ?? '[]', true) ?: [],
+                'status' => $entry['status'] ?? 'active',
+                'latitude' => $entry['latitude'] ?? '',
+                'longitude' => $entry['longitude'] ?? ''
+            ];
         }
+    } catch (Exception $e) {
+        error_log("Error loading SJA for edit: " . $e->getMessage());
     }
 }
 
@@ -183,64 +192,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lat = isset($_POST['latitude']) ? htmlspecialchars(trim((string)$_POST['latitude']), ENT_QUOTES, 'UTF-8') : '';
     $lng = isset($_POST['longitude']) ? htmlspecialchars(trim((string)$_POST['longitude']), ENT_QUOTES, 'UTF-8') : '';
 
-    // Build entry
-    // Preserve the creator for existing entries; for new entries set created_by to current user
-    $entry_id = $posted_id ? $posted_id : uniqid();
-    $created_by = '';
-    if ($posted_id) {
-        // Look up existing entry to preserve creator
-        foreach ($entries as $e) {
-            if (isset($e['id']) && $e['id'] === $posted_id && isset($e['created_by'])) {
-                $created_by = $e['created_by'];
-                break;
-            }
+    // Save to PostgreSQL database
+    try {
+        $db = Database::getInstance();
+        $work_order_id = $_POST['wo_id'] ?? null;
+        // Convert empty string to NULL for integer column
+        if (empty($work_order_id)) {
+            $work_order_id = null;
+        } else {
+            $work_order_id = intval($work_order_id);
         }
-    }
-    if ($created_by === '') {
-        $created_by = $_SESSION['user'];
-    }
-    $entry = [
-        'id'          => $entry_id,
-        'created_by'  => $created_by,
-        // Associate this SJA with a specific work order if provided
-        'wo_id'       => $_POST['wo_id'] ?? '',
-        'basic'       => $basic,
-        'risici'      => $risici,
-        'tilladelser' => $till,
-        'vaernemidler'=> $ppe,
-        'udstyr'      => $udstyr,
-        'taenkt'      => $taenkt,
-        'cancer'      => $cancer,
-        'bem'         => $bem,
-        'deltagere'   => $deltagere,
-        // Store status (active or completed)
-        'status'      => $status,
-        // store coordinates; may be empty if user didn't select
-        'latitude'    => $lat,
-        'longitude'   => $lng
-    ];
-
-    // If editing, replace existing entry; else append new entry
-    $found = false;
-    for ($i = 0; $i < count($entries); $i++) {
-        if (isset($entries[$i]['id']) && $entries[$i]['id'] === $entry['id']) {
-            $entries[$i] = $entry;
-            $found = true;
-            break;
+        $sja_title = $basic['opgave'] ?? 'SJA';
+        
+        // Prepare data for database
+        $basic_info = json_encode($basic, JSON_UNESCAPED_UNICODE);
+        $risks = json_encode($risici, JSON_UNESCAPED_UNICODE);
+        $permissions = json_encode($till, JSON_UNESCAPED_UNICODE);
+        $ppe_data = json_encode($ppe, JSON_UNESCAPED_UNICODE);
+        $equipment_data = json_encode($udstyr, JSON_UNESCAPED_UNICODE);
+        $considerations = json_encode($taenkt, JSON_UNESCAPED_UNICODE);
+        $cancer_substances = json_encode($cancer, JSON_UNESCAPED_UNICODE);
+        $participants = json_encode($deltagere, JSON_UNESCAPED_UNICODE);
+        
+        if ($posted_id && is_numeric($posted_id)) {
+            // Update existing SJA
+            $db->execute("
+                UPDATE sja_entries SET
+                    work_order_id = ?,
+                    sja_title = ?,
+                    basic_info = ?,
+                    risks = ?,
+                    permissions = ?,
+                    ppe = ?,
+                    equipment = ?,
+                    considerations = ?,
+                    cancer_substances = ?,
+                    remarks = ?,
+                    participants = ?,
+                    status = ?,
+                    latitude = ?,
+                    longitude = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            ", [
+                $work_order_id, $sja_title, $basic_info, $risks, $permissions, 
+                $ppe_data, $equipment_data, $considerations, $cancer_substances, 
+                $bem, $participants, $status, 
+                $lat ? floatval($lat) : null, $lng ? floatval($lng) : null, 
+                $posted_id
+            ]);
+            $entry_id = $posted_id;
+            $message = 'SJA opdateret!';
+        } else {
+            // Insert new SJA
+            $result = $db->fetch("
+                INSERT INTO sja_entries (
+                    work_order_id, sja_title, basic_info, risks, permissions, 
+                    ppe, equipment, considerations, cancer_substances, 
+                    remarks, participants, status, latitude, longitude
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                RETURNING id
+            ", [
+                $work_order_id, $sja_title, $basic_info, $risks, $permissions, 
+                $ppe_data, $equipment_data, $considerations, $cancer_substances, 
+                $bem, $participants, $status, 
+                $lat ? floatval($lat) : null, $lng ? floatval($lng) : null
+            ]);
+            $entry_id = $result['id'];
+            $message = 'SJA gemt!';
         }
+        
+        // Update current data for form display
+        $current = [
+            'id' => $entry_id,
+            'basic' => $basic,
+            'risici' => $risici,
+            'tilladelser' => $till,
+            'vaernemidler' => $ppe,
+            'udstyr' => $udstyr,
+            'taenkt' => $taenkt,
+            'cancer' => $cancer,
+            'bem' => $bem,
+            'deltagere' => $deltagere,
+            'status' => $status,
+            'latitude' => $lat,
+            'longitude' => $lng
+        ];
+        
+        // Set edit_id for after-submit view
+        $edit_id = $entry_id;
+        
+    } catch (Exception $e) {
+        error_log("Error saving SJA: " . $e->getMessage());
+        $message = 'Fejl ved gemning af SJA: ' . $e->getMessage();
     }
-    if (!$found) {
-        $entries[] = $entry;
-    }
-
-    // Save back to file
-    file_put_contents($data_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
-    // Set success message and reload data for editing view
-    $message = $found ? 'SJA opdateret!' : 'SJA gemt!';
-    $current = $entry;
-    // If not editing (new), set edit_id for after-submit view
-    $edit_id = $entry['id'];
 }
 ?>
 <!DOCTYPE html>
