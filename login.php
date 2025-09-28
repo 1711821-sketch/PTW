@@ -180,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-card">
             <div class="login-header">
                 <h1>🔐 Login</h1>
-                <p class="login-subtitle">Arbejdstilladelsessystem</p>
+                <p class="login-subtitle">Arbejdsflow for Interterminals</p>
             </div>
             
             <?php if ($error): ?>
