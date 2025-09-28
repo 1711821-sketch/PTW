@@ -7,18 +7,31 @@ class Database {
     
     private function __construct() {
         try {
-            $host = $_ENV['PGHOST'];
-            $port = $_ENV['PGPORT'];
-            $dbname = $_ENV['PGDATABASE'];
-            $username = $_ENV['PGUSER'];
-            $password = $_ENV['PGPASSWORD'];
-            
-            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
-            $this->connection = new PDO($dsn, $username, $password, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]);
+            // First try individual environment variables
+            if (isset($_ENV['PGHOST'], $_ENV['PGPORT'], $_ENV['PGDATABASE'], $_ENV['PGUSER'], $_ENV['PGPASSWORD'])) {
+                $host = $_ENV['PGHOST'];
+                $port = $_ENV['PGPORT'];
+                $dbname = $_ENV['PGDATABASE'];
+                $username = $_ENV['PGUSER'];
+                $password = $_ENV['PGPASSWORD'];
+                
+                $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+                $this->connection = new PDO($dsn, $username, $password, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]);
+            } 
+            // Fallback to DATABASE_URL if individual vars not available
+            elseif (isset($_ENV['DATABASE_URL'])) {
+                $this->connection = new PDO($_ENV['DATABASE_URL'], null, null, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ]);
+            } else {
+                throw new Exception("No database connection information available");
+            }
         } catch (PDOException $e) {
             throw new Exception("Database connection failed: " . $e->getMessage());
         }
