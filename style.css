@@ -2609,6 +2609,84 @@ p {
     margin: 0;
 }
 
+/* Custom Modal Styles */
+.custom-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  margin: 1rem;
+  text-align: center;
+}
+
+.modal-content p {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-yes {
+  background: var(--success-color);
+  color: white;
+}
+
+.btn-yes:hover {
+  background: #27ae60;
+  transform: translateY(-1px);
+}
+
+.btn-no {
+  background: var(--danger-color);
+  color: white;
+}
+
+.btn-no:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+.btn-ok {
+  background: var(--primary-color);
+  color: white;
+  min-width: 100px;
+}
+
+.btn-ok:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
 /* Responsive adjustments for dashboard time tracking */
 @media (max-width: 768px) {
     .time-stats-cards {

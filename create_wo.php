@@ -702,18 +702,64 @@ document.getElementById('parseBtn').addEventListener('click', async function () 
 // Status confirmation dialog for AKTIV selection
 document.getElementById('status').addEventListener('change', function(e) {
   if (e.target.value === 'active') {
-    // Show confirmation dialog
-    const confirmed = confirm('Jeg har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger så opgaven kan aktiveres');
-    
-    if (!confirmed) {
-      // Reset to previous value (planning by default)
-      e.target.value = 'planning';
-      
-      // Show error message
-      alert('Du kan ikke oprette arbejdstilladelse da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
-    }
+    // Show custom modal instead of browser confirm
+    showStatusConfirmModal(function(confirmed) {
+      if (!confirmed) {
+        // Reset to previous value (planning by default)
+        e.target.value = 'planning';
+        
+        // Show error message in custom modal
+        showErrorModal('Du kan ikke oprette arbejdstilladelse da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
+      }
+    });
   }
 });
+
+// Custom modal functions
+function showStatusConfirmModal(callback) {
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <p>Jeg har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger så opgaven kan aktiveres</p>
+      <div class="modal-buttons">
+        <button class="modal-btn btn-yes">Ja</button>
+        <button class="modal-btn btn-no">Nej</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  modal.querySelector('.btn-yes').onclick = function() {
+    document.body.removeChild(modal);
+    callback(true);
+  };
+  
+  modal.querySelector('.btn-no').onclick = function() {
+    document.body.removeChild(modal);
+    callback(false);
+  };
+}
+
+function showErrorModal(message) {
+  const modal = document.createElement('div');
+  modal.className = 'custom-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <p>${message}</p>
+      <div class="modal-buttons">
+        <button class="modal-btn btn-ok">OK</button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  modal.querySelector('.btn-ok').onclick = function() {
+    document.body.removeChild(modal);
+  };
+}
 </script>
     </div><!-- /.container -->
 </body>
