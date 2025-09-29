@@ -377,22 +377,22 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <div>
                         <strong title="Opgaveansvarlige">OA:</strong> <span><?php echo $oaApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=opgaveansvarlig" 
-                               onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this); return false;">✓</a>
+                            <button type="button" class="button button-success button-sm" 
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this);">✓</button>
                         <?php endif; ?>
                     </div>
                     <div>
                         <strong title="Driften">Drift:</strong> <span><?php echo $driftApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=drift" 
-                               onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this); return false;">✓</a>
+                            <button type="button" class="button button-success button-sm" 
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this);">✓</button>
                         <?php endif; ?>
                     </div>
                     <div>
                         <strong title="Entreprenør">Ent:</strong> <span><?php echo $entApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                            <a class="button button-success button-sm" href="view_wo.php?approve_id=<?php echo urlencode($entry['id']); ?>&role=entreprenor" 
-                               onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this); return false;">✓</a>
+                            <button type="button" class="button button-success button-sm" 
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this);">✓</button>
                         <?php endif; ?>
                     </div>
                 </td>

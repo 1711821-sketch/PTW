@@ -252,6 +252,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <h1><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
+<?php if (isset($error_message)): ?>
+    <div class="alert alert-danger"><?php echo $error_message; ?></div>
+<?php endif; ?>
+
 <!-- Modern form with organized sections -->
 <form method="post" style="background: transparent; padding: 0; box-shadow: none; border: none;">
   
