@@ -29,7 +29,7 @@ try {
     $db = Database::getInstance();
     $user = $db->fetch("SELECT id FROM users WHERE username = ?", [$currentUser]);
     if (!$user) {
-        echo json_encode(['success' => false, 'message' => 'Bruger ikke fundet.']);
+        echo json_encode(['success' => false, 'message' => 'Bruger ikke fundet. Log venligst ud og ind igen.']);
         exit();
     }
     $userId = $user['id'];
