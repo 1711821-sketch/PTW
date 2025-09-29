@@ -496,11 +496,11 @@ try {
                 var status = e.status ? e.status : 'planning';
                 
                 // Check if this work order has SJA
-                var hasSJA = workOrdersWithSJA.includes(String(e.id));
+                var hasSJA = workOrdersWithSJA.includes(e.id);
                 
                 // Debug: Log each marker's SJA status
                 console.log('WO ID:', e.id, 'Type:', typeof e.id, 'Has SJA:', hasSJA, 'Status:', status);
-                console.log('SJA array contains:', workOrdersWithSJA.includes(e.id), '(numeric)', workOrdersWithSJA.includes(String(e.id)), '(string)');
+                console.log('SJA array contains:', workOrdersWithSJA.includes(e.id), '(numeric) - USING THIS ONE');
                 
                 // Choose icon based on status and SJA presence
                 var icon;
