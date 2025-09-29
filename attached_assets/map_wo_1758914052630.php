@@ -66,6 +66,7 @@ if (strtolower($role) === 'entreprenor') {
         .controls { padding: 0.5rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .controls input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .controls label { margin-left: 0.5rem; }
+        .legend { padding: 0.25rem 0.5rem; background: #f8f9fa; border-left: 3px solid #0070C0; font-size: 0.85em; color: #666; }
         a.back { display: inline-block; margin: 1rem; color: #0070C0; text-decoration: none; }
     </style>
 </head>
@@ -75,6 +76,9 @@ if (strtolower($role) === 'entreprenor') {
         <label><input type="checkbox" id="showPlanning" checked> Planlagte</label>
         <label><input type="checkbox" id="showActive" checked> Aktive</label>
         <label><input type="checkbox" id="showCompleted" checked> Afsluttede</label>
+    </div>
+    <div class="legend">
+        <strong>Forklaring:</strong> ● = Arbejdstilladelse har tilknyttet SJA (Safety Job Analysis)
     </div>
     <div id="map"></div>
     <a class="back" href="index.php">Tilbage til forsiden</a>
