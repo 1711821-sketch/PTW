@@ -24,15 +24,14 @@ class SMSNotifier {
             'twilio_token' => $_ENV['TWILIO_AUTH_TOKEN'] ?? '',
             'twilio_phone' => $_ENV['TWILIO_PHONE_NUMBER'] ?? '',
             'notification_recipients' => [
-                // Add phone numbers here - will be configurable
-                // Format: '+4512345678'
+                '+4524664369'
             ],
             'notify_roles' => [
                 'admin',
                 'opgaveansvarlig',
                 'drift'
             ],
-            'message_template' => "Ny arbejdstilladelse oprettet:\nWO: {work_order_no}\nBeskrivelse: {description}\nAnsvarlig: {jobansvarlig}\nStatus: {status}"
+            'message_template' => "besked fra Interterminals workflow Der er oprettet ny Arbejdstilladelse. åbne workfol på http://edinlink.com"
         ];
     }
     
@@ -158,8 +157,6 @@ class SMSNotifier {
         // This is a placeholder for future configuration persistence
         return true;
     }
-}
-
 }
 
 // Convenience function to send notification
