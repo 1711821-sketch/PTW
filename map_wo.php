@@ -372,7 +372,13 @@ try {
     <div class="map-container">
         <!-- Modern control panel -->
         <div class="map-controls">
-            <input type="text" id="search" class="search-box" placeholder="🔍 Søg i beskrivelse, jobansvarlig, entreprenør...">
+            <!-- Search and legend row -->
+            <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+                <input type="text" id="search" class="search-box" placeholder="🔍 Søg i beskrivelse, jobansvarlig, entreprenør..." style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                <div style="padding: 0.5rem 0.75rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">
+                    <strong style="color: var(--text-primary);">Forklaring:</strong> ● = SJA tilknyttet
+                </div>
+            </div>
             
             <div class="filter-controls">
                 <label class="filter-option" for="showPlanning">
@@ -387,11 +393,6 @@ try {
                     <input type="checkbox" id="showCompleted" checked>
                     <span class="status-indicator completed">✅ Afsluttede</span>
                 </label>
-            </div>
-            
-            <!-- Legend for SJA indicators -->
-            <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--text-secondary);">
-                <strong style="color: var(--text-primary);">Forklaring:</strong> ● = Arbejdstilladelse har tilknyttet SJA (Safety Job Analysis)
             </div>
         </div>
         
