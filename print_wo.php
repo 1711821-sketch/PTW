@@ -197,6 +197,52 @@ if ($statusVal === 'planning') {
     <div class="action-buttons" style="margin-top: 2rem;">
         <a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>" class="action-btn btn-primary">Opret ny SJA til denne WO</a>
     </div>
+
+    <!-- Section for displaying time consumption for this work order -->
+    <h2>Timeforbrug</h2>
+    <?php
+        // Load time entries from database that reference this work order
+        $time_consumption = [];
+        try {
+            // Get time entries grouped by user with total hours
+            $time_consumption = $db->fetchAll("
+                SELECT 
+                    u.username as brugernavn,
+                    SUM(te.hours) as total_timer
+                FROM time_entries te
+                JOIN users u ON te.user_id = u.id
+                WHERE te.work_order_id = ?
+                GROUP BY u.username, u.id
+                ORDER BY u.username
+            ", [$entry['id']]);
+        } catch (Exception $e) {
+            // Time entries table might not exist yet or other error
+            error_log("Error loading time entries: " . $e->getMessage());
+        }
+    ?>
+    <?php if (!empty($time_consumption)): ?>
+        <table>
+            <tr><th>Brugernavn</th><th>Samlet timeforbrug</th></tr>
+            <?php 
+            $total_all_hours = 0;
+            foreach ($time_consumption as $consumption): 
+                $total_all_hours += floatval($consumption['total_timer'] ?? 0);
+            ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($consumption['brugernavn'] ?? ''); ?></td>
+                    <td><?php echo number_format(floatval($consumption['total_timer'] ?? 0), 2, ',', '.') . ' timer'; ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <?php if (count($time_consumption) > 1): ?>
+                <tr style="border-top: 2px solid #333; font-weight: bold;">
+                    <td><strong>Total</strong></td>
+                    <td><strong><?php echo number_format($total_all_hours, 2, ',', '.') . ' timer'; ?></strong></td>
+                </tr>
+            <?php endif; ?>
+        </table>
+    <?php else: ?>
+        <p>Ingen timer registreret for denne arbejdstilladelse endnu.</p>
+    <?php endif; ?>
     </div><!-- /.container -->
 </body>
 </html>
