@@ -69,6 +69,20 @@ body {
     margin-bottom: 2rem;
 }
 
+/* Header row for welcome message and inline safety sign */
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.header-row h1 {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
 /* Digital Safety Sign */
 .safety-sign {
     background: #000000;
@@ -82,6 +96,26 @@ body {
                 inset 0 0 20px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
+}
+
+/* Inline safety sign variant - smaller and compact */
+.safety-sign-inline {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-width: 4px;
+    border-radius: 8px;
+    flex: 0 0 auto;
+    min-width: 200px;
+}
+
+.safety-sign-inline .safety-sign-number {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.safety-sign-inline .safety-sign-text {
+    font-size: 0.75rem;
+    line-height: 1.1;
 }
 
 .safety-sign::before {
