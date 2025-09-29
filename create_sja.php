@@ -773,230 +773,480 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Removed Leaflet map dependencies -->
 </head>
 <body>
-    <h1><?php echo $edit_id ? 'Rediger Sikker Job Analyse' : 'Opret Sikker Job Analyse (SJA)'; ?></h1>
-    <?php if ($message): ?><p class="success"><?php echo $message; ?></p><?php endif; ?>
-    <form method="post" action="">
-        <!-- Hidden field to preserve ID when editing -->
-        <input type="hidden" name="entry_id" value="<?php echo htmlspecialchars($current['id']); ?>">
-        <!-- Hidden field to carry WO ID so that the SJA can be linked to a work order.  If no wo_id is supplied in the URL, this will be empty. -->
-        <input type="hidden" name="wo_id" value="<?php echo htmlspecialchars($_GET['wo_id'] ?? ''); ?>">
-        <div class="section">
-            <h2>Basisinformation</h2>
-            <table>
-                <tr>
-                    <td>Opgave</td>
-                    <td><input type="text" name="basic[opgave]" value="<?php echo htmlspecialchars($current['basic']['opgave']); ?>" required></td>
-                </tr>
-                <tr>
-                    <td>WO/PO</td>
-                    <td><input type="text" name="basic[wo_po]" value="<?php echo htmlspecialchars($current['basic']['wo_po']); ?>"></td>
-                </tr>
-                <tr>
-                    <td>Dato udførelse</td>
-                    <td><input type="date" name="basic[dato_udfoer]" value="<?php echo htmlspecialchars($current['basic']['dato_udfoer']); ?>"></td>
-                </tr>
-                <tr>
-                    <td>Planlagt af</td>
-                    <td><input type="text" name="basic[planlagt_af]" value="<?php echo htmlspecialchars($current['basic']['planlagt_af']); ?>"></td>
-                </tr>
-                <tr>
-                    <td>Udføres af</td>
-                    <td><input type="text" name="basic[udfoeres_af]" value="<?php echo htmlspecialchars($current['basic']['udfoeres_af']); ?>"></td>
-                </tr>
-                <tr>
-                    <td>Dato planlagt</td>
-                    <td><input type="date" name="basic[dato_planlagt]" value="<?php echo htmlspecialchars($current['basic']['dato_planlagt']); ?>"></td>
-                </tr>
-                <tr>
-                    <td>Koordinator</td>
-                    <td><input type="text" name="basic[koordinator]" value="<?php echo htmlspecialchars($current['basic']['koordinator']); ?>"></td>
-                </tr>
-            </table>
+    <div class="container">
+        <div class="header">
+            <h1><?php echo $edit_id ? 'Rediger Sikker Job Analyse' : 'Opret Sikker Job Analyse (SJA)'; ?></h1>
         </div>
 
-        <!-- Location selection section removed.  The map has been removed per user request. -->
+        <div class="content">
+            <?php if ($message): ?><div class="success"><?php echo $message; ?></div><?php endif; ?>
+            
+            <!-- Progress Navigation -->
+            <div class="progress-nav">
+                <div class="progress-steps">
+                    <div class="progress-step active" data-section="basic">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Basis</span>
+                    </div>
+                    <div class="progress-step" data-section="risici">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Risici</span>
+                    </div>
+                    <div class="progress-step" data-section="tilladelser">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Tilladelser</span>
+                    </div>
+                    <div class="progress-step" data-section="vaernemidler">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Værnemidler</span>
+                    </div>
+                    <div class="progress-step" data-section="udstyr">
+                        <span class="step-number">5</span>
+                        <span class="step-text">Udstyr</span>
+                    </div>
+                    <div class="progress-step" data-section="taenkt">
+                        <span class="step-number">6</span>
+                        <span class="step-text">Overvejelser</span>
+                    </div>
+                    <div class="progress-step" data-section="cancer">
+                        <span class="step-number">7</span>
+                        <span class="step-text">Stoffer</span>
+                    </div>
+                    <div class="progress-step" data-section="deltagere">
+                        <span class="step-number">8</span>
+                        <span class="step-text">Deltagere</span>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Status selection section -->
-        <div class="section">
-            <h2>Status</h2>
-            <select name="status" required>
-                <option value="active" <?php echo (($current['status'] ?? 'active') === 'active') ? 'selected' : ''; ?>>Aktiv</option>
-                <option value="completed" <?php echo (($current['status'] ?? 'active') === 'completed') ? 'selected' : ''; ?>>Afsluttet</option>
-            </select>
-        </div>
+            <form method="post" action="">
+                <!-- Hidden fields -->
+                <input type="hidden" name="entry_id" value="<?php echo htmlspecialchars($current['id']); ?>">
+                <input type="hidden" name="wo_id" value="<?php echo htmlspecialchars($_GET['wo_id'] ?? ''); ?>">
+                <!-- Basisinformation Section -->
+                <div class="section" id="basic-section">
+                    <div class="section-header" onclick="toggleSection('basic-section')">
+                        <h2 class="section-title">Basisinformation</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required" for="opgave">Opgave</label>
+                                <input type="text" id="opgave" name="basic[opgave]" value="<?php echo htmlspecialchars($current['basic']['opgave']); ?>" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="wo_po">WO/PO</label>
+                                <input type="text" id="wo_po" name="basic[wo_po]" value="<?php echo htmlspecialchars($current['basic']['wo_po']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="dato_udfoer">Dato udførelse</label>
+                                <input type="date" id="dato_udfoer" name="basic[dato_udfoer]" value="<?php echo htmlspecialchars($current['basic']['dato_udfoer']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="planlagt_af">Planlagt af</label>
+                                <input type="text" id="planlagt_af" name="basic[planlagt_af]" value="<?php echo htmlspecialchars($current['basic']['planlagt_af']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="udfoeres_af">Udføres af</label>
+                                <input type="text" id="udfoeres_af" name="basic[udfoeres_af]" value="<?php echo htmlspecialchars($current['basic']['udfoeres_af']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="dato_planlagt">Dato planlagt</label>
+                                <input type="date" id="dato_planlagt" name="basic[dato_planlagt]" value="<?php echo htmlspecialchars($current['basic']['dato_planlagt']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="koordinator">Koordinator</label>
+                                <input type="text" id="koordinator" name="basic[koordinator]" value="<?php echo htmlspecialchars($current['basic']['koordinator']); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" for="status">Status</label>
+                                <select id="status" name="status" required>
+                                    <option value="active" <?php echo (($current['status'] ?? 'active') === 'active') ? 'selected' : ''; ?>>Aktiv</option>
+                                    <option value="completed" <?php echo (($current['status'] ?? 'active') === 'completed') ? 'selected' : ''; ?>>Afsluttet</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section">
-            <h2>Risici</h2>
-            <table>
-                <tr>
-                    <th>Punkt</th>
-                    <th>Status</th>
-                    <th>Bemærkning</th>
-                </tr>
-                <?php foreach ($risk_items as $key => $label):
-                    $sel = $current['risici'][$key]['status'] ?? '';
-                    $remark = $current['risici'][$key]['remark'] ?? '';
-                ?>
-                <tr>
-                    <td><?php echo $label; ?></td>
-                    <td>
-                        <select name="risici[<?php echo $key; ?>][status]">
-                            <?php foreach ($status_options as $val => $opt_label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                <!-- Risici Section -->
+                <div class="section" id="risici-section">
+                    <div class="section-header" onclick="toggleSection('risici-section')">
+                        <h2 class="section-title">Risici</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="risk-grid">
+                            <?php foreach ($risk_items as $key => $label):
+                                $sel = $current['risici'][$key]['status'] ?? '';
+                                $remark = $current['risici'][$key]['remark'] ?? '';
+                            ?>
+                            <div class="risk-item">
+                                <div class="risk-header"><?php echo $label; ?></div>
+                                <div class="risk-controls">
+                                    <select name="risici[<?php echo $key; ?>][status]">
+                                        <?php foreach ($status_options as $val => $opt_label): ?>
+                                            <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="risici[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>" placeholder="Bemærkning...">
+                                </div>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="text" name="risici[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>"></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section">
-            <h2>Tilladelser</h2>
-            <table>
-                <tr><th>Punkt</th><th>Status</th><th>Bemærkning</th></tr>
-                <?php foreach ($permission_items as $key => $label):
-                    $sel = $current['tilladelser'][$key]['status'] ?? '';
-                    $remark = $current['tilladelser'][$key]['remark'] ?? '';
-                ?>
-                <tr>
-                    <td><?php echo $label; ?></td>
-                    <td>
-                        <select name="tilladelser[<?php echo $key; ?>][status]">
-                            <?php foreach ($status_options as $val => $opt_label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                <!-- Tilladelser Section -->
+                <div class="section" id="tilladelser-section">
+                    <div class="section-header" onclick="toggleSection('tilladelser-section')">
+                        <h2 class="section-title">Tilladelser</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="risk-grid">
+                            <?php foreach ($permission_items as $key => $label):
+                                $sel = $current['tilladelser'][$key]['status'] ?? '';
+                                $remark = $current['tilladelser'][$key]['remark'] ?? '';
+                            ?>
+                            <div class="risk-item">
+                                <div class="risk-header"><?php echo $label; ?></div>
+                                <div class="risk-controls">
+                                    <select name="tilladelser[<?php echo $key; ?>][status]">
+                                        <?php foreach ($status_options as $val => $opt_label): ?>
+                                            <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="tilladelser[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>" placeholder="Bemærkning...">
+                                </div>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="text" name="tilladelser[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>"></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section">
-            <h2>Personlige værnemidler</h2>
-            <table>
-                <tr><th>Punkt</th><th>Status</th><th>Bemærkning</th></tr>
-                <?php foreach ($ppe_items as $key => $label):
-                    $sel = $current['vaernemidler'][$key]['status'] ?? '';
-                    $remark = $current['vaernemidler'][$key]['remark'] ?? '';
-                ?>
-                <tr>
-                    <td><?php echo $label; ?></td>
-                    <td>
-                        <select name="vaernemidler[<?php echo $key; ?>][status]">
-                            <?php foreach ($status_options as $val => $opt_label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                <!-- Værnemidler Section -->
+                <div class="section" id="vaernemidler-section">
+                    <div class="section-header" onclick="toggleSection('vaernemidler-section')">
+                        <h2 class="section-title">Personlige værnemidler</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="risk-grid">
+                            <?php foreach ($ppe_items as $key => $label):
+                                $sel = $current['vaernemidler'][$key]['status'] ?? '';
+                                $remark = $current['vaernemidler'][$key]['remark'] ?? '';
+                            ?>
+                            <div class="risk-item">
+                                <div class="risk-header"><?php echo $label; ?></div>
+                                <div class="risk-controls">
+                                    <select name="vaernemidler[<?php echo $key; ?>][status]">
+                                        <?php foreach ($status_options as $val => $opt_label): ?>
+                                            <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="vaernemidler[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>" placeholder="Bemærkning...">
+                                </div>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="text" name="vaernemidler[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>"></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section">
-            <h2>Sikkerhedsudstyr</h2>
-            <table>
-                <tr><th>Punkt</th><th>Status</th><th>Bemærkning</th></tr>
-                <?php foreach ($equipment_items as $key => $label):
-                    $sel = $current['udstyr'][$key]['status'] ?? '';
-                    $remark = $current['udstyr'][$key]['remark'] ?? '';
-                ?>
-                <tr>
-                    <td><?php echo $label; ?></td>
-                    <td>
-                        <select name="udstyr[<?php echo $key; ?>][status]">
-                            <?php foreach ($status_options as $val => $opt_label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                <!-- Udstyr Section -->
+                <div class="section" id="udstyr-section">
+                    <div class="section-header" onclick="toggleSection('udstyr-section')">
+                        <h2 class="section-title">Sikkerhedsudstyr</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="risk-grid">
+                            <?php foreach ($equipment_items as $key => $label):
+                                $sel = $current['udstyr'][$key]['status'] ?? '';
+                                $remark = $current['udstyr'][$key]['remark'] ?? '';
+                            ?>
+                            <div class="risk-item">
+                                <div class="risk-header"><?php echo $label; ?></div>
+                                <div class="risk-controls">
+                                    <select name="udstyr[<?php echo $key; ?>][status]">
+                                        <?php foreach ($status_options as $val => $opt_label): ?>
+                                            <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="udstyr[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>" placeholder="Bemærkning...">
+                                </div>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="text" name="udstyr[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>"></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="section">
-            <h2>Har du tænkt på…</h2>
-            <table>
-                <tr><th>Punkt</th><th>Status</th><th>Bemærkning</th></tr>
-                <?php foreach ($consider_items as $key => $label):
-                    $sel = $current['taenkt'][$key]['status'] ?? '';
-                    $remark = $current['taenkt'][$key]['remark'] ?? '';
-                ?>
-                <tr>
-                    <td><?php echo $label; ?></td>
-                    <td>
-                        <select name="taenkt[<?php echo $key; ?>][status]">
-                            <?php foreach ($status_options as $val => $opt_label): ?>
-                                <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                <!-- Taenkt Section -->
+                <div class="section" id="taenkt-section">
+                    <div class="section-header" onclick="toggleSection('taenkt-section')">
+                        <h2 class="section-title">Har du tænkt på…</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="risk-grid">
+                            <?php foreach ($consider_items as $key => $label):
+                                $sel = $current['taenkt'][$key]['status'] ?? '';
+                                $remark = $current['taenkt'][$key]['remark'] ?? '';
+                            ?>
+                            <div class="risk-item">
+                                <div class="risk-header"><?php echo $label; ?></div>
+                                <div class="risk-controls">
+                                    <select name="taenkt[<?php echo $key; ?>][status]">
+                                        <?php foreach ($status_options as $val => $opt_label): ?>
+                                            <option value="<?php echo $val; ?>" <?php echo ($sel === $val ? 'selected' : ''); ?>><?php echo $opt_label; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <input type="text" name="taenkt[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>" placeholder="Bemærkning...">
+                                </div>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
-                    </td>
-                    <td><input type="text" name="taenkt[<?php echo $key; ?>][remark]" value="<?php echo htmlspecialchars($remark); ?>"></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cancer Substances Section -->
+                <div class="section" id="cancer-section">
+                    <div class="section-header" onclick="toggleSection('cancer-section')">
+                        <h2 class="section-title">Kræftfremkaldende stoffer</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <p style="margin-bottom: var(--spacing-lg); color: var(--text-secondary);">Angiv navn, CAS nr., grænseværdi, sikkerhedsdatablad og foranstaltninger for op til 5 stoffer.</p>
+                        <div class="data-table cancer-table">
+                            <?php
+                            $rows = max(3, count($current['cancer']));
+                            for ($i = 0; $i < $rows; $i++):
+                                $c = $current['cancer'][$i] ?? ['name'=>'','cas'=>'','limit'=>'','datasheet'=>'','measures'=>''];
+                            ?>
+                            <div class="table-row">
+                                <div class="row-number">Stof <?php echo $i+1; ?></div>
+                                <input type="text" name="cancer[<?php echo $i; ?>][name]" value="<?php echo htmlspecialchars($c['name']); ?>" placeholder="Navn">
+                                <input type="text" name="cancer[<?php echo $i; ?>][cas]" value="<?php echo htmlspecialchars($c['cas']); ?>" placeholder="CAS nr.">
+                                <input type="text" name="cancer[<?php echo $i; ?>][limit]" value="<?php echo htmlspecialchars($c['limit']); ?>" placeholder="Grænseværdi">
+                                <input type="text" name="cancer[<?php echo $i; ?>][datasheet]" value="<?php echo htmlspecialchars($c['datasheet']); ?>" placeholder="Sikkerhedsdatablad">
+                                <input type="text" name="cancer[<?php echo $i; ?>][measures]" value="<?php echo htmlspecialchars($c['measures']); ?>" placeholder="Foranstaltninger">
+                            </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remarks Section -->
+                <div class="section" id="remarks-section">
+                    <div class="section-header" onclick="toggleSection('remarks-section')">
+                        <h2 class="section-title">Øvrige bemærkninger</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <label class="form-label" for="bem">Yderligere bemærkninger</label>
+                            <textarea id="bem" name="bem" placeholder="Beskriv eventuelle yderligere bemærkninger eller særlige forhold..."><?php echo htmlspecialchars($current['bem']); ?></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participants Section -->
+                <div class="section" id="deltagere-section">
+                    <div class="section-header" onclick="toggleSection('deltagere-section')">
+                        <h2 class="section-title">Deltagere (navn & telefon)</h2>
+                        <span class="section-toggle">▼</span>
+                    </div>
+                    <div class="section-content">
+                        <p style="margin-bottom: var(--spacing-lg); color: var(--text-secondary);">Du kan angive op til 10 deltagere.</p>
+                        <div class="data-table">
+                            <?php
+                            for ($i = 0; $i < 10; $i++):
+                                $d = $current['deltagere'][$i] ?? ['navn'=>'','telefon'=>''];
+                            ?>
+                            <div class="table-row">
+                                <div class="row-number"><?php echo $i+1; ?></div>
+                                <input type="text" name="deltagere[<?php echo $i; ?>][navn]" value="<?php echo htmlspecialchars($d['navn']); ?>" placeholder="Navn">
+                                <input type="text" name="deltagere[<?php echo $i; ?>][telefon]" value="<?php echo htmlspecialchars($d['telefon']); ?>" placeholder="Telefon">
+                            </div>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="index.php" class="btn btn-secondary">← Tilbage til forsiden</a>
+                    <button type="submit" name="save_sja" class="btn btn-primary">
+                        <?php echo $edit_id ? 'Gem ændringer' : 'Gem SJA'; ?>
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div class="section">
-            <h2>Kræftfremkaldende stoffer</h2>
-            <p>Angiv navn, CAS nr., grænseværdi, sikkerhedsdatablad og foranstaltninger for op til 5 stoffer.</p>
-            <table>
-                <tr><th>#</th><th>Navn</th><th>CAS nr.</th><th>Grænseværdi</th><th>Sikkerhedsdatablad</th><th>Foranstaltninger</th></tr>
-                <?php
-                $rows = max(3, count($current['cancer']));
-                for ($i = 0; $i < $rows; $i++):
-                    $c = $current['cancer'][$i] ?? ['name'=>'','cas'=>'','limit'=>'','datasheet'=>'','measures'=>''];
-                ?>
-                <tr>
-                    <td><?php echo $i+1; ?></td>
-                    <td><input type="text" name="cancer[<?php echo $i; ?>][name]" value="<?php echo htmlspecialchars($c['name']); ?>"></td>
-                    <td><input type="text" name="cancer[<?php echo $i; ?>][cas]" value="<?php echo htmlspecialchars($c['cas']); ?>"></td>
-                    <td><input type="text" name="cancer[<?php echo $i; ?>][limit]" value="<?php echo htmlspecialchars($c['limit']); ?>"></td>
-                    <td><input type="text" name="cancer[<?php echo $i; ?>][datasheet]" value="<?php echo htmlspecialchars($c['datasheet']); ?>"></td>
-                    <td><input type="text" name="cancer[<?php echo $i; ?>][measures]" value="<?php echo htmlspecialchars($c['measures']); ?>"></td>
-                </tr>
-                <?php endfor; ?>
-            </table>
-        </div>
+    <script>
+        // Section toggle functionality
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('collapsed');
+            }
+        }
 
-        <div class="section">
-            <h2>Øvrige bemærkninger</h2>
-            <textarea name="bem"><?php echo htmlspecialchars($current['bem']); ?></textarea>
-        </div>
+        // Progress navigation functionality  
+        function scrollToSection(sectionName) {
+            const sectionElement = document.getElementById(sectionName + '-section');
+            if (sectionElement) {
+                sectionElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',
+                    inline: 'nearest' 
+                });
+                
+                // Update active progress step
+                document.querySelectorAll('.progress-step').forEach(step => {
+                    step.classList.remove('active');
+                });
+                
+                const activeStep = document.querySelector(`[data-section="${sectionName}"]`);
+                if (activeStep) {
+                    activeStep.classList.add('active');
+                }
+            }
+        }
 
-        <div class="section">
-            <h2>Deltagere (navn & telefon)</h2>
-            <p>Du kan angive op til 10 deltagere.</p>
-            <table>
-                <tr><th>#</th><th>Navn</th><th>Telefon</th></tr>
-                <?php
-                for ($i = 0; $i < 10; $i++):
-                    $d = $current['deltagere'][$i] ?? ['navn'=>'','telefon'=>''];
-                ?>
-                <tr>
-                    <td><?php echo $i+1; ?></td>
-                    <td><input type="text" name="deltagere[<?php echo $i; ?>][navn]" value="<?php echo htmlspecialchars($d['navn']); ?>"></td>
-                    <td><input type="text" name="deltagere[<?php echo $i; ?>][telefon]" value="<?php echo htmlspecialchars($d['telefon']); ?>"></td>
-                </tr>
-                <?php endfor; ?>
-            </table>
-        </div>
+        // Initialize page functionality when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for progress steps
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.addEventListener('click', function() {
+                    const sectionName = this.getAttribute('data-section');
+                    scrollToSection(sectionName);
+                });
+            });
 
-        <button type="submit" name="save_sja" class="button button-success button-lg">
-            <?php echo $edit_id ? '💾 Gem ændringer' : '💾 Gem SJA'; ?>
-        </button>
-    </form>
+            // Form validation enhancement
+            const form = document.querySelector('form');
+            if (form) {
+                // Add HTML5 validation feedback
+                form.addEventListener('submit', function(e) {
+                    // Check required fields
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let allValid = true;
 
-    <p><a href="view_sja.php">Se eksisterende SJA'er</a></p>
-    <p><a href="index.php">Tilbage til forsiden</a></p>
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            allValid = false;
+                            field.style.borderColor = 'var(--danger-color)';
+                            
+                            // Find and expand the section containing this field
+                            const section = field.closest('.section');
+                            if (section && section.classList.contains('collapsed')) {
+                                section.classList.remove('collapsed');
+                            }
+                        } else {
+                            field.style.borderColor = 'var(--border)';
+                        }
+                    });
 
-    <!-- Map initialization script removed -->
+                    if (!allValid) {
+                        e.preventDefault();
+                        alert('Udfyld venligst alle obligatoriske felter (markeret med *)');
+                        
+                        // Scroll to first invalid field
+                        const firstInvalid = form.querySelector('[required][style*="var(--danger-color)"]');
+                        if (firstInvalid) {
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstInvalid.focus();
+                        }
+                    }
+                });
+
+                // Real-time validation feedback
+                const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', function() {
+                        if (this.value.trim()) {
+                            this.style.borderColor = 'var(--success-color)';
+                        } else {
+                            this.style.borderColor = 'var(--danger-color)';
+                        }
+                    });
+                    
+                    input.addEventListener('input', function() {
+                        if (this.value.trim()) {
+                            this.style.borderColor = 'var(--border)';
+                        }
+                    });
+                });
+            }
+
+            // Intersection Observer to update progress navigation
+            const sections = document.querySelectorAll('.section');
+            const progressSteps = document.querySelectorAll('.progress-step');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const sectionId = entry.target.id;
+                        const sectionName = sectionId.replace('-section', '');
+                        
+                        // Update active step
+                        progressSteps.forEach(step => step.classList.remove('active'));
+                        const activeStep = document.querySelector(`[data-section="${sectionName}"]`);
+                        if (activeStep) {
+                            activeStep.classList.add('active');
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.3,
+                rootMargin: '-80px 0px -50% 0px'
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Auto-save functionality (optional enhancement)
+            let autoSaveTimer;
+            const autoSaveDelay = 30000; // 30 seconds
+
+            function triggerAutoSave() {
+                clearTimeout(autoSaveTimer);
+                autoSaveTimer = setTimeout(() => {
+                    // Could implement auto-save to localStorage or server here
+                    console.log('Auto-save triggered (placeholder)');
+                }, autoSaveDelay);
+            }
+
+            // Listen for form changes to trigger auto-save
+            form.addEventListener('input', triggerAutoSave);
+            form.addEventListener('change', triggerAutoSave);
+
+            // Initialize sections as expanded by default
+            // Uncomment if you want some sections collapsed initially
+            // const sectionsToCollapse = ['cancer-section', 'deltagere-section'];
+            // sectionsToCollapse.forEach(sectionId => {
+            //     const section = document.getElementById(sectionId);
+            //     if (section) section.classList.add('collapsed');
+            // });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Escape key to close any open sections
+            if (e.key === 'Escape') {
+                const expandedSections = document.querySelectorAll('.section:not(.collapsed)');
+                expandedSections.forEach(section => {
+                    // Don't collapse the basic section
+                    if (section.id !== 'basic-section') {
+                        section.classList.add('collapsed');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
