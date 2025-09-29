@@ -1017,8 +1017,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 });
             });
             
-            // Load saved view preference
+            // Load saved view preference and ensure proper initialization
             const savedView = localStorage.getItem('workPermitViewType') || 'list';
+            // Clear any existing styles that might conflict
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('cardView').style.display = 'none';
+            // Then set the correct view
             switchView(savedView);
         });
         </script>
