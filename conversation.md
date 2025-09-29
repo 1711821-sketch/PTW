@@ -1,1 +1,0 @@
-User clarified that after an entrepreneur approves a WO, all users (including admin, drift, ansvarlig) only see that entrepreneur's WO. Fix involves cleaning session variables and role-based filtering.
