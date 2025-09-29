@@ -388,6 +388,11 @@ try {
                     <span class="status-indicator completed">✅ Afsluttede</span>
                 </label>
             </div>
+            
+            <!-- Legend for SJA indicators -->
+            <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--text-secondary);">
+                <strong style="color: var(--text-primary);">Forklaring:</strong> ● = Arbejdstilladelse har tilknyttet SJA (Safety Job Analysis)
+            </div>
         </div>
         
         <!-- Map container -->
