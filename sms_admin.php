@@ -23,12 +23,12 @@ if ($_POST) {
     if (isset($_POST['add_recipient'])) {
         $phoneNumber = trim($_POST['phone_number']);
         if (!empty($phoneNumber)) {
-            if (preg_match('/^\+\d{8,15}$/', $phoneNumber)) {
+            if (preg_match('/^\+45\d{8}$/', $phoneNumber)) {
                 $smsNotifier->addRecipient($phoneNumber);
                 $message = "Modtager tilføjet: $phoneNumber";
                 $messageType = 'success';
             } else {
-                $message = "Ugyldigt telefonnummer. Brug format: +4512345678";
+                $message = "Ugyldigt telefonnummer. Kun danske numre accepteres. Brug format: +45 efterfulgt af 8 cifre (eks: +4512345678)";
                 $messageType = 'error';
             }
         }
@@ -177,11 +177,11 @@ $recipients = $smsNotifier->getRecipients();
             <h2>Tilføj SMS Modtager</h2>
             <form method="post">
                 <div class="form-group">
-                    <label for="phone_number">Telefonnummer (inkl. landekode):</label>
+                    <label for="phone_number">Dansk telefonnummer:</label>
                     <input type="text" id="phone_number" name="phone_number" 
-                           placeholder="+4512345678" required
-                           pattern="^\+\d{8,15}$"
-                           title="Telefonnummer skal starte med + efterfulgt af 8-15 cifre">
+                           placeholder="+4524664369" required
+                           pattern="^\+45\d{8}$"
+                           title="Kun danske telefonnumre accepteres. Format: +45 efterfulgt af 8 cifre">
                 </div>
                 <button type="submit" name="add_recipient" class="button-lg">Tilføj Modtager</button>
             </form>
@@ -217,8 +217,8 @@ $recipients = $smsNotifier->getRecipients();
                 <div class="form-group">
                     <label for="test_phone_number">Test telefonnummer:</label>
                     <input type="text" id="test_phone_number" name="test_phone_number" 
-                           placeholder="+4512345678" required
-                           pattern="^\+\d{8,15}$">
+                           placeholder="+4524664369" required
+                           pattern="^\+45\d{8}$">
                 </div>
                 <button type="submit" name="test_sms" class="button-lg">Send Test SMS</button>
             </form>
