@@ -145,13 +145,17 @@ try {
         }
         
         div.custom-marker-black::before {
-            content: '●' !important;
+            content: 'SJA' !important;
             position: absolute !important;
-            top: 2px !important;
-            right: 2px !important;
-            font-size: 12px !important;
-            color: #000 !important;
-            text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
+            top: -10px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            font-size: 14px !important;
+            color: #ff0000 !important;
+            background: #ffff00 !important;
+            padding: 2px 4px !important;
+            border-radius: 3px !important;
+            font-weight: bold !important;
             z-index: 1000 !important;
             display: block !important;
         }
@@ -407,6 +411,11 @@ try {
     
     // List of work order IDs that have associated SJAs
     var workOrdersWithSJA = <?php echo json_encode($workOrdersWithSJA); ?>;
+    
+    // Debug: Log SJA data to console
+    console.log('=== SJA DEBUG INFO ===');
+    console.log('workOrdersWithSJA:', workOrdersWithSJA);
+    console.log('Total work orders with SJAs:', workOrdersWithSJA.length);
 
     // Create the map centred on Stigsnæs Gulfhavn Olie Terminal.  Adjust the
     // zoom level to show enough detail.
@@ -489,14 +498,21 @@ try {
                 // Check if this work order has SJA
                 var hasSJA = workOrdersWithSJA.includes(String(e.id));
                 
+                // Debug: Log each marker's SJA status
+                console.log('WO ID:', e.id, 'Type:', typeof e.id, 'Has SJA:', hasSJA, 'Status:', status);
+                console.log('SJA array contains:', workOrdersWithSJA.includes(e.id), '(numeric)', workOrdersWithSJA.includes(String(e.id)), '(string)');
+                
                 // Choose icon based on status and SJA presence
                 var icon;
                 if (status === 'planning') {
                     icon = hasSJA ? blueIconBlack : blueIcon;
+                    console.log('Planning WO', e.id, '- Using icon:', hasSJA ? 'blueIconBlack (SJA)' : 'blueIcon (no SJA)');
                 } else if (status === 'active') {
                     icon = hasSJA ? greenIconBlack : greenIcon;
+                    console.log('Active WO', e.id, '- Using icon:', hasSJA ? 'greenIconBlack (SJA)' : 'greenIcon (no SJA)');
                 } else {
                     icon = hasSJA ? grayIconBlack : grayIcon;
+                    console.log('Completed WO', e.id, '- Using icon:', hasSJA ? 'grayIconBlack (SJA)' : 'grayIcon (no SJA)');
                 }
                 
                 
