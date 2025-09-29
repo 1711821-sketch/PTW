@@ -135,38 +135,37 @@ try {
         }
 
         /* Custom marker styles for SJA indicators with black circles */
-        .custom-marker-black {
-            width: 25px;
-            height: 41px;
-            position: relative;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+        div.custom-marker-black {
+            width: 25px !important;
+            height: 41px !important;
+            position: relative !important;
+            background-size: 25px 41px !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
         }
         
-        .custom-marker-black::after {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #000;
-            border-radius: 50%;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
+        div.custom-marker-black::before {
+            content: '●' !important;
+            position: absolute !important;
+            top: 2px !important;
+            right: 2px !important;
+            font-size: 12px !important;
+            color: #000 !important;
+            text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
+            z-index: 1000 !important;
+            display: block !important;
         }
 
-        .marker-green-black {
-            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png');
+        div.marker-green-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png') !important;
         }
 
-        .marker-blue-black {
-            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png');
+        div.marker-blue-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png') !important;
         }
 
-        .marker-gray-black {
-            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png');
+        div.marker-gray-black {
+            background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png') !important;
         }
         
         .status-indicator {
