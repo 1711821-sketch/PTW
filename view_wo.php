@@ -204,85 +204,8 @@ $data_file = __DIR__ . '/wo_data.json';
 $today = date('d-m-Y');
 $now = date('d-m-Y H:i');
 
-// Handle approval actions: if an approval request is present and the
-// current user has permission to approve for that role, update the
-// corresponding arbejdstilladelse entry. Approvals are stored in the entry's 'approvals'
-// associative array keyed by role with the current date as the value. Only
-// administrators or users whose role matches the approval role may
-// approve.
-if (isset($_GET['approve_id']) && isset($_GET['role'])) {
-    $approveId   = $_GET['approve_id'];
-    $approveRole = $_GET['role'];
-    $sessionRole = $_SESSION['role'] ?? '';
-    // Normalise role names to lowercase for comparison
-    $approveRoleLc = strtolower($approveRole);
-    $sessionRoleLc = strtolower($sessionRole);
-    if ($sessionRoleLc === 'admin' || $sessionRoleLc === $approveRoleLc) {
-        try {
-            // SECURITY FIX: Use database with proper access control for approvals
-            $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$approveId]);
-            
-            if (!$workOrder) {
-                error_log("Approval attempt failed - Work order not found - User: $currentUser, WO ID: $approveId");
-                header('Location: view_wo.php?error=not_found');
-                exit();
-            }
-            
-            // CRITICAL: Check if entrepreneur is trying to approve another firm's work order
-            if ($sessionRoleLc === 'entreprenor') {
-                $userFirma = $_SESSION['entreprenor_firma'] ?? '';
-                if ($workOrder['entreprenor_firma'] !== $userFirma) {
-                    error_log("SECURITY VIOLATION: Entrepreneur attempted to approve another firm's work order - User: $currentUser, User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma'] . ", WO ID: $approveId");
-                    header('Location: view_wo.php?error=unauthorized');
-                    exit();
-                }
-            }
-            
-            // Parse existing approvals and approval history
-            $approvals = json_decode($workOrder['approvals'] ?? '{}', true) ?? [];
-            $approvalHistory = json_decode($workOrder['approval_history'] ?? '[]', true) ?? [];
-            
-            // Add new approval
-            $approvals[$approveRoleLc] = $today;
-            $historyEntry = [
-                'timestamp' => $now,
-                'user' => $_SESSION['user'] ?? $sessionRole,
-                'role' => $approveRoleLc
-            ];
-            
-            // For entrepreneurs, add company name to approval history
-            if ($sessionRoleLc === 'entreprenor') {
-                $historyEntry['company'] = $_SESSION['entreprenor_firma'] ?? '';
-            }
-            
-            $approvalHistory[] = $historyEntry;
-            
-            // Update database
-            $updated = $db->execute("
-                UPDATE work_orders 
-                SET approvals = ?, approval_history = ?, updated_at = NOW()
-                WHERE id = ?
-            ", [
-                json_encode($approvals),
-                json_encode($approvalHistory),
-                $approveId
-            ]);
-            
-            if ($updated) {
-                error_log("Approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
-            } else {
-                error_log("Approval failed - Database update failed - User: $currentUser, WO ID: $approveId");
-            }
-            
-        } catch (Exception $e) {
-            error_log("Approval error - User: $currentUser, WO ID: $approveId, Error: " . $e->getMessage());
-        }
-    } else {
-        error_log("Approval denied - Insufficient permissions - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Required Role: $approveRoleLc");
-    }
-    header('Location: view_wo.php');
-    exit();
-}
+// Note: GET-based approval system removed to prevent conflicts with AJAX approval system
+// All approvals now handled via AJAX requests for better user experience
 
 // Handle deletion (admin only) - SECURITY FIX: Use database with proper access control
 $msg = '';

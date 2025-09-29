@@ -125,38 +125,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
             ]
         );
     } else {
-        // Insert new work order into database
-        $db->query(
-            "INSERT INTO work_orders (
-                work_order_no, p_number, mps_nr, description, p_description, jobansvarlig, 
-                telefon, oprettet_af, oprettet_dato, components, entreprenor_firma, 
-                entreprenor_kontakt, status, latitude, longitude, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [
-                $current['work_order_no'], $current['p_number'], $current['mps_nr'],
-                $current['description'], $current['p_description'], $current['jobansvarlig'],
-                $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
-                $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
-                $current['status'], 
-                !empty($current['latitude']) ? floatval($current['latitude']) : null,
-                !empty($current['longitude']) ? floatval($current['longitude']) : null,
-                $current['notes']
-            ]
-        );
+        // Check if work order number already exists to prevent duplicates
+        $existingWO = $db->fetch("SELECT id FROM work_orders WHERE work_order_no = ?", [$current['work_order_no']]);
         
-        // Send SMS notification for new work permit creation
-        try {
-            sendWorkPermitSMSNotification($current);
-        } catch (Exception $e) {
-            error_log("SMS notification failed: " . $e->getMessage());
-            // Continue with normal flow even if SMS fails
+        if ($existingWO) {
+            // Work order number already exists, add error message and don't insert
+            $error_message = "Fejl: Arbejdstilladelse nr. '" . htmlspecialchars($current['work_order_no']) . "' findes allerede. Vælg venligst et andet nummer.";
+        } else {
+            // Insert new work order into database
+            $db->query(
+                "INSERT INTO work_orders (
+                    work_order_no, p_number, mps_nr, description, p_description, jobansvarlig, 
+                    telefon, oprettet_af, oprettet_dato, components, entreprenor_firma, 
+                    entreprenor_kontakt, status, latitude, longitude, notes
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    $current['work_order_no'], $current['p_number'], $current['mps_nr'],
+                    $current['description'], $current['p_description'], $current['jobansvarlig'],
+                    $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
+                    $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
+                    $current['status'], 
+                    !empty($current['latitude']) ? floatval($current['latitude']) : null,
+                    !empty($current['longitude']) ? floatval($current['longitude']) : null,
+                    $current['notes']
+                ]
+            );
+            
+            // Send SMS notification for new work permit creation
+            try {
+                sendWorkPermitSMSNotification($current);
+            } catch (Exception $e) {
+                error_log("SMS notification failed: " . $e->getMessage());
+                // Continue with normal flow even if SMS fails
+            }
+            
+            // Redirect to the overview page after successful save to prevent duplicate
+            // submissions if the user refreshes the page.
+            header('Location: view_wo.php');
+            exit();
         }
     }
 
-    // Redirect to the overview page after saving to prevent duplicate
-    // submissions if the user refreshes the page.
-    header('Location: view_wo.php');
-    exit();
+    // Only redirect if no error occurred
+    if (!isset($error_message)) {
+        // Redirect to the overview page after saving to prevent duplicate
+        // submissions if the user refreshes the page.
+        header('Location: view_wo.php');
+        exit();
+    }
 }
 
 // The default centre for the map if no coordinates have been provided.
