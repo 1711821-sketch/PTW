@@ -673,12 +673,15 @@ button.button-success {
 td a.button,
 td button {
     margin: 0.125rem 0.25rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 0.75rem; /* Larger touch targets */
     vertical-align: middle;
     white-space: nowrap;
-    font-size: 0.7rem;
-    min-width: auto;
+    font-size: 0.8rem;
+    min-width: 44px; /* Better touch targets */
+    min-height: 44px;
     line-height: 1.2;
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+    touch-action: manipulation;
 }
 
 /* Button size variants */
@@ -1106,6 +1109,57 @@ select.status-afsluttet option:hover {
     .table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        margin: 0 -0.75rem; /* Extend table to edge on mobile */
+        border-radius: 0;
+    }
+    
+    table {
+        font-size: 0.85rem;
+        border-radius: 0;
+    }
+    
+    th, td {
+        padding: 0.75rem 0.5rem;
+        min-width: 100px; /* Ensure readable column width */
+    }
+    
+    th {
+        font-size: 0.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, var(--background-tertiary) 0%, var(--border-light) 100%);
+        z-index: 10;
+    }
+    
+    /* Make action columns more compact on mobile */
+    td:last-child,
+    th:last-child {
+        min-width: 120px;
+        text-align: center;
+    }
+    
+    /* Improve mobile table buttons */
+    td a.button,
+    td button {
+        display: block;
+        width: 100%;
+        margin: 0.25rem 0;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        text-align: center;
+    }
+    
+    /* Add zebra striping emphasis on mobile */
+    tbody tr:nth-child(odd) {
+        background-color: rgba(59, 130, 246, 0.03);
+    }
+    
+    tbody tr:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        transform: none; /* Disable hover transform on mobile */
     }
     
     #woTable {
