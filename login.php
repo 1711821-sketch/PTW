@@ -1,76 +1,49 @@
 <?php
 // Login page for SJA system
-// Loads user credentials from a JSON file and authenticates users.
-// If no users file is present, a default admin account will be created.
+// Loads user credentials from PostgreSQL database and authenticates users.
 
 session_start();
+require_once 'database.php';
 
-// Path to users JSON data
-$users_file = __DIR__ . '/users.json';
-
-// Ensure the users file exists with a default admin user
-if (!file_exists($users_file)) {
-    $default_users = [
-        [
-            'username'      => 'admin',
-            // password_hash for 'Test1234!' generated previously via password_hash()
-            'password_hash' => '$2y$12$846ZzhLP2DCMa6IoqxPOKOwHm0Zt706jb322fHkQlokCANnBmMTxK',
-            'role'          => 'admin'
-        ]
-    ];
-    file_put_contents($users_file, json_encode($default_users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
-
-// Load existing users
-$users = json_decode(file_get_contents($users_file), true);
-if (!is_array($users)) {
-    $users = [];
-}
+// Initialize database connection
+$db = Database::getInstance();
 
 // Attempt login on POST
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
-    $found    = false;
-    foreach ($users as $u) {
-        if ($u['username'] === $username && password_verify($password, $u['password_hash'])) {
-            // Valid credentials: Check if the account is approved.
-            // Existing users created before the introduction of the approval
-            // system may not have an 'approved' key; treat them as approved.
-            $isApproved = true;
-            if (array_key_exists('approved', $u)) {
-                $isApproved = (bool)$u['approved'];
-            }
+    
+    try {
+        // Look up user in PostgreSQL database
+        $user = $db->fetch("SELECT * FROM users WHERE username = ?", [$username]);
+        
+        if ($user && password_verify($password, $user['password_hash'])) {
+            // Valid credentials: Check if the account is approved
+            $isApproved = (bool)$user['approved'];
+            
             if (!$isApproved) {
                 // Deny login if the account is not yet approved by an admin
                 $error = 'Din konto skal godkendes af en administrator, før du kan logge ind.';
-                // Do not continue searching; break out of loop.
-                $found    = true;
-                break;
+            } else {
+                // Approved credentials: store username and role in session
+                $_SESSION['user'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                
+                // When a user has the role "entreprenor", also store the contractor
+                // company associated with their account in the session.
+                if ($user['role'] === 'entreprenor') {
+                    $_SESSION['entreprenor_firma'] = $user['entreprenor_firma'] ?? null;
+                }
+                header('Location: index.php');
+                exit();
             }
-            // Approved credentials: store username and role in session
-            $_SESSION['user'] = $u['username'];
-            $_SESSION['role'] = $u['role'];
-            // When a user has the role "entreprenor", also store the contractor
-            // company associated with their account in the session.  This value
-            // will later be used to restrict which work orders they can view.
-            if ($u['role'] === 'entreprenor') {
-                // Some legacy user records may not include an entreprenor_firma key,
-                // so we guard against undefined values.  If not set, the
-                // entrepreneur will see no work orders, which is safer than
-                // accidentally exposing data from other firms.
-                $_SESSION['entreprenor_firma'] = $u['entreprenor_firma'] ?? null;
-            }
-            header('Location: index.php');
-            exit();
+        } else {
+            $error = 'Forkert brugernavn eller adgangskode';
         }
-    }
-    // If no matching credentials were found and no other error was set,
-    // display the generic error message.  Without this check, the generic
-    // message would overwrite the approval-related message set above.
-    if (!$found && $error === '') {
-        $error = 'Forkert brugernavn eller adgangskode';
+    } catch (Exception $e) {
+        error_log("Database error during login: " . $e->getMessage());
+        $error = 'Der opstod en fejl under login. Prøv igen senere.';
     }
 }
 ?>
