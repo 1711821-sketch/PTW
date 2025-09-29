@@ -27,7 +27,7 @@ if (file_exists($data_file)) {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin:0; font-family: Arial, sans-serif; }
-        #map { width: 100%; height: 95vh; }
+        #map { width: 100%; height: 98vh; }
         .controls { padding: 0.5rem; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .controls input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         a.back { display: inline-block; margin: 1rem; color: #0070C0; text-decoration: none; }
