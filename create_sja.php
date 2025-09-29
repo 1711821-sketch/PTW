@@ -243,6 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $entry_id = $posted_id;
             $message = 'SJA opdateret!';
+            // Redirect to homepage after successful update
+            header('Location: index.php');
+            exit;
         } else {
             // Insert new SJA
             $result = $db->fetch("
@@ -260,6 +263,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $entry_id = $result['id'];
             $message = 'SJA gemt!';
+            // Redirect to homepage after successful save
+            header('Location: index.php');
+            exit;
         }
         
         // Update current data for form display
