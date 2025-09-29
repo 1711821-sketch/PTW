@@ -30,6 +30,7 @@ $role = $_SESSION['role'] ?? 'user';
 
 // Include database functionality
 require_once 'database.php';
+require_once 'sms_config.php';
 
 // Path to the JSON file where work orders are stored.  If this file
 // doesn’t exist it will be created on first save.
@@ -142,6 +143,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
                 $current['notes']
             ]
         );
+        
+        // Send SMS notification for new work permit creation
+        try {
+            sendWorkPermitSMSNotification($current);
+        } catch (Exception $e) {
+            error_log("SMS notification failed: " . $e->getMessage());
+            // Continue with normal flow even if SMS fails
+        }
     }
 
     // Redirect to the overview page after saving to prevent duplicate
