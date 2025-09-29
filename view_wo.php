@@ -192,6 +192,8 @@ try {
             $entry['approval_history'] = json_decode($entry['approval_history'], true) ?? [];
         }
     }
+    // CRITICAL: Unset reference to prevent PHP from keeping $entry bound to the last element
+    unset($entry);
     
 } catch (Exception $e) {
     error_log("Database error in view_wo.php: " . $e->getMessage());
