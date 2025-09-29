@@ -2799,50 +2799,41 @@ p {
  * Custom Leaflet Map Markers with SJA Indicators
  * ======================================== */
 
-/* Base custom marker with black circle indicator for Leaflet divIcon */
-.custom-marker-black {
+/* Leaflet divIcon SJA indicators - using different approach */
+/* Base marker styling for divIcon elements */
+div.custom-marker-black {
     position: relative !important;
     width: 25px !important;
     height: 41px !important;
-    background: transparent !important;
-    border: none !important;
+    background-size: 25px 41px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
 }
 
-/* Green marker with black SJA indicator */
-.marker-green-black {
+/* Green marker with SJA indicator */
+div.marker-green-black {
     background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png') !important;
-    background-size: 25px 41px !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
 }
 
-/* Blue marker with black SJA indicator */  
-.marker-blue-black {
+/* Blue marker with SJA indicator */  
+div.marker-blue-black {
     background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png') !important;
-    background-size: 25px 41px !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
 }
 
-/* Gray marker with black SJA indicator */
-.marker-gray-black {
+/* Gray marker with SJA indicator */
+div.marker-gray-black {
     background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png') !important;
-    background-size: 25px 41px !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
 }
 
-/* Add black circle indicator using ::after pseudo-element - this must come AFTER the specific marker classes */
-.custom-marker-black::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    width: 10px;
-    height: 10px;
-    background-color: #000;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+/* Black circle SJA indicator - positioned as overlay */
+div.custom-marker-black::before {
+    content: '●' !important;
+    position: absolute !important;
+    top: 2px !important;
+    right: 2px !important;
+    font-size: 12px !important;
+    color: #000 !important;
+    text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
+    z-index: 1000 !important;
+    display: block !important;
 }

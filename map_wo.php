@@ -499,6 +499,8 @@ try {
                 } else {
                     icon = hasSJA ? grayIconBlack : grayIcon;
                 }
+                
+                
                 var marker = L.marker([parseFloat(lat), parseFloat(lng)], { icon: icon });
                 
                 // Create modern popup content
