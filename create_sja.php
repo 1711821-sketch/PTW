@@ -43,7 +43,7 @@ $current = [
     'cancer' => [],
     'bem' => '',
     'deltagere' => [],
-    // Status of the SJA. New entries default to active if not set.
+    // Status is always 'active' (field removed from form)
     'status' => 'active',
     // Latitude/longitude for location (saved when user clicks on map)
     'latitude' => '',
@@ -164,8 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bem       = $_POST['bem'] ?? '';
     $deltagere = $_POST['deltagere'] ?? [];
 
-    // Status submitted from the form. Default to 'active' when not provided.
-    $status    = isset($_POST['status']) ? htmlspecialchars(trim((string)$_POST['status']), ENT_QUOTES, 'UTF-8') : 'active';
+    // Status always defaults to 'active' since status field was removed from form.
+    $status    = 'active';
 
     // Sanitize the data recursively
     $sanitize = function($value) use (&$sanitize) {
@@ -858,13 +858,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="form-group">
                                 <label class="form-label" for="koordinator">Koordinator</label>
                                 <input type="text" id="koordinator" name="basic[koordinator]" value="<?php echo htmlspecialchars($current['basic']['koordinator']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label required" for="status">Status</label>
-                                <select id="status" name="status" required>
-                                    <option value="active" <?php echo (($current['status'] ?? 'active') === 'active') ? 'selected' : ''; ?>>Aktiv</option>
-                                    <option value="completed" <?php echo (($current['status'] ?? 'active') === 'completed') ? 'selected' : ''; ?>>Afsluttet</option>
-                                </select>
                             </div>
                         </div>
                     </div>
