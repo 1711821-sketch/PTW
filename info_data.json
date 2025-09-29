@@ -1,31 +1,7 @@
 [
     {
-        "id": "001",
-        "title": "Velkomst til det nye informationssystem",
-        "content": "Vi har implementeret et nyt informationssystem for at forbedre kommunikationen mellem administratorer og brugere. Her vil du finde vigtige meddelelser, opdateringer og informationer om arbejdstilladelsessystemet.",
-        "type": "info",
-        "created_date": "2025-09-27",
-        "author": "admin"
-    },
-    {
-        "id": "002",
-        "title": "Vigtig sikkerhedsopdatering",
-        "content": "Alle brugere skal være opmærksomme på de nye sikkerhedsprocedurer, der træder i kraft fra næste måned. Kontakt din nærmeste leder for yderligere information.",
-        "type": "important",
-        "created_date": "2025-09-26",
-        "author": "admin"
-    },
-    {
-        "id": "003",
-        "title": "Planlæg systemvedligeholdelse",
-        "content": "Systemet vil være utilgængeligt i kort tid søndag den 29. september mellem kl. 02:00 og 04:00 på grund af planlagt vedligeholdelse.",
-        "type": "normal",
-        "created_date": "2025-09-25",
-        "author": "admin"
-    },
-    {
         "id": "004",
-        "title": "Pølser tila alle",
+        "title": "Pølser til alle på Stigsæn terminalen",
         "content": "Hej Alle, der er pølser til alle i dag kl 12.00",
         "type": "info",
         "created_date": "2025-09-27",
