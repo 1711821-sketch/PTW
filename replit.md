@@ -44,6 +44,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Search**: Debounced search functionality covering WO numbers, descriptions, job responsible, and P-descriptions
 - **Responsive Controls**: Modern filter controls with visual feedback and mobile optimization
 - **Live Updates**: Real-time marker counting and visibility management with status indicators
+- **SJA Visual Indicators**: Work orders with associated Safety Job Analyses display black circle indicators (●) on map markers for immediate safety compliance visibility
 
 ### Recent Implementation (September 2025)
 - **Time Tracking System**: Complete contractor time registration solution implemented
