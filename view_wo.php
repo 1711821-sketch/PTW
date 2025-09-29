@@ -297,8 +297,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             error_log("Delete attempt failed - Work order not found - User: $currentUser, WO ID: $delete_id");
             $msg = 'Kunne ikke finde arbejdstilladelse til sletning.';
         } else {
-            // Delete work order and all related time entries
+            // Delete work order and all related entries (time entries and SJA entries)
             $db->execute("DELETE FROM time_entries WHERE work_order_id = ?", [$delete_id]);
+            $db->execute("DELETE FROM sja_entries WHERE work_order_id = ?", [$delete_id]);
             $deleted = $db->execute("DELETE FROM work_orders WHERE id = ?", [$delete_id]);
             
             if ($deleted) {
