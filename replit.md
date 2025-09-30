@@ -2,7 +2,7 @@
 
 ## Overview
 
-A web-based arbejdstilladelsessystem designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles arbejdstilladelse creation, approval workflows, safety job analysis (SJA), and role-based access control. Built with PHP backend using JSON file storage for data persistence.
+A web-based arbejdstilladelsessystem designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles arbejdstilladelse creation, approval workflows, safety job analysis (SJA) with comprehensive version history, and role-based access control. Built with PHP backend using PostgreSQL database for data persistence.
 
 ## User Preferences
 
@@ -18,9 +18,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend Architecture
 - **Technology**: PHP with session-based authentication
-- **Data Storage**: JSON file-based persistence (users.json, wo_data.json, sja_data.json)
+- **Data Storage**: PostgreSQL database for all persistent data (work orders, SJA entries, time tracking)
 - **Authentication**: Password hashing with bcrypt, role-based access control
 - **Session Management**: PHP sessions for user state and role filtering
+- **Database Layer**: Custom Database class with PDO for secure parameterized queries
 
 ### Role-Based Access Control
 - **Admin**: Full system access and management capabilities
@@ -91,11 +92,10 @@ Preferred communication style: Simple, everyday language.
 - **Web Standards**: HTML5, CSS3, JavaScript for frontend functionality
 - **Google Fonts**: Inter font family for modern typography
 
-### File System Dependencies
-- **JSON Storage**: File-based data persistence for users, work orders, and safety analyses
-- **Asset Management**: CSS and JSON file attachments in attached_assets directory
+### Database Dependencies
+- **PostgreSQL**: Neon-backed PostgreSQL database for all persistent data
+- **Asset Management**: CSS file attachments in attached_assets directory
 
-### No External Services
-- System operates independently without external API dependencies
-- Self-contained authentication and data storage
-- No database server requirements (uses JSON files)
+### External Services
+- **Neon PostgreSQL**: Managed PostgreSQL database service via Replit integration
+- Self-contained authentication and session management
