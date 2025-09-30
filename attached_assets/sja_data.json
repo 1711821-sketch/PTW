@@ -1,0 +1,95 @@
+[
+    {
+        "id": "68db9e53b73e4",
+        "created_by": "test_user",
+        "version": 3,
+        "updated_at": "2025-09-30 09:09:50",
+        "modified_by": "test_user_2",
+        "history": [
+            {
+                "version": 1,
+                "timestamp": "2025-09-30 09:09:39",
+                "modified_by": "test_user",
+                "data": {
+                    "id": "68db9e53b73e4",
+                    "created_by": "test_user",
+                    "version": 1,
+                    "updated_at": "2025-09-30 09:09:39",
+                    "modified_by": "test_user",
+                    "basic": {
+                        "opgave": "Test Version History SJA",
+                        "wo_po": "TEST001",
+                        "dato_udfoer": "2025-09-30",
+                        "planlagt_af": "Tester",
+                        "udfoeres_af": "Team Test",
+                        "dato_planlagt": "2025-09-30",
+                        "koordinator": "Coordinator Test"
+                    },
+                    "risici": [],
+                    "tilladelser": [],
+                    "vaernemidler": [],
+                    "udstyr": [],
+                    "taenkt": [],
+                    "cancer": [],
+                    "bem": "Original version",
+                    "deltagere": [],
+                    "status": "active",
+                    "latitude": "",
+                    "longitude": ""
+                }
+            },
+            {
+                "version": 2,
+                "timestamp": "2025-09-30 09:09:39",
+                "modified_by": "test_user_2",
+                "data": {
+                    "id": "68db9e53b73e4",
+                    "created_by": "test_user",
+                    "version": 2,
+                    "updated_at": "2025-09-30 09:09:39",
+                    "modified_by": "test_user_2",
+                    "basic": {
+                        "opgave": "Test Version History SJA",
+                        "wo_po": "TEST001",
+                        "dato_udfoer": "2025-09-30",
+                        "planlagt_af": "Tester",
+                        "udfoeres_af": "Team Test",
+                        "dato_planlagt": "2025-09-30",
+                        "koordinator": "Coordinator Test"
+                    },
+                    "risici": [],
+                    "tilladelser": [],
+                    "vaernemidler": [],
+                    "udstyr": [],
+                    "taenkt": [],
+                    "cancer": [],
+                    "bem": "Updated version 2",
+                    "deltagere": [],
+                    "status": "active",
+                    "latitude": "",
+                    "longitude": ""
+                }
+            }
+        ],
+        "basic": {
+            "opgave": "Test Version History SJA",
+            "wo_po": "TEST001",
+            "dato_udfoer": "2025-09-30",
+            "planlagt_af": "Tester",
+            "udfoeres_af": "Team Test",
+            "dato_planlagt": "2025-09-30",
+            "koordinator": "Coordinator Test"
+        },
+        "risici": [],
+        "tilladelser": [],
+        "vaernemidler": [],
+        "udstyr": [],
+        "taenkt": [],
+        "cancer": [],
+        "bem": "Updated version 3",
+        "deltagere": [],
+        "status": "active",
+        "latitude": "",
+        "longitude": ""
+    }
+]

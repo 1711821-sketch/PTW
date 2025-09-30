@@ -187,11 +187,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Preserve the creator for existing entries; for new entries set created_by to current user
     $entry_id = $posted_id ? $posted_id : uniqid();
     $created_by = '';
+    $existing_entry = null;
     if ($posted_id) {
-        // Look up existing entry to preserve creator
+        // Look up existing entry to preserve creator and version info
+        // IMPORTANT: Make a deep copy before any modifications to capture the true current state
         foreach ($entries as $e) {
-            if (isset($e['id']) && $e['id'] === $posted_id && isset($e['created_by'])) {
-                $created_by = $e['created_by'];
+            if (isset($e['id']) && $e['id'] === $posted_id) {
+                $created_by = $e['created_by'] ?? '';
+                $existing_entry = json_decode(json_encode($e), true);
                 break;
             }
         }
@@ -199,9 +202,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($created_by === '') {
         $created_by = $_SESSION['user'];
     }
+    
+    // Version tracking
+    $version = 1;
+    $history = [];
+    
+    if ($existing_entry) {
+        // This is an edit - save current version to history BEFORE creating new entry
+        $current_version = $existing_entry['version'] ?? 1;
+        $current_history = $existing_entry['history'] ?? [];
+        
+        // Create snapshot of current entry (exclude history to avoid nesting)
+        $snapshot = $existing_entry;
+        unset($snapshot['history']);
+        
+        // Add current state to history
+        $current_history[] = [
+            'version'      => $current_version,
+            'timestamp'    => $existing_entry['updated_at'] ?? date('Y-m-d H:i:s'),
+            'modified_by'  => $existing_entry['modified_by'] ?? $created_by,
+            'data'         => $snapshot
+        ];
+        
+        $version = $current_version + 1;
+        $history = $current_history;
+    }
+    
     $entry = [
         'id'          => $entry_id,
         'created_by'  => $created_by,
+        'version'     => $version,
+        'updated_at'  => date('Y-m-d H:i:s'),
+        'modified_by' => $_SESSION['user'],
+        'history'     => $history,
         // Associate this SJA with a specific work order if provided
         'wo_id'       => $_POST['wo_id'] ?? '',
         'basic'       => $basic,
@@ -233,8 +266,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $entries[] = $entry;
     }
 
-    // Save back to file
-    file_put_contents($data_file, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    // Save back to file with exclusive lock to prevent race conditions
+    $fp = fopen($data_file, 'w');
+    if ($fp && flock($fp, LOCK_EX)) {
+        fwrite($fp, json_encode($entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+    } elseif ($fp) {
+        fclose($fp);
+    }
 
     // Set success message and reload data for editing view
     $message = $found ? 'SJA opdateret!' : 'SJA gemt!';
