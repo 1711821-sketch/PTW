@@ -542,7 +542,7 @@ try {
                         '</div>' : '') +
                     '</div>' +
                     '<div class="wo-popup-actions">' +
-                        '<a href="print_wo.php?id=' + encodeURIComponent(e.id) + '" target="_blank" class="wo-popup-btn">' +
+                        '<a href="print_wo.php?id=' + encodeURIComponent(e.id) + '" class="wo-popup-btn">' +
                             '👁️ Se detaljer' +
                         '</a>' +
                     '</div>' +
