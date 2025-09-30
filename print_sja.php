@@ -9,28 +9,47 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$data_file = __DIR__ . '/sja_data.json';
-
-// Read the data
-$entries = [];
-if (file_exists($data_file)) {
-    $entries = json_decode(file_get_contents($data_file), true);
-    if (!is_array($entries)) {
-        $entries = [];
-    }
-}
+// Use database instead of JSON files
+require_once 'database.php';
 
 $id = $_GET['id'] ?? '';
 $entry = null;
-foreach ($entries as $e) {
-    if (isset($e['id']) && $e['id'] === $id) {
-        $entry = $e;
-        break;
+
+try {
+    $db = Database::getInstance();
+    $dbEntry = $db->fetch("SELECT * FROM sja_entries WHERE id = ?", [$id]);
+    
+    if ($dbEntry) {
+        // Convert database format to expected format
+        $entry = [
+            'id' => $dbEntry['id'],
+            'basic' => json_decode($dbEntry['basic_info'] ?? '{}', true) ?: [],
+            'risici' => json_decode($dbEntry['risks'] ?? '{}', true) ?: [],
+            'tilladelser' => json_decode($dbEntry['permissions'] ?? '{}', true) ?: [],
+            'vaernemidler' => json_decode($dbEntry['ppe'] ?? '{}', true) ?: [],
+            'udstyr' => json_decode($dbEntry['equipment'] ?? '{}', true) ?: [],
+            'taenkt' => json_decode($dbEntry['considerations'] ?? '{}', true) ?: [],
+            'cancer' => json_decode($dbEntry['cancer_substances'] ?? '{}', true) ?: [],
+            'bem' => $dbEntry['remarks'] ?? '',
+            'deltagere' => json_decode($dbEntry['participants'] ?? '[]', true) ?: [],
+            'status' => $dbEntry['status'] ?? 'active',
+            'latitude' => $dbEntry['latitude'] ?? '',
+            'longitude' => $dbEntry['longitude'] ?? '',
+            'work_order_id' => $dbEntry['work_order_id'] ?? '',
+            'created_at' => $dbEntry['created_at'] ?? '',
+            'updated_at' => $dbEntry['updated_at'] ?? ''
+        ];
     }
+} catch (Exception $e) {
+    error_log("Error loading SJA for print: " . $e->getMessage());
+    echo '<p>Fejl ved indlæsning af SJA.</p>';
+    echo '<p><a href="view_sja.php">Tilbage til liste</a></p>';
+    exit();
 }
 
 if (!$entry) {
     echo '<p>SJA ikke fundet.</p>';
+    echo '<p><a href="view_sja.php">Tilbage til liste</a></p>';
     exit();
 }
 

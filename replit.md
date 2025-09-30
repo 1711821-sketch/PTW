@@ -49,6 +49,9 @@ Preferred communication style: Simple, everyday language.
 ### Recent Implementation (September 2025)
 - **Time Tracking System**: Complete contractor time registration solution implemented
 - **Database Migration**: Migrated from JSON files to PostgreSQL for enhanced security and data integrity
+  - Work orders: Fully migrated to work_orders table
+  - SJA entries: Fully migrated to sja_entries table with JSON column structure
+  - All view and print pages updated to use database queries
 - **Enhanced Dashboard**: Real-time time tracking metrics with accurate calculations and contractor rankings
 - **Security Implementation**: Database-based access control with role-based authorization throughout
 - **Validation System**: Quarter-hour increments, date range validation, and comprehensive input sanitization

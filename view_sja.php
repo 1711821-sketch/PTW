@@ -9,36 +9,48 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
+// Use database instead of JSON files
+require_once 'database.php';
+
 $role = $_SESSION['role'] ?? 'user';
-$data_file = __DIR__ . '/sja_data.json';
 $entries = [];
-if (file_exists($data_file)) {
-    $entries = json_decode(file_get_contents($data_file), true);
-    if (!is_array($entries)) {
-        $entries = [];
-    }
-}
 
 // Handle deletion for admin
 $msg = '';
 if ($role === 'admin' && isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
-    $new_entries = [];
-    $deleted = false;
-    foreach ($entries as $entry) {
-        if (isset($entry['id']) && $entry['id'] === $delete_id) {
-            $deleted = true;
-            continue;
+    try {
+        $db = Database::getInstance();
+        $result = $db->execute("DELETE FROM sja_entries WHERE id = ?", [$delete_id]);
+        if ($result) {
+            $msg = 'SJA er blevet slettet.';
+        } else {
+            $msg = 'Kunne ikke finde SJA til sletning.';
         }
-        $new_entries[] = $entry;
+    } catch (Exception $e) {
+        error_log("Error deleting SJA: " . $e->getMessage());
+        $msg = 'Fejl ved sletning af SJA.';
     }
-    if ($deleted) {
-        file_put_contents($data_file, json_encode($new_entries, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        $entries = $new_entries;
-        $msg = 'SJA er blevet slettet.';
-    } else {
-        $msg = 'Kunne ikke finde SJA til sletning.';
+}
+
+// Load all SJA entries from database
+try {
+    $db = Database::getInstance();
+    $dbEntries = $db->fetchAll("SELECT * FROM sja_entries ORDER BY created_at DESC");
+    
+    // Convert database format to expected format for display
+    foreach ($dbEntries as $dbEntry) {
+        $entries[] = [
+            'id' => $dbEntry['id'],
+            'basic' => json_decode($dbEntry['basic_info'] ?? '{}', true) ?: [],
+            'status' => $dbEntry['status'] ?? 'active',
+            'created_at' => $dbEntry['created_at'] ?? '',
+            'updated_at' => $dbEntry['updated_at'] ?? ''
+        ];
     }
+} catch (Exception $e) {
+    error_log("Error loading SJAs: " . $e->getMessage());
+    $msg = 'Fejl ved indlæsning af SJA-liste.';
 }
 ?>
 <!DOCTYPE html>
