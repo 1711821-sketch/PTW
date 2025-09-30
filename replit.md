@@ -80,6 +80,7 @@ Preferred communication style: Simple, everyday language.
   - Fixed print_wo.php to correctly parse SJA basic_info JSON when displaying linked SJAs (September 30, 2025)
   - Fixed create_sja.php to preserve work_order_id when editing SJAs from history view (September 30, 2025)
   - Fixed user registration and login flow to work correctly after database migration (September 30, 2025)
+  - Fixed critical SQL syntax error in view_wo.php preventing entrepreneurs from viewing approved work orders - escaped JSONB `?` operator as `??` for PDO compatibility (September 30, 2025)
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits

@@ -155,8 +155,8 @@ try {
                 SELECT * FROM work_orders 
                 WHERE entreprenor_firma = ? 
                 AND status = 'active'
-                AND approvals::jsonb ? 'opgaveansvarlig'
-                AND approvals::jsonb ? 'drift'
+                AND approvals::jsonb ?? 'opgaveansvarlig'
+                AND approvals::jsonb ?? 'drift'
                 ORDER BY created_at DESC
             ", [$firma]);
             
