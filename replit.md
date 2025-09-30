@@ -63,6 +63,13 @@ Preferred communication style: Simple, everyday language.
   - Approved by both opgaveansvarlig (task manager) and drift (operations)
   - Still restricted to their own firm's work orders
   - Implemented via PostgreSQL JSON operators in view_wo.php query
+- **Work Order Image Upload**: Entrepreneurs can upload completion documentation images (September 30, 2025):
+  - Secure file upload system with MIME-type validation and extension mapping
+  - Entrepreneurs can upload images only to their firm's work orders
+  - All roles can view uploaded images as documentation
+  - Image gallery with responsive grid layout and lightbox functionality
+  - Security: PHP execution disabled in uploads directory, no user-supplied extensions used
+  - Images stored in uploads/work_order_images/ with database references in completion_images column
 - **Bug Fixes**: 
   - Fixed print_wo.php to correctly parse SJA basic_info JSON when displaying linked SJAs (September 30, 2025)
   - Fixed create_sja.php to preserve work_order_id when editing SJAs from history view (September 30, 2025)
