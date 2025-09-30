@@ -24,6 +24,7 @@ $edit_id = isset($_GET['id']) ? $_GET['id'] : null;
 // Extend the default structure with location fields for map support
 $current = [
     'id' => $edit_id ?? '',
+    'work_order_id' => '',
     // Basic information about the task
     'basic' => [
         'opgave'        => '',
@@ -130,6 +131,7 @@ if ($edit_id) {
             // Convert database format back to form format
             $current = [
                 'id' => $entry['id'],
+                'work_order_id' => $entry['work_order_id'] ?? '',
                 'basic' => json_decode($entry['basic_info'] ?? '{}', true) ?: [],
                 'risici' => json_decode($entry['risks'] ?? '{}', true) ?: [],
                 'tilladelser' => json_decode($entry['permissions'] ?? '{}', true) ?: [],
@@ -323,6 +325,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Update current data for form display
         $current = [
             'id' => $entry_id,
+            'work_order_id' => $work_order_id,
             'basic' => $basic,
             'risici' => $risici,
             'tilladelser' => $till,
@@ -880,7 +883,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="post" action="">
                 <!-- Hidden fields -->
                 <input type="hidden" name="entry_id" value="<?php echo htmlspecialchars($current['id']); ?>">
-                <input type="hidden" name="wo_id" value="<?php echo htmlspecialchars($_GET['wo_id'] ?? ''); ?>">
+                <input type="hidden" name="wo_id" value="<?php echo htmlspecialchars($current['work_order_id'] ?: ($_GET['wo_id'] ?? '')); ?>">
                 <!-- Basisinformation Section -->
                 <div class="section" id="basic-section">
                     <div class="section-header" onclick="toggleSection('basic-section')">
