@@ -42,12 +42,6 @@
         "entreprenor_firma": "Suomen Vesipiikkaus Oy - Finla"
     },
     {
-        "username": "asmir",
-        "password_hash": "$2y$10$2kLvp2tGc.1HRxxoGH6xMe486Bv16dnMBL0zMvivU7WBei2W84uSy",
-        "role": "opgaveansvarlig",
-        "approved": true
-    },
-    {
         "username": "Morten Kimer",
         "password_hash": "$2y$10$XAMEQDDxpF13dJl2JU1fAe3FhSEiSycOSBrGITw0hy1ylmAA4Nio.",
         "role": "entreprenor",
@@ -112,5 +106,25 @@
         "role": "entreprenor",
         "approved": true,
         "entreprenor_firma": "DELPRO A\/S"
+    },
+    {
+        "username": "delpro1",
+        "password_hash": "$2y$10$f4B\/CRfJi\/zW.u47zdndh.kLLRcpoCS0qZtOMGKqr8jfJKJ1VXaAm",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "DELPRO A\/S"
+    },
+    {
+        "username": "o",
+        "password_hash": "$2y$10$MF.6ySJnlhpX4c2e9kA5nuEwcp2Ilyz2lNLu88PFWcovUfI1Eu0dG",
+        "role": "entreprenor",
+        "approved": true,
+        "entreprenor_firma": "DELPRO A\/S"
+    },
+    {
+        "username": "dd",
+        "password_hash": "$2y$10$Jb59aWw7A2ELD7ejOQzUJ.KZpnNzfxAjAFOuMP\/MCDcXyBoGo4EH6",
+        "role": "drift",
+        "approved": true
     }
 ]

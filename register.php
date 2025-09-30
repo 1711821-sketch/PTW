@@ -2,21 +2,8 @@
 // Start PHP session for potential future use
 session_start();
 
-// Define file paths.  Users will be stored in users.json and
-// the list of available contractors will be extracted from the database.
-$users_file = __DIR__ . '/users.json';
+// Database connection for user storage and contractor list
 require_once 'database.php';
-
-// Ensure users.json exists.  If it doesn't, create an empty array.
-if (!file_exists($users_file)) {
-    file_put_contents($users_file, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
-
-// Load existing users
-$users = json_decode(file_get_contents($users_file), true);
-if (!is_array($users)) {
-    $users = [];
-}
 
 // Extract unique contractor firm names from the database.  Contractors are
 // specified by the "entreprenor_firma" column in work_orders table.
@@ -59,36 +46,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!in_array($role, $allowed_roles, true)) {
         $error = 'Ugyldig rolle valgt.';
     } else {
-        // Check for duplicate username
-        foreach ($users as $existing) {
-            if (isset($existing['username']) && strtolower($existing['username']) === strtolower($username)) {
+        // Check for duplicate username in PostgreSQL database
+        try {
+            $db = Database::getInstance();
+            $existing_user = $db->fetch("SELECT username FROM users WHERE LOWER(username) = LOWER(?)", [$username]);
+            if ($existing_user) {
                 $error = 'Brugernavnet eksisterer allerede.';
-                break;
             }
+        } catch (Exception $e) {
+            error_log('Database error checking duplicate username: ' . $e->getMessage());
+            $error = 'Der opstod en fejl. Prøv igen senere.';
         }
     }
 
-    // If no errors so far, register the user
+    // If no errors so far, register the user in PostgreSQL database
     if ($error === '') {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        // Create the new user entry.  Users are not approved by default and must be
-        // approved by an administrator via admin.php before they can log in.
-        $new_user = [
-            'username'      => $username,
-            'password_hash' => $password_hash,
-            'role'          => $role,
-            'approved'      => false
-        ];
-        // Attach contractor firm to the user only if role is entreprenor
-        if ($role === 'entreprenor') {
-            $new_user['entreprenor_firma'] = $selected_contractor;
+        try {
+            $db = Database::getInstance();
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Prepare SQL based on role (entreprenor needs firma column)
+            if ($role === 'entreprenor') {
+                $db->execute(
+                    "INSERT INTO users (username, password_hash, role, approved, entreprenor_firma) 
+                     VALUES (?, ?, ?, false, ?)",
+                    [$username, $password_hash, $role, $selected_contractor]
+                );
+            } else {
+                $db->execute(
+                    "INSERT INTO users (username, password_hash, role, approved) 
+                     VALUES (?, ?, ?, false)",
+                    [$username, $password_hash, $role]
+                );
+            }
+            
+            // Redirect to login page after successful registration.
+            // The user will remain unable to log in until an administrator approves the account.
+            header('Location: login.php');
+            exit;
+        } catch (Exception $e) {
+            error_log('Database error during user registration: ' . $e->getMessage());
+            $error = 'Der opstod en fejl under registrering. Prøv igen senere.';
         }
-        $users[] = $new_user;
-        file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-        // Redirect to login page after successful registration.  The user will
-        // remain unable to log in until an administrator approves the account.
-        header('Location: login.php');
-        exit;
     }
 }
 ?>
