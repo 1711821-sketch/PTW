@@ -70,9 +70,16 @@ Preferred communication style: Simple, everyday language.
   - Image gallery with responsive grid layout and lightbox functionality
   - Security: PHP execution disabled in uploads directory, no user-supplied extensions used
   - Images stored in uploads/work_order_images/ with database references in completion_images column
+- **User Management Migration**: Complete migration of user registration and approval system to PostgreSQL (September 30, 2025):
+  - Migrated register.php to store new users in PostgreSQL database instead of users.json
+  - Migrated admin.php to manage user approvals and deletions in PostgreSQL database
+  - Fixed critical login issue where new users couldn't log in because they were stored in JSON but login.php reads from PostgreSQL
+  - All user management now uses prepared statements with proper error handling
+  - User approval workflow: register → admin approves → user can login
 - **Bug Fixes**: 
   - Fixed print_wo.php to correctly parse SJA basic_info JSON when displaying linked SJAs (September 30, 2025)
   - Fixed create_sja.php to preserve work_order_id when editing SJAs from history view (September 30, 2025)
+  - Fixed user registration and login flow to work correctly after database migration (September 30, 2025)
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
