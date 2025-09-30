@@ -560,7 +560,7 @@ document.getElementById('parseBtn').addEventListener('click', async function () 
   }
   if (descMatches.length > 0) {
     // Clean and assign the first description
-    let d1 = descMatches[0].replace(/\s*(?:Afhjælpende|Ekstraordinært)\s*\(Z[^)]*\)/gi, '').trim();
+    let d1 = descMatches[0].replace(/\s*(?:Afhjælpende|Ekstraordinært|Forebyggende)\s*\(Z[^)]*\)/gi, '').trim();
     markField('description', true, d1);
     logLines.push('<span class="found">✔ Beskrivelse fundet</span>');
   } else {
