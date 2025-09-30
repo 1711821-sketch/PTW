@@ -31,12 +31,91 @@ try {
     if (is_string($entry['approval_history'] ?? '')) {
         $entry['approval_history'] = json_decode($entry['approval_history'], true) ?? [];
     }
+    if (is_string($entry['completion_images'] ?? '[]')) {
+        $entry['completion_images'] = json_decode($entry['completion_images'], true) ?? [];
+    }
     
 } catch (Exception $e) {
     error_log("Error loading work order for print: " . $e->getMessage());
     echo '<p>Fejl ved indlæsning af arbejdstilladelse.</p>';
     echo '<p><a href="view_wo.php">Tilbage til oversigt</a></p>';
     exit();
+}
+
+// Handle image upload for entrepreneurs
+$upload_message = '';
+$upload_error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
+    $currentUser = $_SESSION['user'] ?? '';
+    $currentRole = $_SESSION['role'] ?? '';
+    $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+    
+    // Security check: Only entrepreneurs can upload
+    if ($currentRole !== 'entreprenor') {
+        $upload_error = 'Kun entreprenører kan uploade billeder.';
+    }
+    // Security check: Entrepreneur can only upload to their own firm's work orders
+    elseif ($entry['entreprenor_firma'] !== $userFirma) {
+        $upload_error = 'Du kan kun uploade billeder til dit eget firmas arbejdstilladelser.';
+        error_log("SECURITY VIOLATION: Entrepreneur $currentUser attempted to upload image to another firm's work order. User Firma: $userFirma, WO Firma: " . $entry['entreprenor_firma']);
+    }
+    // Check if file was uploaded
+    elseif (!isset($_FILES['completion_image']) || $_FILES['completion_image']['error'] === UPLOAD_ERR_NO_FILE) {
+        $upload_error = 'Ingen fil valgt.';
+    }
+    elseif ($_FILES['completion_image']['error'] !== UPLOAD_ERR_OK) {
+        $upload_error = 'Fejl ved upload af fil.';
+    }
+    else {
+        $file = $_FILES['completion_image'];
+        
+        // Validate file type (only images)
+        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+        
+        if (!in_array($mime_type, $allowed_types)) {
+            $upload_error = 'Kun billedfiler (JPEG, PNG, GIF, WebP) er tilladt.';
+        }
+        // Validate file size (max 10MB)
+        elseif ($file['size'] > 10485760) {
+            $upload_error = 'Billedet må ikke være større end 10MB.';
+        }
+        else {
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'wo_' . $entry['id'] . '_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
+            $upload_path = __DIR__ . '/uploads/work_order_images/' . $filename;
+            
+            // Move uploaded file
+            if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+                // Add filename to completion_images array in database
+                $current_images = $entry['completion_images'] ?? [];
+                $current_images[] = $filename;
+                
+                try {
+                    $db->execute("
+                        UPDATE work_orders 
+                        SET completion_images = ?, updated_at = NOW()
+                        WHERE id = ?
+                    ", [json_encode($current_images), $entry['id']]);
+                    
+                    $upload_message = 'Billedet er uploadet med succes!';
+                    $entry['completion_images'] = $current_images;
+                    
+                    error_log("Image uploaded successfully - User: $currentUser, WO ID: " . $entry['id'] . ", Filename: $filename");
+                } catch (Exception $e) {
+                    $upload_error = 'Fejl ved gemning af billedet i databasen.';
+                    error_log("Error saving image to database: " . $e->getMessage());
+                    // Clean up uploaded file
+                    @unlink($upload_path);
+                }
+            } else {
+                $upload_error = 'Fejl ved gemning af fil.';
+            }
+        }
+    }
 }
 
 // Determine status label
@@ -87,11 +166,39 @@ if ($statusVal === 'planning') {
         .btn-secondary { background-color: #6c757d; }
         .btn-secondary:hover { background-color: #545b62; }
         
+        /* Image gallery styling */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .image-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .image-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
         @media print {
-            .action-buttons, .navbar { display: none; }
+            .action-buttons, .navbar, .upload-section { display: none; }
             body { margin: 0; }
             h1 { font-size: 1.4em; }
             h2 { font-size: 1.2em; border-color: #000; }
+            .image-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -246,6 +353,65 @@ if ($statusVal === 'planning') {
     <?php else: ?>
         <p>Ingen timer registreret for denne arbejdstilladelse endnu.</p>
     <?php endif; ?>
+    
+    <!-- Image upload section for entrepreneurs -->
+    <?php 
+    $currentUser = $_SESSION['user'] ?? '';
+    $currentRole = $_SESSION['role'] ?? '';
+    $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+    $canUpload = ($currentRole === 'entreprenor' && $entry['entreprenor_firma'] === $userFirma);
+    ?>
+    
+    <h2>Dokumentationsbilleder</h2>
+    
+    <?php if ($canUpload): ?>
+        <div class="upload-section" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h3 style="margin-top: 0; font-size: 1.1em;">Upload dokumentationsbilleder</h3>
+            <p style="margin-bottom: 1rem; color: #666;">Upload billeder for at dokumentere afsluttet arbejde. Tilladt: JPEG, PNG, GIF, WebP (maks. 10MB)</p>
+            
+            <?php if ($upload_message): ?>
+                <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; border-radius: 4px;">
+                    ✅ <?php echo htmlspecialchars($upload_message); ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($upload_error): ?>
+                <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 4px;">
+                    ❌ <?php echo htmlspecialchars($upload_error); ?>
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <input type="file" name="completion_image" accept="image/*" required 
+                       style="padding: 0.5rem; border: 1px solid #ced4da; border-radius: 4px; min-width: 200px;">
+                <button type="submit" name="upload_image" value="1" 
+                        style="padding: 0.6rem 1.5rem; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                    📤 Upload billede
+                </button>
+            </form>
+        </div>
+    <?php endif; ?>
+    
+    <!-- Display uploaded images -->
+    <?php if (!empty($entry['completion_images']) && is_array($entry['completion_images'])): ?>
+        <div class="image-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <?php foreach ($entry['completion_images'] as $image_filename): ?>
+                <div class="image-card" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <a href="uploads/work_order_images/<?php echo urlencode($image_filename); ?>" target="_blank">
+                        <img src="uploads/work_order_images/<?php echo urlencode($image_filename); ?>" 
+                             alt="Dokumentationsbillede" 
+                             style="width: 100%; height: 200px; object-fit: cover; display: block;">
+                    </a>
+                    <div style="padding: 0.5rem; background-color: #f8f9fa; font-size: 0.85em; color: #666; text-align: center;">
+                        Klik for at se i fuld størrelse
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <p style="color: #666; font-style: italic;">Ingen dokumentationsbilleder uploadet endnu.</p>
+    <?php endif; ?>
+    
     </div><!-- /.container -->
 </body>
 </html>
