@@ -1,7 +1,7 @@
 run = "php -S 0.0.0.0:8000 -t ."
 
 entrypoint = "index.php"
-modules = ["php-8.2", "postgresql-16"]
+modules = ["php-8.2", "postgresql-16", "nodejs-20"]
 
 [nix]
 channel = "stable-22_11"
@@ -32,6 +32,7 @@ externalPort = 3000
 
 [agent]
 expertMode = true
+integrations = ["javascript_object_storage:1.0.0"]
 
 [workflows]
 runButton = "Project"
