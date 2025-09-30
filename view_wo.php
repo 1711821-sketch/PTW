@@ -148,10 +148,15 @@ try {
     if ($currentRole === 'entreprenor') {
         $firma = $_SESSION['entreprenor_firma'] ?? '';
         if ($firma !== '') {
-            // Only load work orders for this entrepreneur's firm
+            // Only load work orders for this entrepreneur's firm that are:
+            // 1. In 'active' status
+            // 2. Approved by both opgaveansvarlig and drift
             $entries = $db->fetchAll("
                 SELECT * FROM work_orders 
                 WHERE entreprenor_firma = ? 
+                AND status = 'active'
+                AND approvals::jsonb ? 'opgaveansvarlig'
+                AND approvals::jsonb ? 'drift'
                 ORDER BY created_at DESC
             ", [$firma]);
             
