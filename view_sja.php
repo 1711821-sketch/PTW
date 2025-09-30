@@ -132,6 +132,7 @@ try {
                 <td>
                     <a class="button button-secondary button-sm" href="print_sja.php?id=<?php echo urlencode($entry['id']); ?>" target="_blank">🖨️ Print</a>
                     <a class="button button-sm" href="create_sja.php?id=<?php echo urlencode($entry['id']); ?>">✏️ Rediger</a>
+                    <a class="button button-secondary button-sm" href="sja_history.php?id=<?php echo urlencode($entry['id']); ?>">📜 Historik</a>
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm" href="view_sja.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne SJA?');">🗑️ Slet</a>
                     <?php endif; ?>

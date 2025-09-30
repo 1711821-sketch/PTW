@@ -215,51 +215,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $participants = json_encode($deltagere, JSON_UNESCAPED_UNICODE);
         
         if ($posted_id && is_numeric($posted_id)) {
-            // Update existing SJA
-            $db->execute("
-                UPDATE sja_entries SET
-                    work_order_id = ?,
-                    sja_title = ?,
-                    basic_info = ?,
-                    risks = ?,
-                    permissions = ?,
-                    ppe = ?,
-                    equipment = ?,
-                    considerations = ?,
-                    cancer_substances = ?,
-                    remarks = ?,
-                    participants = ?,
-                    status = ?,
-                    latitude = ?,
-                    longitude = ?,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = ?
-            ", [
-                $work_order_id, $sja_title, $basic_info, $risks, $permissions, 
-                $ppe_data, $equipment_data, $considerations, $cancer_substances, 
-                $bem, $participants, $status, 
-                $lat ? floatval($lat) : null, $lng ? floatval($lng) : null, 
-                $posted_id
-            ]);
+            // Update existing SJA - with version tracking
+            
+            // First, get current version to save to history
+            $existing = $db->fetch("SELECT * FROM sja_entries WHERE id = ?", [$posted_id]);
+            
+            if ($existing) {
+                $current_version = $existing['version'] ?? 1;
+                $current_history = json_decode($existing['history'] ?? '[]', true);
+                if (!is_array($current_history)) {
+                    $current_history = [];
+                }
+                
+                // Create snapshot of current entry (without history to avoid nesting)
+                $snapshot = [
+                    'version' => $current_version,
+                    'work_order_id' => $existing['work_order_id'],
+                    'sja_title' => $existing['sja_title'],
+                    'basic_info' => $existing['basic_info'],
+                    'risks' => $existing['risks'],
+                    'permissions' => $existing['permissions'],
+                    'ppe' => $existing['ppe'],
+                    'equipment' => $existing['equipment'],
+                    'considerations' => $existing['considerations'],
+                    'cancer_substances' => $existing['cancer_substances'],
+                    'remarks' => $existing['remarks'],
+                    'participants' => $existing['participants'],
+                    'status' => $existing['status'],
+                    'latitude' => $existing['latitude'],
+                    'longitude' => $existing['longitude'],
+                    'modified_by' => $existing['modified_by'] ?? $existing['created_by'] ?? $_SESSION['user'],
+                    'updated_at' => $existing['updated_at'] ?? $existing['created_at']
+                ];
+                
+                // Add current state to history
+                $current_history[] = [
+                    'version' => $current_version,
+                    'timestamp' => $existing['updated_at'] ?? $existing['created_at'],
+                    'modified_by' => $existing['modified_by'] ?? $existing['created_by'] ?? $_SESSION['user'],
+                    'data' => $snapshot
+                ];
+                
+                $new_version = $current_version + 1;
+                $new_history = json_encode($current_history, JSON_UNESCAPED_UNICODE);
+                
+                // Update with new data and version info
+                $db->execute("
+                    UPDATE sja_entries SET
+                        work_order_id = ?,
+                        sja_title = ?,
+                        basic_info = ?,
+                        risks = ?,
+                        permissions = ?,
+                        ppe = ?,
+                        equipment = ?,
+                        considerations = ?,
+                        cancer_substances = ?,
+                        remarks = ?,
+                        participants = ?,
+                        status = ?,
+                        latitude = ?,
+                        longitude = ?,
+                        version = ?,
+                        history = ?::jsonb,
+                        modified_by = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                ", [
+                    $work_order_id, $sja_title, $basic_info, $risks, $permissions, 
+                    $ppe_data, $equipment_data, $considerations, $cancer_substances, 
+                    $bem, $participants, $status, 
+                    $lat ? floatval($lat) : null, $lng ? floatval($lng) : null,
+                    $new_version, $new_history, $_SESSION['user'],
+                    $posted_id
+                ]);
+            }
+            
             $entry_id = $posted_id;
             $message = 'SJA opdateret!';
             // Redirect to homepage after successful update
             header('Location: index.php');
             exit;
         } else {
-            // Insert new SJA
+            // Insert new SJA with version tracking
             $result = $db->fetch("
                 INSERT INTO sja_entries (
                     work_order_id, sja_title, basic_info, risks, permissions, 
                     ppe, equipment, considerations, cancer_substances, 
-                    remarks, participants, status, latitude, longitude
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    remarks, participants, status, latitude, longitude,
+                    version, created_by, modified_by
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 RETURNING id
             ", [
                 $work_order_id, $sja_title, $basic_info, $risks, $permissions, 
                 $ppe_data, $equipment_data, $considerations, $cancer_substances, 
                 $bem, $participants, $status, 
-                $lat ? floatval($lat) : null, $lng ? floatval($lng) : null
+                $lat ? floatval($lat) : null, $lng ? floatval($lng) : null,
+                1, $_SESSION['user'], $_SESSION['user']
             ]);
             $entry_id = $result['id'];
             $message = 'SJA gemt!';
