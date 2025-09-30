@@ -64,7 +64,14 @@ try {
             <!-- Digital Safety Sign - Inline -->
             <div class="safety-sign safety-sign-inline">
                 <div class="safety-sign-content">
-                    <div class="safety-sign-number"><?= $daysSinceAccident ?></div>
+                    <div class="safety-sign-number">
+                        <?php 
+                        $digits = str_split((string)$daysSinceAccident);
+                        foreach ($digits as $digit) {
+                            echo '<span class="digit">' . htmlspecialchars($digit) . '</span>';
+                        }
+                        ?>
+                    </div>
                     <div class="safety-sign-text">DAGE SIDEN SIDSTE UHELD</div>
                 </div>
             </div>
