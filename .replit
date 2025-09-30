@@ -30,6 +30,10 @@ externalPort = 3001
 localPort = 41193
 externalPort = 3000
 
+[[ports]]
+localPort = 43257
+externalPort = 4200
+
 [agent]
 expertMode = true
 integrations = ["javascript_object_storage:1.0.0"]
