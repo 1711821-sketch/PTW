@@ -182,10 +182,13 @@ if ($statusVal === 'planning') {
     <?php if (!empty($attached_sja)): ?>
         <table>
             <tr><th>SJA ID</th><th>Opgave</th><th>Oprettet</th><th>Handlinger</th></tr>
-            <?php foreach ($attached_sja as $sja): ?>
+            <?php foreach ($attached_sja as $sja): 
+                $basic_info = json_decode($sja['basic_info'] ?? '{}', true);
+                $opgave = $basic_info['opgave'] ?? 'SJA';
+            ?>
                 <tr>
                     <td><?php echo htmlspecialchars($sja['id']); ?></td>
-                    <td><?php echo htmlspecialchars($sja['opgave'] ?? 'SJA'); ?></td>
+                    <td><?php echo htmlspecialchars($opgave); ?></td>
                     <td><?php echo htmlspecialchars($sja['created_at'] ?? ''); ?></td>
                     <td><a href="print_sja.php?id=<?php echo urlencode($sja['id']); ?>">Se SJA</a></td>
                 </tr>
