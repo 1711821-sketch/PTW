@@ -53,6 +53,7 @@ Preferred communication style: Simple, everyday language.
 - **Security Implementation**: Database-based access control with role-based authorization throughout
 - **Validation System**: Quarter-hour increments, date range validation, and comprehensive input sanitization
 - **Mobile Optimization**: Comprehensive iPhone and mobile device optimization with improved touch targets, responsive navigation, and better mobile user experience
+- **SJA Version History**: Complete version control system for Safety Job Analyses with automatic versioning, historical snapshots, side-by-side comparison, and legacy entry support
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
@@ -69,6 +70,16 @@ Preferred communication style: Simple, everyday language.
 - **Typography Scaling**: Adaptive font sizes and line heights optimized for mobile readability
 - **iPhone Compatibility**: Special handling for iOS Safari including webkit optimizations and touch-action properties
 - **Animation System**: Smooth slide-in animations for mobile navigation with proper timing and easing
+
+### SJA Version History System
+- **Automatic Versioning**: Each SJA edit creates a new version with automatic version numbering
+- **Historical Snapshots**: Complete snapshots of previous versions stored in history array
+- **Version Metadata**: Each version includes timestamp, version number, and modified_by user
+- **Version Viewing**: Dedicated interface to browse and view any historical version
+- **Side-by-Side Comparison**: Compare two versions with highlighted differences across all sections
+- **Legacy Support**: Backwards compatible with existing SJAs without version data
+- **Data Integrity**: Deep copy snapshots and file locking prevent data corruption
+- **Accessible UI**: History links in both list view and print view for easy access
 
 ## External Dependencies
 
