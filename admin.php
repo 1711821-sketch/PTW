@@ -31,17 +31,22 @@ if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
     exit();
 }
 
-$users_file = __DIR__ . '/users.json';
+require_once 'database.php';
+
 $info_file = __DIR__ . '/info_data.json';
 $users = [];
 $messages = [];
 
-// Load users
-if (file_exists($users_file)) {
-    $users = json_decode(file_get_contents($users_file), true);
+// Load users from PostgreSQL database
+try {
+    $db = Database::getInstance();
+    $users = $db->fetchAll("SELECT * FROM users ORDER BY id ASC");
     if (!is_array($users)) {
         $users = [];
     }
+} catch (Exception $e) {
+    error_log('Database error loading users in admin.php: ' . $e->getMessage());
+    $users = [];
 }
 
 // Load messages
@@ -97,34 +102,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     requireCSRFToken();
     
     if (isset($_POST['approve_user'])) {
-        // Handle user approval
+        // Handle user approval in PostgreSQL database
         $approve_user = $_POST['username'] ?? '';
-        foreach ($users as &$u) {
-            if ($u['username'] === $approve_user) {
-                $u['approved'] = true;
-                $message = 'Bruger "' . htmlspecialchars($approve_user) . '" er nu godkendt.';
-                break;
-            }
+        try {
+            $db = Database::getInstance();
+            $db->execute("UPDATE users SET approved = true WHERE username = ?", [$approve_user]);
+            $message = 'Bruger "' . htmlspecialchars($approve_user) . '" er nu godkendt.';
+            
+            // Reload users from database
+            $users = $db->fetchAll("SELECT * FROM users ORDER BY id ASC");
+        } catch (Exception $e) {
+            error_log('Database error approving user: ' . $e->getMessage());
+            $message = 'Der opstod en fejl ved godkendelse af bruger.';
         }
-        file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     } elseif (isset($_POST['delete_user'])) {
-        // Handle user deletion
+        // Handle user deletion in PostgreSQL database
         $delete_user = $_POST['username'] ?? '';
-        $updated = [];
-        foreach ($users as $u) {
-            // Do not delete admin accounts
-            if ($u['username'] === $delete_user && $u['role'] !== 'admin') {
-                continue; // Skip this user to delete
+        try {
+            $db = Database::getInstance();
+            // Check if user is an admin (admins cannot be deleted)
+            $user = $db->fetch("SELECT role FROM users WHERE username = ?", [$delete_user]);
+            
+            if ($user && $user['role'] !== 'admin') {
+                $db->execute("DELETE FROM users WHERE username = ?", [$delete_user]);
+                $message = 'Bruger "' . htmlspecialchars($delete_user) . '" er blevet slettet.';
+                
+                // Reload users from database
+                $users = $db->fetchAll("SELECT * FROM users ORDER BY id ASC");
+            } else {
+                $message = 'Kunne ikke slette bruger. Administratorer kan ikke slettes.';
             }
-            $updated[] = $u;
-        }
-        // Check if deletion happened
-        if (count($updated) < count($users)) {
-            file_put_contents($users_file, json_encode($updated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            $users = $updated;
-            $message = 'Bruger "' . htmlspecialchars($delete_user) . '" er blevet slettet.';
-        } else {
-            $message = 'Kunne ikke slette bruger. Administratorer kan ikke slettes.';
+        } catch (Exception $e) {
+            error_log('Database error deleting user: ' . $e->getMessage());
+            $message = 'Der opstod en fejl ved sletning af bruger.';
         }
     } elseif (isset($_POST['create_message'])) {
         // Create new message
