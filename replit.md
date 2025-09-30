@@ -58,6 +58,11 @@ Preferred communication style: Simple, everyday language.
 - **Validation System**: Quarter-hour increments, date range validation, and comprehensive input sanitization
 - **Mobile Optimization**: Comprehensive iPhone and mobile device optimization with improved touch targets, responsive navigation, and better mobile user experience
 - **SJA Version History**: Complete version control system for Safety Job Analyses with automatic versioning, historical snapshots, side-by-side comparison, and legacy entry support
+- **Entrepreneur Access Control Enhancement**: Entrepreneurs can now only view work orders that meet all criteria (September 30, 2025):
+  - Status must be 'active'
+  - Approved by both opgaveansvarlig (task manager) and drift (operations)
+  - Still restricted to their own firm's work orders
+  - Implemented via PostgreSQL JSON operators in view_wo.php query
 - **Bug Fixes**: 
   - Fixed print_wo.php to correctly parse SJA basic_info JSON when displaying linked SJAs (September 30, 2025)
   - Fixed create_sja.php to preserve work_order_id when editing SJAs from history view (September 30, 2025)
