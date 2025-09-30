@@ -69,13 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
     else {
         $file = $_FILES['completion_image'];
         
-        // Validate file type (only images)
-        $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        // Validate file type (only images) using MIME type detection
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime_type = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
         
-        if (!in_array($mime_type, $allowed_types)) {
+        // Map MIME types to safe file extensions (NEVER use user-supplied extension)
+        $mime_to_extension = [
+            'image/jpeg' => 'jpg',
+            'image/jpg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp'
+        ];
+        
+        if (!isset($mime_to_extension[$mime_type])) {
             $upload_error = 'Kun billedfiler (JPEG, PNG, GIF, WebP) er tilladt.';
         }
         // Validate file size (max 10MB)
@@ -83,9 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
             $upload_error = 'Billedet må ikke være større end 10MB.';
         }
         else {
-            // Generate unique filename
-            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = 'wo_' . $entry['id'] . '_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $extension;
+            // SECURITY: Use extension based on MIME type, NOT user-supplied filename
+            $safe_extension = $mime_to_extension[$mime_type];
+            $filename = 'wo_' . $entry['id'] . '_' . time() . '_' . bin2hex(random_bytes(8)) . '.' . $safe_extension;
             $upload_path = __DIR__ . '/uploads/work_order_images/' . $filename;
             
             // Move uploaded file

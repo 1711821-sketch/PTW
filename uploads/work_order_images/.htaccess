@@ -1,0 +1,15 @@
+# Disable PHP execution in this directory for security
+# Prevents execution of any uploaded files even if they have PHP code
+php_flag engine off
+
+# Additional security: deny access to .php files
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Allow only image files to be served
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
