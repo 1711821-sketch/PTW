@@ -342,7 +342,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <th>Jobansvarlig</th>
                         <th>Entreprenør</th>
                         <th>Status</th>
-                        <th>Godkendelser<br>(dagens status)</th>
+                        <th>Godkendelser<br>Dagens Status</th>
                         <th>Handlinger</th>
                     </tr>
                 </thead>
