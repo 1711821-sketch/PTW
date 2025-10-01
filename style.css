@@ -1108,7 +1108,8 @@ select.status-afsluttet option:hover {
 #woTable td:nth-child(7) > div {
     margin-bottom: 8px;
     line-height: 1.5;
-    display: flex;
+    display: grid;
+    grid-template-columns: 35px auto auto;
     align-items: center;
     gap: 4px;
 }
@@ -1120,10 +1121,8 @@ select.status-afsluttet option:hover {
 #woTable td:nth-child(7) strong {
     font-size: 0.65rem;
     font-weight: 600;
-    display: inline-block;
     width: 35px;
     text-align: left;
-    flex-shrink: 0;
 }
 
 /* Handlinger kolonne - kompakt knapper */
