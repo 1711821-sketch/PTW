@@ -382,23 +382,26 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 <td><span class="<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span></td>
                 <td>
                     <div>
-                        <strong title="Opgaveansvarlige">OA:</strong> <span><?php echo $oaApproved ? '✅' : '❌'; ?></span>
+                        <strong title="Opgaveansvarlige">OA:</strong> <span id="oa-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>"><?php echo $oaApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
                             <button type="button" class="button button-success button-sm" 
+                                    id="list-oa-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this);">✓</button>
                         <?php endif; ?>
                     </div>
                     <div>
-                        <strong title="Driften">Drift:</strong> <span><?php echo $driftApproved ? '✅' : '❌'; ?></span>
+                        <strong title="Driften">Drift:</strong> <span id="drift-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>"><?php echo $driftApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
                             <button type="button" class="button button-success button-sm" 
+                                    id="list-drift-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this);">✓</button>
                         <?php endif; ?>
                     </div>
                     <div>
-                        <strong title="Entreprenør">Ent:</strong> <span><?php echo $entApproved ? '✅' : '❌'; ?></span>
+                        <strong title="Entreprenør">Ent:</strong> <span id="ent-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>"><?php echo $entApproved ? '✅' : '❌'; ?></span>
                         <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
                             <button type="button" class="button button-success button-sm" 
+                                    id="list-ent-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this);">✓</button>
                         <?php endif; ?>
                     </div>
@@ -880,15 +883,36 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update status display
-                    const statusElement = document.getElementById(`${role === 'opgaveansvarlig' ? 'oa' : role}-status-${id}`);
-                    if (statusElement) {
-                        statusElement.textContent = '✅ Godkendt';
-                        statusElement.className = 'approval-status approved';
+                    // Update status display - map role names to ID prefixes
+                    let rolePrefix = role;
+                    if (role === 'opgaveansvarlig') rolePrefix = 'oa';
+                    if (role === 'entreprenor') rolePrefix = 'ent';
+                    
+                    // Update BOTH List View and Card View elements (both exist in DOM)
+                    // List View element (in table)
+                    const listViewElement = document.querySelector(`#listView #${rolePrefix}-status-${id}`);
+                    if (listViewElement) {
+                        listViewElement.textContent = '✅';
+                        listViewElement.className = 'approval-status approved';
                     }
                     
-                    // Hide the button
+                    // Card View element
+                    const cardViewElement = document.querySelector(`#cardView #${rolePrefix}-status-${id}`);
+                    if (cardViewElement) {
+                        cardViewElement.textContent = '✅ Godkendt';
+                        cardViewElement.className = 'approval-status approved';
+                    }
+                    
+                    // Hide the button that was clicked
                     buttonElement.style.display = 'none';
+                    
+                    // Also hide corresponding button in the other view if it exists
+                    // List View buttons have 'list-' prefix, Card View buttons don't
+                    const listViewButton = document.getElementById(`list-${rolePrefix}-btn-${id}`);
+                    const cardViewButton = document.getElementById(`${rolePrefix}-btn-${id}`);
+                    
+                    if (listViewButton) listViewButton.style.display = 'none';
+                    if (cardViewButton) cardViewButton.style.display = 'none';
                     
                     // Show success notification
                     showNotification(data.message, 'success');
@@ -1017,10 +1041,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             
             // Set up AJAX approval button listeners
             document.querySelectorAll('.ajax-approve-btn').forEach(function(button) {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(event) {
                     const id = this.getAttribute('data-id');
                     const role = this.getAttribute('data-role');
-                    approveWorkPermit(id, role, this);
+                    approveWorkPermit(id, role, event.currentTarget);
                 });
             });
             
