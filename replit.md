@@ -88,10 +88,13 @@ Preferred communication style: Simple, everyday language.
     - Fixed text formatting to respect each view's style (List: '✅'/'❌', Card: '✅ Godkendt'/'❌ Mangler')
     - Ensured both view's buttons are hidden after approval regardless of which view is active
   - Optimized approval column width in view_wo.php List View for more compact display (October 1, 2025):
-    - Reduced column min-width from 140px to 110px for space efficiency
+    - Fixed column header forcing excessive width - reduced from ~140px+ to exactly 110px
+    - Applied triple-lock width constraint (width + min-width + max-width = 110px) to both header and data cells
+    - Enabled header text wrapping with white-space: normal and overflow-wrap: anywhere
+    - Added word-break protection to prevent long unbreakable strings from expanding column
+    - Tablet override (≤768px) with !important to ensure wrapping on mobile devices
     - Reduced label width from 50px to 38px (OA:, Drift:, Ent:)
     - Added layout robustness with border-spacing: 0 and text-overflow protection
-    - Maintained proper alignment with table display and fixed layout
     - Labels use white-space: nowrap with ellipsis overflow handling
 
 ### Time Tracking Features
