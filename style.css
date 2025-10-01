@@ -1099,13 +1099,13 @@ select.status-afsluttet option:hover {
 }
 
 /* Godkendelser kolonne - mere kompakt */
-#woTable td:nth-child(8) {
+#woTable td:nth-child(7) {
     min-width: 180px;
     font-size: 0.7rem;
 }
 
 /* Add spacing between approval rows in table cell */
-#woTable td:nth-child(8) > div {
+#woTable td:nth-child(7) > div {
     margin-bottom: 8px;
     line-height: 1.5;
     display: flex;
@@ -1113,11 +1113,11 @@ select.status-afsluttet option:hover {
     gap: 4px;
 }
 
-#woTable td:nth-child(8) > div:last-child {
+#woTable td:nth-child(7) > div:last-child {
     margin-bottom: 0;
 }
 
-#woTable td:nth-child(8) strong {
+#woTable td:nth-child(7) strong {
     font-size: 0.65rem;
     font-weight: 600;
     display: inline-block;
