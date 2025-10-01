@@ -290,6 +290,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <a href="dashboard.php">Dashboard</a>
             <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
+                <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>

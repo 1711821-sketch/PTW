@@ -407,6 +407,7 @@ if (isset($_GET['edit_message'])) {
             <a href="view_wo.php">WO Oversigt</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="info.php">Informationer</a>
+            <a href="time_overblik.php">Timeoverblik</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">📱 SMS Notifikationer</a>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>

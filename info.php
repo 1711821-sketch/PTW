@@ -219,6 +219,7 @@ function formatDanishDate($date) {
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
+                <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
             <span class="nav-user">
