@@ -1084,28 +1084,28 @@ select.status-afsluttet option:hover {
 }
 
 /* Kompakt WO tabel styling */
-#woTable {
+#arbejdstilladelseTable {
     font-size: 0.8rem;
 }
 
-#woTable th {
+#arbejdstilladelseTable th {
     font-size: 0.7rem;
     padding: 0.4rem 0.6rem;
 }
 
-#woTable td {
+#arbejdstilladelseTable td {
     padding: 0.4rem 0.6rem;
     font-size: 0.75rem;
 }
 
 /* Godkendelser kolonne - mere kompakt */
-#woTable td:nth-child(7) {
+#arbejdstilladelseTable td:nth-child(7) {
     min-width: 180px;
     font-size: 0.7rem;
 }
 
 /* Add spacing between approval rows in table cell */
-#woTable td:nth-child(7) > div {
+#arbejdstilladelseTable td:nth-child(7) > div {
     margin-bottom: 16px;
     line-height: 1.5;
     display: table;
@@ -1113,34 +1113,34 @@ select.status-afsluttet option:hover {
     table-layout: fixed;
 }
 
-#woTable td:nth-child(7) > div > * {
+#arbejdstilladelseTable td:nth-child(7) > div > * {
     display: table-cell;
     vertical-align: middle;
 }
 
-#woTable td:nth-child(7) > div:last-child {
+#arbejdstilladelseTable td:nth-child(7) > div:last-child {
     margin-bottom: 0;
 }
 
-#woTable td:nth-child(7) strong {
+#arbejdstilladelseTable td:nth-child(7) strong {
     font-size: 0.65rem;
     font-weight: 600;
     width: 50px;
     text-align: left;
 }
 
-#woTable td:nth-child(7) .approval-status {
+#arbejdstilladelseTable td:nth-child(7) .approval-status {
     flex: none;
     display: table-cell;
     width: 40px;
 }
 
-#woTable td:nth-child(7) button {
+#arbejdstilladelseTable td:nth-child(7) button {
     display: table-cell;
 }
 
 /* Handlinger kolonne - kompakt knapper */
-#woTable td:last-child a.button {
+#arbejdstilladelseTable td:last-child a.button {
     padding: 0.2rem 0.4rem;
     font-size: 0.65rem;
     margin: 0.1rem;
@@ -1153,12 +1153,12 @@ select.status-afsluttet option:hover {
         padding: 1rem;
     }
     
-    #woTable {
+    #arbejdstilladelseTable {
         font-size: 0.75rem;
     }
     
-    #woTable th,
-    #woTable td {
+    #arbejdstilladelseTable th,
+    #arbejdstilladelseTable td {
         padding: 0.3rem 0.4rem;
     }
 }
@@ -1220,7 +1220,7 @@ select.status-afsluttet option:hover {
         transform: none; /* Disable hover transform on mobile */
     }
     
-    #woTable {
+    #arbejdstilladelseTable {
         min-width: 800px;
     }
 }
