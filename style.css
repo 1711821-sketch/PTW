@@ -1166,9 +1166,9 @@ select.status-afsluttet option:hover {
 
 /* Handlinger kolonne - uniforme knapper */
 .handlinger-btn {
-    min-width: 80px;
-    height: 32px;
-    padding: 5px 10px;
+    width: 90px;
+    height: 36px;
+    padding: 5px 0;
     text-align: center;
     display: inline-flex;
     align-items: center;
