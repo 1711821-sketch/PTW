@@ -1106,8 +1106,11 @@ select.status-afsluttet option:hover {
 
 /* Add spacing between approval rows in table cell */
 #woTable td:nth-child(8) > div {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 #woTable td:nth-child(8) > div:last-child {
@@ -1117,6 +1120,10 @@ select.status-afsluttet option:hover {
 #woTable td:nth-child(8) strong {
     font-size: 0.65rem;
     font-weight: 600;
+    display: inline-block;
+    width: 35px;
+    text-align: left;
+    flex-shrink: 0;
 }
 
 /* Handlinger kolonne - kompakt knapper */
