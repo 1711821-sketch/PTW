@@ -697,11 +697,15 @@ td button {
     vertical-align: middle;
     white-space: nowrap;
     font-size: 0.8rem;
-    min-width: 44px; /* Better touch targets */
-    min-height: 44px;
-    line-height: 1.2;
-    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
-    touch-action: manipulation;
+}
+
+/* Make approval buttons in table cells extra compact to match status icons */
+td button.button-success.button-sm {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.85rem;
+    min-width: auto;
+    line-height: 1;
+    vertical-align: middle;
 }
 
 /* Button size variants */
