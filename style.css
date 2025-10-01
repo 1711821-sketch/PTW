@@ -1132,7 +1132,9 @@ select.status-afsluttet option:hover {
 #arbejdstilladelseTable td:nth-child(7) .approval-status {
     flex: none;
     display: table-cell;
-    width: 40px;
+    width: 28px;
+    padding: 2px 4px;
+    text-align: left;
 }
 
 #arbejdstilladelseTable td:nth-child(7) button {
