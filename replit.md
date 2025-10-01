@@ -87,6 +87,12 @@ Preferred communication style: Simple, everyday language.
     - Updated JavaScript to use view-scoped selectors to update both views simultaneously
     - Fixed text formatting to respect each view's style (List: '✅'/'❌', Card: '✅ Godkendt'/'❌ Mangler')
     - Ensured both view's buttons are hidden after approval regardless of which view is active
+  - Optimized approval column width in view_wo.php List View for more compact display (October 1, 2025):
+    - Reduced column min-width from 140px to 110px for space efficiency
+    - Reduced label width from 50px to 38px (OA:, Drift:, Ent:)
+    - Added layout robustness with border-spacing: 0 and text-overflow protection
+    - Maintained proper alignment with table display and fixed layout
+    - Labels use white-space: nowrap with ellipsis overflow handling
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
