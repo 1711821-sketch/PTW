@@ -701,11 +701,14 @@ td button {
 
 /* Make approval buttons in table cells extra compact to match status icons */
 td button.button-success.button-sm {
-    padding: 0.1rem 0.3rem;
-    font-size: 0.85rem;
+    padding: 0.05rem 0.25rem;
+    font-size: 1rem;
     min-width: auto;
+    min-height: auto;
     line-height: 1;
     vertical-align: middle;
+    border-radius: 3px;
+    font-weight: normal;
 }
 
 /* Button size variants */
