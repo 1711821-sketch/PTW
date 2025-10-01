@@ -1099,9 +1099,23 @@ select.status-afsluttet option:hover {
 }
 
 /* Godkendelser kolonne - mere kompakt */
-#arbejdstilladelseTable td:nth-child(7) {
+#arbejdstilladelseTable th:nth-child(7) {
+    width: 110px;
     min-width: 110px;
+    max-width: 110px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.2;
+}
+
+#arbejdstilladelseTable td:nth-child(7) {
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
     font-size: 0.7rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 /* Add spacing between approval rows in table cell */
@@ -1465,6 +1479,14 @@ p {
     th, td {
         padding: 0.75rem 0.5rem;
         white-space: nowrap;
+    }
+    
+    /* Override for Godkendelser column - allow wrapping */
+    #arbejdstilladelseTable th:nth-child(7),
+    #arbejdstilladelseTable td:nth-child(7) {
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
     }
     
     /* Enhanced filter controls */
