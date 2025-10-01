@@ -2121,33 +2121,33 @@ p {
     }
 }
 
-/* Individual work permit card - Clean and readable design */
+/* Individual work permit card - Clean and readable design with better separation */
 .work-permit-card {
-    background: var(--background-primary);
-    border: 1px solid var(--border-light);
+    background: #ffffff;
+    border: 2px solid var(--border-light);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: var(--transition);
-    overflow: visible;
+    overflow: hidden;
     position: relative;
     min-height: auto;
     display: flex;
     flex-direction: column;
     height: fit-content;
-    border-left: 4px solid var(--primary-color); /* Add distinctive left border */
+    margin-bottom: 1.5rem;
 }
 
 .work-permit-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     border-color: var(--primary-color);
 }
 
-/* Card header - Spacious and clear */
+/* Card header - Clear header with AT number and description */
 .card-header {
-    background: linear-gradient(135deg, var(--background-tertiary) 0%, var(--border-light) 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: none;
     position: relative;
     flex-shrink: 0;
 }
@@ -2156,18 +2156,40 @@ p {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 0.5rem;
-    margin-bottom: 0.125rem;
+    gap: 1rem;
+}
+
+.card-title-text {
+    flex: 1;
 }
 
 .card-title h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.card-header-description {
     margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.card-p-description {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(59, 130, 246, 0.05);
+    border-left: 3px solid var(--primary-color);
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
-    font-weight: 600;
     color: var(--text-primary);
-    line-height: 1.2;
-    flex: 1;
-    word-wrap: break-word;
 }
 
 .card-status {
@@ -2180,10 +2202,12 @@ p {
     flex-shrink: 0;
 }
 
-.card-id {
-    font-size: 0.75rem;
-    color: var(--text-light);
-    font-weight: 500;
+/* Horizontal divider between header and content */
+.card-divider {
+    margin: 0;
+    border: none;
+    border-top: 2px solid var(--border-light);
+    opacity: 0.5;
 }
 
 /* Card content - Spacious and readable */
@@ -2457,11 +2481,19 @@ p {
     }
     
     .work-permit-card {
-        margin: 0;
+        margin: 0 0 1rem 0;
     }
     
     .card-header {
         padding: 1rem 1.25rem;
+    }
+    
+    .card-title h3 {
+        font-size: 1.125rem;
+    }
+    
+    .card-header-description {
+        font-size: 0.875rem;
     }
     
     .card-content {
@@ -2534,13 +2566,20 @@ p {
     }
     
     .work-permit-card {
-        margin: 0;
+        margin: 0 0 1rem 0;
         border-radius: var(--radius-md);
-        border-left-width: 4px;
     }
     
     .card-header {
         padding: 1.25rem 1.5rem;
+    }
+    
+    .card-title h3 {
+        font-size: 1.1rem;
+    }
+    
+    .card-header-description {
+        font-size: 0.875rem;
     }
     
     .card-content {

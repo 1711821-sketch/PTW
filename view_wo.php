@@ -449,23 +449,22 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <div class="work-permit-card" data-status="<?php echo htmlspecialchars($status); ?>">
                 <div class="card-header">
                     <div class="card-title">
-                        <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
+                        <div class="card-title-text">
+                            <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
+                            <p class="card-header-description"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
+                        </div>
                         <span class="card-status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
                     </div>
-                    <div class="card-id">ID: <?php echo htmlspecialchars($entry['id'] ?? ''); ?></div>
+                    <?php if (!empty($entry['p_description'])): ?>
+                        <div class="card-p-description">
+                            <strong>P-beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 
+                <hr class="card-divider">
+                
                 <div class="card-content">
-                    <div class="card-description">
-                        <h4>📋 Beskrivelse</h4>
-                        <p><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
-                        <?php if (!empty($entry['p_description'])): ?>
-                            <div class="p-description">
-                                <strong>P-beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    
                     <div class="card-details">
                         <div class="detail-item">
                             <span class="detail-label">👤 Jobansvarlig:</span>
