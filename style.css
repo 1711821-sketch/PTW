@@ -1109,7 +1109,7 @@ select.status-afsluttet option:hover {
     margin-bottom: 8px;
     line-height: 1.5;
     display: grid;
-    grid-template-columns: 35px auto auto;
+    grid-template-columns: 50px auto auto;
     align-items: center;
     gap: 4px;
 }
@@ -1121,8 +1121,13 @@ select.status-afsluttet option:hover {
 #woTable td:nth-child(7) strong {
     font-size: 0.65rem;
     font-weight: 600;
-    width: 35px;
+    width: 50px;
     text-align: left;
+}
+
+#woTable td:nth-child(7) .approval-status {
+    flex: none;
+    display: inline-block;
 }
 
 /* Handlinger kolonne - kompakt knapper */
