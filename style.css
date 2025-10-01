@@ -1106,7 +1106,7 @@ select.status-afsluttet option:hover {
 
 /* Add spacing between approval rows in table cell */
 #woTable td:nth-child(7) > div {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     line-height: 1.5;
     display: table;
     width: 100%;
