@@ -103,6 +103,15 @@ Preferred communication style: Simple, everyday language.
 - **Admin Overview**: Complete time consumption visibility for administrators, operations, and task managers
 - **Security Validation**: Database-based access control replacing JSON file vulnerabilities
 - **Audit Logging**: Comprehensive tracking of all time entries and security events
+- **Time Overview Page (time_overblik.php)**: Admin-only comprehensive reporting page (October 1, 2025):
+  - Displays all registered hours across all arbejdstilladelser grouped by work order and user
+  - Filter functionality for date range, specific work order, and user selection
+  - Statistics dashboard showing total hours, work orders, users, and entries
+  - Top 5 work orders and top 5 users by hours with visual rankings
+  - Monthly hours chart with PostgreSQL-optimized date grouping
+  - Detailed table with columns: AT number, description, P-description, user, firma, total hours, entry count, and period
+  - Robust error handling with isolated try/catch blocks for each query to ensure partial failures don't blank the page
+  - Graceful degradation when data sections fail to load
 
 ### Mobile Optimization Features
 - **Hamburger Navigation**: Responsive slide-out navigation menu with fixed hamburger button for mobile devices
