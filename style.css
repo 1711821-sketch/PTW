@@ -1130,12 +1130,17 @@ select.status-afsluttet option:hover {
 }
 
 #arbejdstilladelseTable td:nth-child(7) .approval-status {
-    flex: none;
-    display: table-cell;
-    width: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 20px;
     padding: 0;
-    text-align: right;
+    line-height: 1;
+    font-size: 16px;
     white-space: nowrap;
+    overflow: hidden;
+    background: none !important;
+    border: none !important;
 }
 
 #arbejdstilladelseTable td:nth-child(7) button {
