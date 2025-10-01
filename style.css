@@ -1100,7 +1100,7 @@ select.status-afsluttet option:hover {
 
 /* Godkendelser kolonne - mere kompakt */
 #arbejdstilladelseTable td:nth-child(7) {
-    min-width: 180px;
+    min-width: 140px;
     font-size: 0.7rem;
 }
 
@@ -1132,9 +1132,10 @@ select.status-afsluttet option:hover {
 #arbejdstilladelseTable td:nth-child(7) .approval-status {
     flex: none;
     display: table-cell;
-    width: 28px;
-    padding: 2px 4px;
-    text-align: left;
+    width: 24px;
+    padding: 0;
+    text-align: right;
+    white-space: nowrap;
 }
 
 #arbejdstilladelseTable td:nth-child(7) button {
