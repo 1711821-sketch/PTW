@@ -1104,8 +1104,7 @@ select.status-afsluttet option:hover {
     min-width: 110px;
     max-width: 110px;
     white-space: normal;
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
+    word-break: keep-all;
     line-height: 1.2;
 }
 
@@ -1481,8 +1480,13 @@ p {
         white-space: nowrap;
     }
     
-    /* Override for Godkendelser column - allow wrapping */
-    #arbejdstilladelseTable th:nth-child(7),
+    /* Override for Godkendelser column header - allow wrapping but keep words intact */
+    #arbejdstilladelseTable th:nth-child(7) {
+        white-space: normal !important;
+        word-break: keep-all !important;
+    }
+    
+    /* Override for Godkendelser column data - allow word breaking for long content */
     #arbejdstilladelseTable td:nth-child(7) {
         white-space: normal !important;
         overflow-wrap: anywhere !important;
