@@ -1108,10 +1108,14 @@ select.status-afsluttet option:hover {
 #woTable td:nth-child(7) > div {
     margin-bottom: 8px;
     line-height: 1.5;
-    display: grid;
-    grid-template-columns: 50px auto auto;
-    align-items: center;
-    gap: 4px;
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+#woTable td:nth-child(7) > div > * {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 #woTable td:nth-child(7) > div:last-child {
@@ -1127,7 +1131,12 @@ select.status-afsluttet option:hover {
 
 #woTable td:nth-child(7) .approval-status {
     flex: none;
-    display: inline-block;
+    display: table-cell;
+    width: 40px;
+}
+
+#woTable td:nth-child(7) button {
+    display: table-cell;
 }
 
 /* Handlinger kolonne - kompakt knapper */
