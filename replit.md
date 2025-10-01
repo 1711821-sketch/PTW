@@ -81,6 +81,12 @@ Preferred communication style: Simple, everyday language.
   - Fixed create_sja.php to preserve work_order_id when editing SJAs from history view (September 30, 2025)
   - Fixed user registration and login flow to work correctly after database migration (September 30, 2025)
   - Fixed critical SQL syntax error in view_wo.php preventing entrepreneurs from viewing approved work orders - escaped JSONB `?` operator as `??` for PDO compatibility (September 30, 2025)
+  - Fixed UI update issue in view_wo.php where approval checkmarks didn't appear immediately after approval (October 1, 2025):
+    - Added unique IDs to approval status spans in List View
+    - Added unique IDs to approval buttons in both List View (with 'list-' prefix) and Card View
+    - Updated JavaScript to use view-scoped selectors to update both views simultaneously
+    - Fixed text formatting to respect each view's style (List: '✅'/'❌', Card: '✅ Godkendt'/'❌ Mangler')
+    - Ensured both view's buttons are hidden after approval regardless of which view is active
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
