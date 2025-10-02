@@ -271,6 +271,81 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
+    <style>
+        /* Time Modal Styles */
+        .time-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .time-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .time-modal-content {
+            position: relative;
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 10001;
+        }
+        
+        .time-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .time-modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+        }
+        
+        .time-modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+        
+        .time-modal-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+        
+        .time-modal-body {
+            padding: 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Top navigation bar with hamburger menu -->
@@ -415,12 +490,83 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">Slet</a>
                     <?php endif; ?>
+                    <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
+                        <button class="button button-sm handlinger-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
+        
+        <!-- Time Registration Modals for List View -->
+        <?php foreach ($entries as $entry): 
+            if ($entry['status'] === 'active' && in_array($role, ['admin', 'entreprenor'])):
+        ?>
+        <div id="timeModal<?php echo $entry['id']; ?>" class="time-modal" style="display: none;">
+            <div class="time-modal-overlay" onclick="closeTimeModal(<?php echo $entry['id']; ?>)"></div>
+            <div class="time-modal-content">
+                <div class="time-modal-header">
+                    <h3>⏱️ Tidsregistrering – WO <?php echo htmlspecialchars($entry['work_order_no'] ?? $entry['id']); ?></h3>
+                    <button class="time-modal-close" onclick="closeTimeModal(<?php echo $entry['id']; ?>)">&times;</button>
+                </div>
+                <div class="time-modal-body">
+                    <div class="time-entry-form">
+                        <div class="time-input-group">
+                            <label for="modal-time-date-<?php echo $entry['id']; ?>">📅 Dato:</label>
+                            <input type="date" 
+                                   id="modal-time-date-<?php echo $entry['id']; ?>" 
+                                   class="time-date-input" 
+                                   value="<?php echo date('Y-m-d'); ?>"
+                                   max="<?php echo date('Y-m-d'); ?>"
+                                   onchange="loadTimeEntryModal(<?php echo $entry['id']; ?>, this.value)">
+                        </div>
+                        <div class="time-input-group">
+                            <label for="modal-time-hours-<?php echo $entry['id']; ?>">🕐 Timer:</label>
+                            <input type="number" 
+                                   id="modal-time-hours-<?php echo $entry['id']; ?>" 
+                                   class="time-hours-input" 
+                                   min="0" 
+                                   max="24" 
+                                   step="0.25" 
+                                   placeholder="0.00">
+                        </div>
+                        <div class="time-input-group full-width">
+                            <label for="modal-time-desc-<?php echo $entry['id']; ?>">📝 Beskrivelse (valgfri):</label>
+                            <input type="text" 
+                                   id="modal-time-desc-<?php echo $entry['id']; ?>" 
+                                   class="time-desc-input" 
+                                   placeholder="Beskrivelse af arbejdet...">
+                        </div>
+                        <div class="time-actions">
+                            <button type="button" 
+                                    class="button button-success button-sm save-time-btn" 
+                                    onclick="saveTimeEntryModal(<?php echo $entry['id']; ?>)">
+                                💾 Gem timer
+                            </button>
+                            <button type="button" 
+                                    class="button button-secondary button-sm show-all-times-btn" 
+                                    onclick="toggleTimeHistoryModal(<?php echo $entry['id']; ?>)">
+                                📊 Vis alle timer
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Time history section -->
+                    <div class="time-history" id="modal-time-history-<?php echo $entry['id']; ?>" style="display: none;">
+                        <h5>📈 Tidshistorik</h5>
+                        <div class="time-history-content">
+                            <div class="loading">Indlæser...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php 
+            endif;
+        endforeach; 
+        ?>
         
         <!-- Card View -->
         <div id="cardView" class="card-view" style="display: none;">
@@ -648,6 +794,220 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             setTimeout(() => {
                 notification.classList.add('notification-show');
             }, 100);
+        }
+        
+        // Modal Functions
+        function openTimeModal(workOrderId) {
+            const modal = document.getElementById(`timeModal${workOrderId}`);
+            if (modal) {
+                modal.style.display = 'flex';
+                // Load current date's time entry
+                const dateInput = document.getElementById(`modal-time-date-${workOrderId}`);
+                if (dateInput) {
+                    loadTimeEntryModal(workOrderId, dateInput.value);
+                }
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeTimeModal(workOrderId) {
+            const modal = document.getElementById(`timeModal${workOrderId}`);
+            if (modal) {
+                modal.style.display = 'none';
+                // Restore body scroll
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function saveTimeEntryModal(workOrderId) {
+            const dateInput = document.getElementById(`modal-time-date-${workOrderId}`);
+            const hoursInput = document.getElementById(`modal-time-hours-${workOrderId}`);
+            const descInput = document.getElementById(`modal-time-desc-${workOrderId}`);
+            const modal = document.getElementById(`timeModal${workOrderId}`);
+            const saveBtn = modal.querySelector('.save-time-btn');
+            
+            const entryDate = dateInput.value;
+            const hours = parseFloat(hoursInput.value);
+            
+            // Check for invalid hours input (NaN from empty field)
+            if (isNaN(hours) || hours <= 0) {
+                showNotification('Indtast venligst et gyldigt antal timer større end 0.', 'error');
+                return;
+            }
+            const description = descInput.value.trim();
+            
+            // Enhanced input validation to match backend
+            if (!entryDate) {
+                showNotification('Vælg venligst en dato.', 'error');
+                return;
+            }
+            
+            // Date validation - no future dates, no dates older than 1 year
+            const entryDateObj = new Date(entryDate);
+            const today = new Date();
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            
+            if (entryDateObj > today) {
+                showNotification('Dato kan ikke være i fremtiden.', 'error');
+                return;
+            }
+            
+            if (entryDateObj < oneYearAgo) {
+                showNotification('Dato skal være inden for det sidste år.', 'error');
+                return;
+            }
+            
+            if (hours < 0 || hours > 24) {
+                showNotification('Timer skal være mellem 0 og 24.', 'error');
+                return;
+            }
+            
+            // Check for quarter-hour increments (0, 0.25, 0.5, 0.75, 1.0, etc.)
+            const quarterHours = hours * 4;
+            if (quarterHours !== Math.floor(quarterHours)) {
+                showNotification('Timer skal være i kvarte-times intervaller (0.25, 0.5, 0.75, osv.).', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = '⏳ Gemmer...';
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('action', 'save_time_entry');
+            formData.append('work_order_id', workOrderId);
+            formData.append('entry_date', entryDate);
+            formData.append('hours', hours);
+            formData.append('description', description);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Reset hours input, keep date and description
+                    hoursInput.value = '';
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Der opstod en fejl ved gemning af timer. Prøv igen.', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            });
+        }
+        
+        function loadTimeEntryModal(workOrderId, date) {
+            const hoursInput = document.getElementById(`modal-time-hours-${workOrderId}`);
+            const descInput = document.getElementById(`modal-time-desc-${workOrderId}`);
+            
+            if (!date) {
+                hoursInput.value = '';
+                descInput.value = '';
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('action', 'get_user_time_entry');
+            formData.append('work_order_id', workOrderId);
+            formData.append('entry_date', date);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    hoursInput.value = data.data.hours || '';
+                    descInput.value = data.data.description || '';
+                } else {
+                    hoursInput.value = '';
+                    descInput.value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading time entry:', error);
+            });
+        }
+        
+        function toggleTimeHistoryModal(workOrderId) {
+            const historyDiv = document.getElementById(`modal-time-history-${workOrderId}`);
+            const modal = document.getElementById(`timeModal${workOrderId}`);
+            const button = modal.querySelector('.show-all-times-btn');
+            
+            if (historyDiv.style.display === 'none') {
+                // Show history and load data
+                historyDiv.style.display = 'block';
+                button.textContent = '📊 Skjul timer';
+                loadTimeHistoryModal(workOrderId);
+            } else {
+                // Hide history
+                historyDiv.style.display = 'none';
+                button.textContent = '📊 Vis alle timer';
+            }
+        }
+        
+        function loadTimeHistoryModal(workOrderId) {
+            const modal = document.getElementById(`timeModal${workOrderId}`);
+            const contentDiv = modal.querySelector(`#modal-time-history-${workOrderId} .time-history-content`);
+            contentDiv.innerHTML = '<div class="loading">Indlæser...</div>';
+            
+            const formData = new FormData();
+            formData.append('action', 'get_time_entries');
+            formData.append('work_order_id', workOrderId);
+            
+            fetch('time_entry_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const entries = data.data.entries;
+                    const totalHours = data.data.total_hours;
+                    
+                    if (entries.length === 0) {
+                        contentDiv.innerHTML = '<p>Ingen tidsregistreringer fundet.</p>';
+                        return;
+                    }
+                    
+                    let html = `<div class="time-summary"><strong>Total timer: ${totalHours}</strong></div>`;
+                    html += '<div class="time-entries-list">';
+                    
+                    entries.forEach(entry => {
+                        html += `
+                            <div class="time-entry-item">
+                                <div class="time-entry-date">${entry.entry_date}</div>
+                                <div class="time-entry-hours">${entry.hours} timer</div>
+                                <div class="time-entry-user">${entry.username}</div>
+                                ${entry.description ? `<div class="time-entry-desc">${entry.description}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    contentDiv.innerHTML = html;
+                } else {
+                    contentDiv.innerHTML = `<p class="error">Fejl: ${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading time history:', error);
+                contentDiv.innerHTML = '<p class="error">Der opstod en fejl ved indlæsning af tidshistorik.</p>';
+            });
         }
         
         // Time Entry Functions
