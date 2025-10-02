@@ -380,7 +380,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 📋 Liste
             </button>
             <button id="cardViewBtn" class="view-btn" data-view="card">
-                🗂️ Kort
+                🗂️ Boksvisning
             </button>
         </div>
     </div>
