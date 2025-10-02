@@ -1165,15 +1165,20 @@ select.status-afsluttet option:hover {
 }
 
 /* Handlinger kolonne - uniforme knapper */
-.handlinger-btn {
+.handlinger-btn,
+.handlinger-btn.btn {
     width: 90px;
-    height: 28px;
-    padding: 3px 0;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    line-height: 1.2 !important;
+    font-size: 0.85rem !important;
+    height: auto !important;
     text-align: center;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
     margin: 0.1rem;
     box-sizing: border-box;
 }

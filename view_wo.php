@@ -483,15 +483,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     </div>
                 </td>
                 <td>
-                    <a class="button button-secondary button-sm handlinger-btn" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">Vis</a>
+                    <a class="btn btn-dark handlinger-btn" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">Vis</a>
                     <?php if ($role !== 'entreprenor'): ?>
-                        <a class="button button-sm handlinger-btn" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
+                        <a class="btn btn-primary handlinger-btn" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
                     <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
-                        <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">Slet</a>
+                        <a class="btn btn-danger handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">Slet</a>
                     <?php endif; ?>
                     <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
-                        <button class="button button-sm handlinger-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
+                        <button class="btn handlinger-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
                     <?php endif; ?>
                 </td>
             </tr>
