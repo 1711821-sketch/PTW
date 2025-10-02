@@ -1165,22 +1165,27 @@ select.status-afsluttet option:hover {
 }
 
 /* Handlinger kolonne - uniforme knapper */
-.handlinger-btn,
-.handlinger-btn.btn {
-    width: 90px;
-    padding-top: 2px !important;
-    padding-bottom: 2px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+.col-actions .button,
+.col-actions a.button,
+.col-actions button.button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
     line-height: 1.2 !important;
-    font-size: 0.85rem !important;
+    padding: 2px 10px !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.5rem !important;
+    margin: 0.1rem !important;
+    width: 88px !important;
     height: auto !important;
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0.1rem;
-    box-sizing: border-box;
+    min-height: 26px !important;
+    box-sizing: border-box !important;
+}
+
+/* Ikoner må ikke skubbe højden */
+.col-actions .button i { 
+    margin: 0 2px; 
 }
 
 /* Responsive forbedringer */

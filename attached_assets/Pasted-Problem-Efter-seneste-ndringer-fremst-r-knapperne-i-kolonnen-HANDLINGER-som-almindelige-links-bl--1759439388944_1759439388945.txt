@@ -1,0 +1,134 @@
+Problem
+
+Efter seneste ændringer fremstår knapperne i kolonnen HANDLINGER som almindelige links (blå og understreget), og den grønne ikonknap er for høj. Årsag: en global override af .btn/link-styles eller manglende btn-klasser på elementerne.
+
+Mål
+
+Genskab rigtige Bootstrap-knapper for Vis / Rediger / Slet / ⏱️.
+
+Gør dem lavere i højden (ca. 25–28 px) uden at påvirke andre knapper i systemet.
+
+⏱️ vises kun når status = AKTIV.
+
+Tekst/ikoner skal være vertikalt centreret.
+
+1) Ryd op i CSS (meget vigtigt)
+
+Åbn style.css og sørg for, at der ikke findes globale overrides som ændrer Bootstrap-knapper eller links:
+
+Fjern eller kommentér ALLE regler der rammer bredt, fx:
+
+/* MÅ IKKE VÆRE AKTIVT: */
+/* .btn { ... }             */
+/* a.btn { ... }            */
+/* .btn a { ... }           */
+/* .btn * { line-height:... } */
+/* a { text-decoration: underline !important; } */
+
+
+Hvis vi vil style kun HANDLINGER-knapperne, gør vi det med en lokal klasse, ikke global .btn.
+
+2) Tilføj lokal, sikker styling til HANDLINGER
+
+I style.css (nederst), tilføj denne lokale override, der kun rammer knapper i actions-kolonnen:
+
+/* Kolonne-namespace så vi ikke rammer andre knapper */
+.col-actions .btn {
+  display: inline-flex;              /* centrerer indholdet */
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;  /* aldrig links-streg under */
+  line-height: 1.2 !important;       /* kompakt højde */
+  padding: 2px 10px !important;      /* lavere højde */
+  font-size: 0.875rem;               /* en smule mindre tekst */
+  border-radius: .5rem;              /* pæn afrunding som før */
+}
+
+/* Ikoner må ikke skubbe højden */
+.col-actions .btn i { margin: 0 2px; }
+
+/* Valgfrit: Ens bredde, hvis ønsket (ellers slet den) */
+/* .col-actions .btn { min-width: 88px; } */
+
+/* Grøn tid-knap (hvis vi vil give den en fast farve) */
+/* Brug evt. bare btn-outline-secondary for neutral stil */
+.col-actions .btn-time {
+  /* Hvis du hellere vil have grøn: skift klassen i HTML til btn-success i stedet */
+}
+
+
+Bemærk: Vi ændrer kun .col-actions .btn, ikke .btn globalt.
+
+3) Opdater HTML i view_wo.php
+
+Find stedet hvor HANDLINGER-kolonnen rendres for hver række. Pak knapperne ind i en container med klassen col-actions og giv hver knap Bootstrap-klasserne + en lokal klasse action-btn (valgfri) – vigtigst er, at de har btn ... og ligger inde i .col-actions.
+
+<td class="text-end col-actions">
+  <div class="d-inline-flex gap-2">
+    <!-- VIS -->
+    <a href="view_single_wo.php?id=<?= (int)$row['id'] ?>"
+       class="btn btn-dark action-btn">Vis</a>
+
+    <!-- REDIGER -->
+    <a href="edit_wo.php?id=<?= (int)$row['id'] ?>"
+       class="btn btn-primary action-btn">Rediger</a>
+
+    <!-- SLET -->
+    <form method="post" action="delete_wo.php" class="d-inline"
+          onsubmit="return confirm('Slette denne arbejdstilladelse?')">
+      <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+      <button type="submit" class="btn btn-danger action-btn">Slet</button>
+    </form>
+
+    <!-- ⏱️ TID – KUN AKTIV -->
+    <?php if (isset($row['status']) && strtoupper($row['status']) === 'AKTIV'): ?>
+      <button type="button"
+              class="btn btn-outline-secondary action-btn btn-time"
+              data-bs-toggle="modal"
+              data-bs-target="#timeModal<?= (int)$row['id'] ?>">
+        <i class="fas fa-clock"></i>
+      </button>
+    <?php endif; ?>
+  </div>
+
+  <!-- Tidsregistreringsmodal (genbrug formular fra kortvisning) -->
+  <div class="modal fade" id="timeModal<?= (int)$row['id'] ?>" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Tidsregistrering – WO <?= (int)$row['id'] ?></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <?php
+            $current_wo_id = (int)$row['id'];   // hvis time_form.php forventer en variabel
+            include 'time_form.php';            // samme formular som i kortvisning
+          ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</td>
+
+
+Vigtigt: Sørg for at alle fire elementer har class="btn …" – hvis en mister btn, falder den tilbage til link-look (som på dit screenshot).
+
+4) Indlæsningsrækkefølge
+
+I <head>: Sørg for at Bootstrap CSS indlæses før din style.css, så vores lokale overrides vinder:
+
+<link rel="stylesheet" href="vendor/bootstrap.min.css">
+<link rel="stylesheet" href="style.css">   <!-- vores overrides sidst -->
+<link rel="stylesheet" href="vendor/fontawesome.min.css">
+
+5) Test-tjekliste
+
+Hard-reload (Ctrl+F5) for at undgå cache.
+
+Knapper ser ud som knapper (ingen understregning, korrekt baggrund).
+
+Højden ~25–28 px, tekst/ikoner centreret.
+
+⏱️ vises kun hvor status = AKTIV.
+
+Modal åbner og viser samme tidsformular som i kortvisning.
