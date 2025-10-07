@@ -178,6 +178,17 @@ try {
             background-image: url('https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-grey.png') !important;
         }
         
+        /* Work status indicator (added via JavaScript content) */
+        div.marker-work-status::after {
+            position: absolute !important;
+            top: 2px !important;
+            left: 2px !important;
+            font-size: 11px !important;
+            text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
+            z-index: 1000 !important;
+            display: block !important;
+        }
+        
         .status-indicator {
             display: inline-flex;
             align-items: center;
@@ -384,7 +395,7 @@ try {
             <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
                 <input type="text" id="search" class="search-box" placeholder="🔍 Søg i beskrivelse, jobansvarlig, entreprenør..." style="margin-bottom: 0; flex: 1; min-width: 200px;">
                 <div style="padding: 0.5rem 0.75rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">
-                    <strong style="color: var(--text-primary);">Forklaring:</strong> ● = SJA tilknyttet
+                    <strong style="color: var(--text-primary);">Forklaring:</strong> ● = SJA tilknyttet | 🔨 = Arbejder | ⏹️ = Stoppet
                 </div>
             </div>
             
@@ -504,17 +515,57 @@ try {
                 // Check if this work order has SJA
                 var hasSJA = workOrdersWithSJA.includes(e.id);
                 
+                // Parse work status for today
+                var workStatus = null;
+                var workStatusIcon = '';
+                var today = new Date().toLocaleDateString('da-DK', {day: '2-digit', month: '2-digit', year: 'numeric'});
                 
-                // Choose icon based on status and SJA presence
-                var icon;
-                if (status === 'planning') {
-                    icon = hasSJA ? blueIconBlack : blueIcon;
-                } else if (status === 'active') {
-                    icon = hasSJA ? greenIconBlack : greenIcon;
-                } else {
-                    icon = hasSJA ? grayIconBlack : grayIcon;
+                try {
+                    if (e.daily_work_status) {
+                        var dailyStatus = typeof e.daily_work_status === 'string' 
+                            ? JSON.parse(e.daily_work_status) 
+                            : e.daily_work_status;
+                        
+                        if (dailyStatus.date === today) {
+                            workStatus = dailyStatus.status;
+                            workStatusIcon = dailyStatus.status === 'working' ? '🔨' : '⏹️';
+                        }
+                    }
+                } catch (e) {
+                    // Ignore JSON parse errors
                 }
                 
+                // Choose icon based on status, SJA presence, and work status
+                var icon;
+                
+                // If work status exists, use custom divIcon with work status
+                if (workStatus) {
+                    var className = 'custom-marker-black marker-work-status';
+                    if (status === 'planning') {
+                        className += ' marker-blue-black';
+                    } else if (status === 'active') {
+                        className += ' marker-green-black';
+                    } else {
+                        className += ' marker-gray-black';
+                    }
+                    
+                    icon = L.divIcon({
+                        className: className,
+                        html: '<style>.marker-work-status::after{content:"' + workStatusIcon + '";}</style>',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34]
+                    });
+                } else {
+                    // No work status, use normal icons
+                    if (status === 'planning') {
+                        icon = hasSJA ? blueIconBlack : blueIcon;
+                    } else if (status === 'active') {
+                        icon = hasSJA ? greenIconBlack : greenIcon;
+                    } else {
+                        icon = hasSJA ? grayIconBlack : grayIcon;
+                    }
+                }
                 
                 var marker = L.marker([parseFloat(lat), parseFloat(lng)], { icon: icon });
                 
