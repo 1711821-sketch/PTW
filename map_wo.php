@@ -570,6 +570,11 @@ try {
                         className += ' marker-gray-black';
                     }
                     
+                    // Add pulsing effect when work is active (working status)
+                    if (workStatus === 'working') {
+                        className += ' marker-working-pulse';
+                    }
+                    
                     icon = L.divIcon({
                         className: className,
                         html: '<style>.marker-work-status::after{content:"' + workStatusIcon + '";}</style>',
