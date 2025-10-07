@@ -542,6 +542,21 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $oaApproved = (isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today);
                 $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
                 $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
+                
+                // Parse daily work status
+                $workStatus = json_decode($entry['daily_work_status'] ?? '{}', true) ?? [];
+                $workStatusToday = (isset($workStatus['date']) && $workStatus['date'] === $today);
+                $workStatusIcon = '';
+                $workStatusText = '';
+                if ($workStatusToday) {
+                    if ($workStatus['status'] === 'working') {
+                        $workStatusIcon = '🔨';
+                        $workStatusText = 'Arbejder';
+                    } elseif ($workStatus['status'] === 'stopped') {
+                        $workStatusIcon = '⏹️';
+                        $workStatusText = 'Stoppet';
+                    }
+                }
             ?>
             <tr data-status="<?php echo htmlspecialchars($status); ?>">
                 <td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td>
@@ -556,7 +571,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         echo '<br><small>' . htmlspecialchars($kontakt) . '</small>';
                     }
                 ?></td>
-                <td><span class="<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span></td>
+                <td>
+                    <span class="<?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
+                    <?php if ($workStatusIcon): ?>
+                        <span id="work-status-icon-<?php echo $entry['id']; ?>" title="<?php echo htmlspecialchars($workStatusText); ?>" style="margin-left: 0.5rem; font-size: 1.1em;"><?php echo $workStatusIcon; ?></span>
+                    <?php else: ?>
+                        <span id="work-status-icon-<?php echo $entry['id']; ?>"></span>
+                    <?php endif; ?>
+                </td>
                 <td>
                     <div>
                         <strong title="Opgaveansvarlige">OA:</strong> <span id="oa-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>"><?php echo $oaApproved ? '✅' : '❌'; ?></span>
@@ -593,6 +615,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php endif; ?>
                     <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
                         <button class="button button-success" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
+                    <?php endif; ?>
+                    <?php if ($role === 'entreprenor' && $status === 'active'): ?>
+                        <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
+                            <button id="work-btn-<?php echo $entry['id']; ?>" class="button button-primary" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')">🔨 Start</button>
+                        <?php else: ?>
+                            <button id="work-btn-<?php echo $entry['id']; ?>" class="button button-warning" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop</button>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -690,6 +719,21 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
                 $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
                 
+                // Parse daily work status
+                $workStatus = json_decode($entry['daily_work_status'] ?? '{}', true) ?? [];
+                $workStatusToday = (isset($workStatus['date']) && $workStatus['date'] === $today);
+                $workStatusIcon = '';
+                $workStatusText = '';
+                if ($workStatusToday) {
+                    if ($workStatus['status'] === 'working') {
+                        $workStatusIcon = '🔨';
+                        $workStatusText = 'Arbejder';
+                    } elseif ($workStatus['status'] === 'stopped') {
+                        $workStatusIcon = '⏹️';
+                        $workStatusText = 'Stoppet';
+                    }
+                }
+                
                 $firma = $entry['entreprenor_firma'] ?? '';
                 $kontakt = $entry['entreprenor_kontakt'] ?? '';
             ?>
@@ -701,6 +745,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                             <p class="card-header-description"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
                         </div>
                         <span class="card-status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
+                        <?php if ($workStatusIcon): ?>
+                            <span id="card-work-status-icon-<?php echo $entry['id']; ?>" title="<?php echo htmlspecialchars($workStatusText); ?>" style="margin-left: 0.5rem; font-size: 1.3em;"><?php echo $workStatusIcon; ?></span>
+                        <?php else: ?>
+                            <span id="card-work-status-icon-<?php echo $entry['id']; ?>"></span>
+                        <?php endif; ?>
                     </div>
                     <?php if (!empty($entry['p_description'])): ?>
                         <div class="card-p-description">
@@ -862,6 +911,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
+                    <?php endif; ?>
+                    <?php if ($role === 'entreprenor' && $status === 'active'): ?>
+                        <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
+                            <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-primary button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')">🔨 Start arbejde</button>
+                        <?php else: ?>
+                            <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-warning button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop arbejde</button>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1423,6 +1479,114 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     callback(false);
                 }
             };
+        }
+        
+        // Update work status (for entrepreneurs)
+        function updateWorkStatus(woId, newStatus) {
+            // Create FormData for POST request
+            const formData = new FormData();
+            formData.append('ajax_work_status', '1');
+            formData.append('wo_id', woId);
+            formData.append('status', newStatus);
+            
+            // Get button elements
+            const listButton = document.getElementById(`work-btn-${woId}`);
+            const cardButton = document.getElementById(`card-work-btn-${woId}`);
+            
+            // Disable buttons and show loading state
+            if (listButton) {
+                listButton.disabled = true;
+                listButton.textContent = '⏳ Opdaterer...';
+            }
+            if (cardButton) {
+                cardButton.disabled = true;
+                cardButton.textContent = '⏳ Opdaterer...';
+            }
+            
+            fetch('view_wo.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update icon in both views
+                    const listIcon = document.getElementById(`work-status-icon-${woId}`);
+                    const cardIcon = document.getElementById(`card-work-status-icon-${woId}`);
+                    
+                    if (listIcon) {
+                        listIcon.textContent = data.icon;
+                        listIcon.title = data.status === 'working' ? 'Arbejder' : 'Stoppet';
+                        listIcon.style.marginLeft = '0.5rem';
+                        listIcon.style.fontSize = '1.1em';
+                    }
+                    if (cardIcon) {
+                        cardIcon.textContent = data.icon;
+                        cardIcon.title = data.status === 'working' ? 'Arbejder' : 'Stoppet';
+                        cardIcon.style.marginLeft = '0.5rem';
+                        cardIcon.style.fontSize = '1.3em';
+                    }
+                    
+                    // Update buttons based on new status
+                    if (data.status === 'working') {
+                        if (listButton) {
+                            listButton.textContent = '⏹️ Stop';
+                            listButton.className = 'button button-warning';
+                            listButton.onclick = function() { updateWorkStatus(woId, 'stopped'); };
+                        }
+                        if (cardButton) {
+                            cardButton.textContent = '⏹️ Stop arbejde';
+                            cardButton.className = 'button button-warning button-sm';
+                            cardButton.onclick = function() { updateWorkStatus(woId, 'stopped'); };
+                        }
+                    } else {
+                        if (listButton) {
+                            listButton.textContent = '🔨 Start';
+                            listButton.className = 'button button-primary';
+                            listButton.onclick = function() { updateWorkStatus(woId, 'working'); };
+                        }
+                        if (cardButton) {
+                            cardButton.textContent = '🔨 Start arbejde';
+                            cardButton.className = 'button button-primary button-sm';
+                            cardButton.onclick = function() { updateWorkStatus(woId, 'working'); };
+                        }
+                    }
+                    
+                    // Re-enable buttons
+                    if (listButton) listButton.disabled = false;
+                    if (cardButton) cardButton.disabled = false;
+                    
+                    // Show success notification
+                    showNotification(data.message, 'success');
+                } else {
+                    // Show error notification
+                    showNotification(data.message, 'error');
+                    
+                    // Reset buttons
+                    if (listButton) {
+                        listButton.disabled = false;
+                        listButton.textContent = newStatus === 'working' ? '🔨 Start' : '⏹️ Stop';
+                    }
+                    if (cardButton) {
+                        cardButton.disabled = false;
+                        cardButton.textContent = newStatus === 'working' ? '🔨 Start arbejde' : '⏹️ Stop arbejde';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Der opstod en fejl. Prøv igen.', 'error');
+                
+                // Reset buttons
+                if (listButton) {
+                    listButton.disabled = false;
+                    listButton.textContent = newStatus === 'working' ? '🔨 Start' : '⏹️ Stop';
+                }
+                if (cardButton) {
+                    cardButton.disabled = false;
+                    cardButton.textContent = newStatus === 'working' ? '🔨 Start arbejde' : '⏹️ Stop arbejde';
+                }
+            });
         }
         
         // View switching functionality
