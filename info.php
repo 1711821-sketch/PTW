@@ -215,7 +215,7 @@ function formatDanishDate($date) {
         <div class="navbar-links">
             <a href="index.php">Forside</a>
             <a href="dashboard.php">Dashboard</a>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>

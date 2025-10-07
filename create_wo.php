@@ -185,7 +185,7 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></title>
+<title><?php echo $edit_id ? 'Rediger PTW' : 'Opret ny PTW'; ?></title>
 <?php include 'pwa-head.php'; ?>
 <!-- Include global stylesheet for modern responsive design -->
 <link rel="stylesheet" href="style.css">
@@ -235,9 +235,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         </button>
         <div class="navbar-links">
             <a href="index.php">Forside</a>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role ?? '', ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret ny arbejdstilladelse</a>
+                <a href="create_wo.php">Opret ny PTW</a>
             <?php endif; ?>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
@@ -250,7 +250,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         </div>
     </nav>
     <div class="container">
-<h1><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></h1>
+<h1><?php echo $edit_id ? 'Rediger PTW' : 'Opret ny PTW'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
 
 <?php if (isset($error_message)): ?>
@@ -294,7 +294,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <div class="card-body">
       <div class="form-row">
         <div class="form-group">
-          <label for="work_order_no">Arbejdstilladelse Nr.</label>
+          <label for="work_order_no">PTW Nr.</label>
           <input type="text" id="work_order_no" name="work_order_no" value="<?php echo htmlspecialchars($current['work_order_no']); ?>">
         </div>
         <div class="form-group">
@@ -537,17 +537,17 @@ document.getElementById('parseBtn').addEventListener('click', async function () 
   }
   const flat = rawText.replace(/\s+/g, ' ').trim();
   let logLines = [];
-  // 1) Work order number (Arbejdstilladelse Nr.).  Try Danish and English labels.
+  // 1) Work order number (PTW Nr.).  Try Danish and English labels.
   let arMatch = flat.match(/Arbejdstilladelse\s*Nr\.?\s*([0-9][A-Za-z0-9\-]*)/i);
   let enMatch = null;
   if (!arMatch) enMatch = flat.match(/Work\s*Order\s*(?:No\.?|Number)?\s*([0-9][A-Za-z0-9\-]*)/i);
   const woValue = arMatch ? arMatch[1] : (enMatch ? enMatch[1] : null);
   if (woValue) {
     markField('work_order_no', true, woValue);
-    logLines.push('<span class="found">✔ Arbejdstilladelse Nr.: ' + woValue + '</span>');
+    logLines.push('<span class="found">✔ PTW Nr.: ' + woValue + '</span>');
   } else {
     markField('work_order_no', false);
-    logLines.push('<span class="missing">✘ Arbejdstilladelse Nr. IKKE fundet</span>');
+    logLines.push('<span class="missing">✘ PTW Nr. IKKE fundet</span>');
   }
   // 2) Beskrivelser: capture multiple "Beskrivelse" sections. The first
   // occurrence is tied to the Work Order description and any second
@@ -754,7 +754,7 @@ document.getElementById('status').addEventListener('change', function(e) {
         e.target.value = 'planning';
         
         // Show error message in custom modal
-        showErrorModal('Du kan ikke oprette arbejdstilladelse da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
+        showErrorModal('Du kan ikke oprette PTW da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
       }
     });
   }

@@ -375,9 +375,9 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             <a href="create_sja.php">Opret SJA</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret arbejdstilladelse</a>
+                <a href="create_wo.php">Opret PTW</a>
             <?php endif; ?>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php" class="active">Dashboard</a>
             <a href="info.php">Informationer</a>

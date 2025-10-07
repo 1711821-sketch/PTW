@@ -1,5 +1,5 @@
 <?php
-// Displays a list of all arbejdstilladelser stored in the system. Entries can
+// Displays a list of all PTW?r stored in the system. Entries can
 // be filtered by status and edited or deleted (admin only). Only
 // authenticated users can access this page.
 
@@ -42,7 +42,7 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
             error_log("AJAX approval failed - Work order not found - User: $currentUser, WO ID: $approveId");
             echo json_encode([
                 'success' => false,
-                'message' => 'Arbejdstilladelse ikke fundet.'
+                'message' => 'PTW ikke fundet.'
             ]);
             exit();
         }
@@ -54,7 +54,7 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
                 error_log("SECURITY VIOLATION: Entrepreneur attempted AJAX approval of another firm's work order - User: $currentUser, User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma'] . ", WO ID: $approveId");
                 echo json_encode([
                     'success' => false,
-                    'message' => 'Du har ikke tilladelse til at godkende denne arbejdstilladelse.'
+                    'message' => 'Du har ikke tilladelse til at godkende denne PTW.'
                 ]);
                 exit();
             }
@@ -71,7 +71,7 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         if (isset($approvals[$approveRoleLc]) && $approvals[$approveRoleLc] === $today) {
             echo json_encode([
                 'success' => false,
-                'message' => 'Arbejdstilladelsen er allerede godkendt for denne rolle i dag.'
+                'message' => 'PTW\'en er allerede godkendt for denne rolle i dag.'
             ]);
             exit();
         }
@@ -106,7 +106,7 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
             echo json_encode([
                 'success' => true,
-                'message' => 'Arbejdstilladelsen er blevet godkendt som ' . ucfirst($approveRole) . '.'
+                'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.'
             ]);
         } else {
             error_log("AJAX approval failed - Database update failed - User: $currentUser, WO ID: $approveId");
@@ -226,7 +226,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         if (!$workOrder) {
             error_log("Delete attempt failed - Work order not found - User: $currentUser, WO ID: $delete_id");
-            $msg = 'Kunne ikke finde arbejdstilladelse til sletning.';
+            $msg = 'Kunne ikke finde PTW? til sletning.';
         } else {
             // Delete work order and all related entries (time entries and SJA entries)
             $db->execute("DELETE FROM time_entries WHERE work_order_id = ?", [$delete_id]);
@@ -253,13 +253,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $msg = 'Arbejdstilladelse er blevet slettet.';
             } else {
                 error_log("Delete failed - Database error - User: $currentUser, WO ID: $delete_id");
-                $msg = 'Fejl ved sletning af arbejdstilladelse.';
+                $msg = 'Fejl ved sletning af PTW?.';
             }
         }
         
     } catch (Exception $e) {
         error_log("Delete error - User: $currentUser, WO ID: $delete_id, Error: " . $e->getMessage());
-        $msg = 'Fejl ved sletning af arbejdstilladelse.';
+        $msg = 'Fejl ved sletning af PTW?.';
     }
 }
 ?>
@@ -267,7 +267,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Alle Arbejdstilladelser</title>
+    <title>Alle PTW'er</title>
     <?php include 'pwa-head.php'; ?>
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
@@ -358,9 +358,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </button>
         <div class="navbar-links">
             <a href="index.php">Forside</a>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret ny arbejdstilladelse</a>
+                <a href="create_wo.php">Opret ny PTW?</a>
             <?php endif; ?>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
@@ -375,7 +375,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     </nav>
     <div class="container">
     <div class="header-section">
-        <h1>Oversigt over arbejdstilladelser</h1>
+        <h1>PTW-oversigt</h1>
         <div class="view-toggle">
             <button id="listViewBtn" class="view-btn active" data-view="list">
                 📋 Liste
@@ -410,7 +410,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         <!-- List View -->
         <div id="listView" class="table-wrapper">
-            <table id="arbejdstilladelseTable">
+            <table id="PTW?Table">
                 <thead>
                     <tr>
                         <th title="Arbejdstilladelse NR.">A nr.</th>
@@ -489,7 +489,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <a class="button" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
                     <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
-                        <a class="button button-danger" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">Slet</a>
+                        <a class="button button-danger" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
                     <?php endif; ?>
                     <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
                         <button class="button button-success" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
@@ -761,7 +761,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <a class="button button-sm handlinger-btn" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
                     <?php endif; ?>
                     <?php if ($role === 'admin'): ?>
-                        <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne arbejdstilladelse?');">Slet</a>
+                        <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -1302,7 +1302,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             modal.className = 'custom-modal';
             modal.innerHTML = `
                 <div class="modal-content">
-                    <p>Du har nu godkendt arbejdstilladelse for denne opgave, være opmærksom på at du først kan påbegynde opgaven når Driften og Opgaveansvarlig også har godkendt opgaven. Jeg bekræfter at jeg først påbegynder opgaven når Driften og Opgaveansvarlige også har godkendt opgaven</p>
+                    <p>Du har nu godkendt PTW for denne opgave, være opmærksom på at du først kan påbegynde opgaven når Driften og Opgaveansvarlig også har godkendt opgaven. Jeg bekræfter at jeg først påbegynder opgaven når Driften og Opgaveansvarlige også har godkendt opgaven</p>
                     <div class="modal-buttons">
                         <button class="modal-btn btn-yes">OK - Jeg forstår</button>
                     </div>
@@ -1358,7 +1358,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             var showCompleted = document.getElementById('filterCompleted').checked;
             
             // Filter table rows
-            var rows = document.querySelectorAll('#arbejdstilladelseTable tr[data-status]');
+            var rows = document.querySelectorAll('#PTW?Table tr[data-status]');
             rows.forEach(function(row) {
                 var status = row.getAttribute('data-status');
                 if ((status === 'planning' && !showPlanning) ||
@@ -1419,10 +1419,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         });
         </script>
     <?php else: ?>
-        <p>Der er endnu ingen arbejdstilladelser oprettet.</p>
+        <p>Der er endnu ingen PTW?r oprettet.</p>
     <?php endif; ?>
     <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-        <p><a href="create_wo.php">Opret ny arbejdstilladelse</a></p>
+        <p><a href="create_wo.php">Opret ny PTW?</a></p>
     <?php endif; ?>
     <p><a href="map_wo.php">Se oversigtskort</a></p>
     <p><a href="index.php">Tilbage til forsiden</a></p>

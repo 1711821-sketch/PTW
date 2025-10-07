@@ -213,7 +213,7 @@ if ($statusVal === 'planning') {
 <body>
     <!-- Top navigation bar -->
     <nav class="navbar">
-        <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+        <a href="view_wo.php">PTW-oversigt</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
             <a href="create_wo.php">Opret ny arbejdstilladelse</a>
         <?php endif; ?>

@@ -144,7 +144,7 @@ $recipients = $smsNotifier->getRecipients();
         </button>
         <div class="navbar-links">
             <a href="index.php">Forside</a>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">SMS Notifikationer</a>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>)</span>
