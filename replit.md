@@ -1,8 +1,8 @@
-# Arbejdstilladelsessystem
+# PTW System (Permit To Work)
 
 ## Overview
 
-A web-based arbejdstilladelsessystem designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles arbejdstilladelse creation, approval workflows, safety job analysis (SJA) with comprehensive version history, and role-based access control. Built with PHP backend using PostgreSQL database for data persistence.
+A web-based PTW (Permit To Work) system designed for coordinating work between different stakeholders including administrators, entrepreneurs (contractors), task managers (opgaveansvarlig), and operations (drift) personnel. The system handles PTW creation, approval workflows, safety job analysis (SJA) with comprehensive version history, and role-based access control. Built with PHP backend using PostgreSQL database for data persistence.
 
 ## User Preferences
 
@@ -35,7 +35,7 @@ Preferred communication style: Simple, everyday language.
 - **Status Management**: Work order status transitions based on approval completion
 
 ### Data Architecture
-- **Arbejdstilladelser**: Structured data with approval status, location coordinates, and stakeholder information
+- **PTW (Permits To Work)**: Structured data with approval status, location coordinates, and stakeholder information
 - **Safety Job Analysis**: Risk assessment forms with hazard identification and control measures
 - **User Management**: Role-based user accounts with company associations for entrepreneurs
 
@@ -96,6 +96,13 @@ Preferred communication style: Simple, everyday language.
     - Reduced label width from 50px to 38px (OA:, Drift:, Ent:)
     - Added layout robustness with border-spacing: 0 and text-overflow protection
     - Labels use white-space: nowrap with ellipsis overflow handling
+  - **Terminology Change** (October 7, 2025):
+    - Complete system-wide rebrand from "Arbejdstilladelse" to "PTW" (Permit To Work)
+    - Updated all user-facing text, navigation menus, page titles, and UI labels
+    - Modified manifest.json app name to "PTW System"
+    - Changed login header from "Arbejdsflow for Interterminals" to "PTW System - Interterminals"
+    - Updated all error messages and form labels to use PTW terminology
+    - Database structure and backend logic remain unchanged (still uses work_orders table)
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
@@ -114,12 +121,12 @@ Preferred communication style: Simple, everyday language.
   - Graceful degradation when data sections fail to load
 
 ### Mobile Optimization & PWA Features (October 2025)
-- **Progressive Web App (PWA)**: Full PWA implementation with offline capability and installable on home screen
+- **Progressive Web App (PWA)**: Full PWA implementation installable on home screen
   - manifest.json with app metadata, icons, and display configuration
-  - Service Worker for offline functionality and caching
   - PWA meta tags on all pages for iOS and Android compatibility
   - Standalone display mode for app-like experience without browser chrome
   - Theme color and status bar styling for native app feel
+  - **Note**: Service Worker removed due to Safari compatibility issues (was blocking PHP redirects)
 - **Responsive Design**: Comprehensive mobile-first responsive CSS
   - Media queries for phones (≤640px), tablets (641-1024px), and landscape orientation
   - Touch-friendly interactions with 44px minimum touch targets
