@@ -31,7 +31,7 @@ class SMSNotifier {
                 'opgaveansvarlig',
                 'drift'
             ],
-            'message_template' => "besked fra Interterminals workflow Der er oprettet ny Arbejdstilladelse. åbne workfol på http://edinlink.com"
+            'message_template' => "besked fra Interterminals workflow Der er oprettet ny PTW. åbne workfol på http://edinlink.com"
         ];
     }
     
@@ -136,7 +136,7 @@ class SMSNotifier {
             return ['success' => false, 'message' => 'Twilio not configured'];
         }
         
-        $message = $testMessage ?? "Test besked fra arbejdstilladelse system. SMS notifikationer fungerer korrekt.";
+        $message = $testMessage ?? "Test besked fra PTW system. SMS notifikationer fungerer korrekt.";
         
         try {
             $result = $this->client->messages->create(

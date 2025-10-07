@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
     }
     // Security check: Entrepreneur can only upload to their own firm's work orders
     elseif ($entry['entreprenor_firma'] !== $userFirma) {
-        $upload_error = 'Du kan kun uploade billeder til dit eget firmas PTW'er.';
+        $upload_error = 'Du kan kun uploade billeder til dit eget firmas PTW\'er.';
         error_log("SECURITY VIOLATION: Entrepreneur $currentUser attempted to upload image to another firm's work order. User Firma: $userFirma, WO Firma: " . $entry['entreprenor_firma']);
     }
     // Check if file was uploaded
@@ -215,7 +215,7 @@ if ($statusVal === 'planning') {
     <nav class="navbar">
         <a href="view_wo.php">PTW-oversigt</a>
         <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny arbejdstilladelse</a>
+            <a href="create_wo.php">Opret ny PTW</a>
         <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Include Dashboard link for consistency with other pages -->

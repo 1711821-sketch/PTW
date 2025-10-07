@@ -163,7 +163,7 @@ $recipients = $smsNotifier->getRecipients();
         
         <div class="config-info">
             <h3>📱 Konfiguration</h3>
-            <p>SMS notifikationer sendes automatisk når nye arbejdstilladelser oprettes.</p>
+            <p>SMS notifikationer sendes automatisk når nye PTWr oprettes.</p>
             <p><strong>Krav:</strong> Twilio API nøgler skal være konfigureret som miljøvariabler:</p>
             <ul>
                 <li>TWILIO_ACCOUNT_SID</li>

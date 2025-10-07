@@ -301,7 +301,7 @@ document.getElementById('status').addEventListener('change', function(e) {
         e.target.value = 'planning';
         
         // Show error message in custom modal
-        showErrorModal('Du kan ikke oprette arbejdstilladelse da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
+        showErrorModal('Du kan ikke oprette PTW da du ikke har udarbejdet eller har planen om at udarbejde nødvendige tilladelser/vurderinger');
       }
     });
   }

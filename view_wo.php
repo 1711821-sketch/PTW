@@ -226,7 +226,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         if (!$workOrder) {
             error_log("Delete attempt failed - Work order not found - User: $currentUser, WO ID: $delete_id");
-            $msg = 'Kunne ikke finde PTW? til sletning.';
+            $msg = 'Kunne ikke finde PTW til sletning.';
         } else {
             // Delete work order and all related entries (time entries and SJA entries)
             $db->execute("DELETE FROM time_entries WHERE work_order_id = ?", [$delete_id]);
@@ -250,16 +250,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     $entries = [];
                 }
                 
-                $msg = 'Arbejdstilladelse er blevet slettet.';
+                $msg = 'PTW er blevet slettet.';
             } else {
                 error_log("Delete failed - Database error - User: $currentUser, WO ID: $delete_id");
-                $msg = 'Fejl ved sletning af PTW?.';
+                $msg = 'Fejl ved sletning af PTW.';
             }
         }
         
     } catch (Exception $e) {
         error_log("Delete error - User: $currentUser, WO ID: $delete_id, Error: " . $e->getMessage());
-        $msg = 'Fejl ved sletning af PTW?.';
+        $msg = 'Fejl ved sletning af PTW.';
     }
 }
 ?>
@@ -410,10 +410,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         <!-- List View -->
         <div id="listView" class="table-wrapper">
-            <table id="PTW?Table">
+            <table id="ptwTable">
                 <thead>
                     <tr>
-                        <th title="Arbejdstilladelse NR.">A nr.</th>
+                        <th title="PTW NR.">PTW nr.</th>
                         <th>Beskrivelse</th>
                         <th>P-beskrivelse</th>
                         <th>Jobansvarlig</th>

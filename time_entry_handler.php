@@ -43,7 +43,7 @@ try {
             
             // Validate input
             if ($workOrderId <= 0) {
-                echo json_encode(['success' => false, 'message' => 'Ugyldig arbejdstilladelse ID.']);
+                echo json_encode(['success' => false, 'message' => 'Ugyldig PTW ID.']);
                 exit();
             }
             
@@ -81,7 +81,7 @@ try {
             // Enhanced work order access validation
             $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
             if (!$workOrder) {
-                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
+                echo json_encode(['success' => false, 'message' => 'PTW ikke fundet.']);
                 exit();
             }
             
@@ -90,7 +90,7 @@ try {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
                 if ($workOrder['entreprenor_firma'] !== $firma) {
                     error_log("Unauthorized time entry attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
-                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer på denne arbejdstilladelse.']);
+                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at registrere timer på denne PTW.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin'])) {
@@ -134,14 +134,14 @@ try {
             $workOrderId = intval($_POST['work_order_id'] ?? 0);
             
             if ($workOrderId <= 0) {
-                echo json_encode(['success' => false, 'message' => 'Ugyldig arbejdstilladelse ID.']);
+                echo json_encode(['success' => false, 'message' => 'Ugyldig PTW ID.']);
                 exit();
             }
             
             // Enhanced work order validation for viewing
             $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
             if (!$workOrder) {
-                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
+                echo json_encode(['success' => false, 'message' => 'PTW ikke fundet.']);
                 exit();
             }
             
@@ -150,7 +150,7 @@ try {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
                 if ($workOrder['entreprenor_firma'] !== $firma) {
                     error_log("Unauthorized time view attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
-                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne arbejdstilladelse.']);
+                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne PTW.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
@@ -183,7 +183,7 @@ try {
             // Enhanced work order validation for user time entry
             $workOrder = $db->fetch("SELECT id, entreprenor_firma, status FROM work_orders WHERE id = ?", [$workOrderId]);
             if (!$workOrder) {
-                echo json_encode(['success' => false, 'message' => 'Arbejdstilladelse ikke fundet.']);
+                echo json_encode(['success' => false, 'message' => 'PTW ikke fundet.']);
                 exit();
             }
             
@@ -192,7 +192,7 @@ try {
                 $firma = $_SESSION['entreprenor_firma'] ?? '';
                 if ($workOrder['entreprenor_firma'] !== $firma) {
                     error_log("Unauthorized user time entry view attempt - User: $currentUser, Work Order: $workOrderId, User Firma: $firma, WO Firma: " . $workOrder['entreprenor_firma']);
-                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne arbejdstilladelse.']);
+                    echo json_encode(['success' => false, 'message' => 'Du har ikke tilladelse til at se timer på denne PTW.']);
                     exit();
                 }
             } elseif (!in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {

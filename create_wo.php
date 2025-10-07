@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
         
         if ($existingWO) {
             // Work order number already exists, add error message and don't insert
-            $error_message = "Fejl: Arbejdstilladelse nr. '" . htmlspecialchars($current['work_order_no']) . "' findes allerede. Vælg venligst et andet nummer.";
+            $error_message = "Fejl: PTW nr. '" . htmlspecialchars($current['work_order_no']) . "' findes allerede. Vælg venligst et andet nummer.";
         } else {
             // Insert new work order into database
             $db->query(
