@@ -314,6 +314,7 @@ if ($statusVal === 'planning') {
     <?php endif; ?>
     <div class="action-buttons" style="margin-top: 2rem;">
         <a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>" class="action-btn btn-primary">Opret ny SJA til denne PTW</a>
+        <a href="view_sja.php" class="action-btn btn-secondary">Se SJA Oversigt</a>
     </div>
 
     <!-- Section for displaying time consumption for this work order -->
