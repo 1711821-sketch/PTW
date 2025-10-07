@@ -1,0 +1,54 @@
+{
+  "name": "Arbejdstilladelsessystem",
+  "short_name": "Arbejdstilladelse",
+  "description": "Work Order og Safety Job Analysis system til sikker arbejdsstyring",
+  "start_url": "/dashboard.php",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#1e40af",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/attached_assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/attached_assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/attached_assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Åbn dashboard oversigt",
+      "url": "/dashboard.php",
+      "icons": [{ "src": "/attached_assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Opret Arbejdstilladelse",
+      "short_name": "Opret",
+      "description": "Opret ny arbejdstilladelse",
+      "url": "/create_wo.php",
+      "icons": [{ "src": "/attached_assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Se Arbejdstilladelser",
+      "short_name": "Oversigt",
+      "description": "Se alle arbejdstilladelser",
+      "url": "/view_wo.php",
+      "icons": [{ "src": "/attached_assets/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

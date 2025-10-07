@@ -133,10 +133,36 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Arbejdstilladelsessystem</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Work Order og Safety Job Analysis system til sikker arbejdsstyring">
+    <meta name="theme-color" content="#1e40af">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arbejdstilladelse">
+    <link rel="apple-touch-icon" href="/attached_assets/apple-touch-icon.png">
+    
+    <!-- MS Tiles -->
+    <meta name="msapplication-TileColor" content="#1e40af">
+    
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registreret'))
+                    .catch(err => console.log('Service Worker fejl:', err));
+            });
+        }
+    </script>
     <style>
         /* Modern Dashboard Specific Styles */
         .dashboard-grid {
