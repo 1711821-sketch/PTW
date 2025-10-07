@@ -189,6 +189,25 @@ try {
             display: block !important;
         }
         
+        /* Pulsating animation for active work markers */
+        @keyframes markerPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+        
+        /* Apply pulsating effect to markers with active work status */
+        div.marker-working-pulse {
+            animation: markerPulse 2s ease-out infinite !important;
+            border-radius: 50% !important;
+        }
+        
         .status-indicator {
             display: inline-flex;
             align-items: center;
