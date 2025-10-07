@@ -353,8 +353,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title><?php echo $edit_id ? 'Rediger SJA' : 'Opret SJA'; ?></title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Work Order og Safety Job Analysis system til sikker arbejdsstyring">
+    <meta name="theme-color" content="#1e40af">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arbejdstilladelse">
+    <link rel="apple-touch-icon" href="/attached_assets/apple-touch-icon.png">
+    
+    <!-- MS Tiles -->
+    <meta name="msapplication-TileColor" content="#1e40af">
+    
     <style>
         /* Modern CSS Variables - Design System */
         :root {
