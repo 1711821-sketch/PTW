@@ -181,10 +181,10 @@ try {
         /* Work status indicator (added via JavaScript content) */
         div.marker-work-status::after {
             position: absolute !important;
-            top: 2px !important;
-            left: 2px !important;
-            font-size: 11px !important;
-            text-shadow: 0 0 2px #fff, 0 0 4px #fff !important;
+            top: 1px !important;
+            left: 1px !important;
+            font-size: 15px !important;
+            text-shadow: 0 0 3px #fff, 0 0 6px #fff !important;
             z-index: 1000 !important;
             display: block !important;
         }
