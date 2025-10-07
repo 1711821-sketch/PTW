@@ -143,7 +143,6 @@ $recipients = $smsNotifier->getRecipients();
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="index.php">Forside</a>
             <a href="view_wo.php">PTW-oversigt</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">SMS Notifikationer</a>

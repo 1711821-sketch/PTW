@@ -402,7 +402,6 @@ if (isset($_GET['edit_message'])) {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="index.php">Forside</a>
             <a href="dashboard.php">Dashboard</a>
             <a href="view_wo.php">WO Oversigt</a>
             <a href="view_sja.php">SJA Oversigt</a>

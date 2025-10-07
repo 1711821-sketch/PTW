@@ -148,7 +148,6 @@ function highlightDiff($val1, $val2) {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="index.php">Forside</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="sja_history.php?id=<?php echo urlencode($id); ?>">← Tilbage til historik</a>
             <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?></span>

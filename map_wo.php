@@ -353,7 +353,6 @@ try {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="index.php">Forside</a>
             <a href="view_wo.php">🔍 WO Oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
                 <a href="create_wo.php">➕ Opret ny WO</a>

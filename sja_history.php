@@ -103,7 +103,6 @@ $current_version = $entry['version'] ?? 1;
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="index.php">Forside</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="create_sja.php">Opret ny SJA</a>
             <a href="view_wo.php">WO Oversigt</a>
