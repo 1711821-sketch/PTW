@@ -353,9 +353,9 @@ try {
             <span class="hamburger-line"></span>
         </button>
         <div class="navbar-links">
-            <a href="view_wo.php">🔍 WO Oversigt</a>
+            <a href="view_wo.php">🔍 PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">➕ Opret ny WO</a>
+                <a href="create_wo.php">➕ Opret ny PTW</a>
             <?php endif; ?>
             <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
             <a href="dashboard.php">📊 Dashboard</a>
