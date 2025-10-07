@@ -54,9 +54,12 @@ if (strtolower($role) === 'entreprenor') {
              ORDER BY created_at DESC", 
             [$firma, $today, $today]
         );
+        
+        error_log("MAP - Entrepreneur: " . $_SESSION['user'] . ", Firma: $firma, Today: $today, Count: " . count($entries));
     } else {
         // If no firm is defined, show nothing
         $entries = [];
+        error_log("MAP - Entrepreneur: " . $_SESSION['user'] . ", No firma defined");
     }
 }
 
