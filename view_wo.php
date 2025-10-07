@@ -127,6 +127,108 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
     exit();
 }
 
+// AJAX handler for updating daily work status (entrepreneurs only)
+if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST['status'])) {
+    header('Content-Type: application/json');
+    
+    $woId = $_POST['wo_id'];
+    $newStatus = $_POST['status']; // 'working' or 'stopped'
+    $sessionRole = $_SESSION['role'] ?? '';
+    $currentUser = $_SESSION['user'] ?? '';
+    
+    // Only entrepreneurs can update work status
+    if (strtolower($sessionRole) !== 'entreprenor') {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Kun entreprenører kan opdatere arbejdsstatus.'
+        ]);
+        exit();
+    }
+    
+    try {
+        require_once 'database.php';
+        $db = Database::getInstance();
+        
+        // Get work order and verify ownership
+        $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$woId]);
+        
+        if (!$workOrder) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'PTW ikke fundet.'
+            ]);
+            exit();
+        }
+        
+        // Verify entrepreneur owns this work order
+        $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+        if ($workOrder['entreprenor_firma'] !== $userFirma) {
+            error_log("SECURITY VIOLATION: Entrepreneur attempted to update work status of another firm's work order - User: $currentUser, User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma'] . ", WO ID: $woId");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Du har ikke tilladelse til at opdatere denne PTW.'
+            ]);
+            exit();
+        }
+        
+        // Validate status
+        if (!in_array($newStatus, ['working', 'stopped'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Ugyldig status.'
+            ]);
+            exit();
+        }
+        
+        $today = date('d-m-Y');
+        $now = date('Y-m-d H:i:s');
+        
+        // Create work status object
+        $workStatus = [
+            'date' => $today,
+            'status' => $newStatus,
+            'updated_at' => $now,
+            'updated_by' => $currentUser,
+            'firma' => $userFirma
+        ];
+        
+        // Update database
+        $updated = $db->execute("
+            UPDATE work_orders 
+            SET daily_work_status = ?, updated_at = NOW()
+            WHERE id = ?
+        ", [
+            json_encode($workStatus),
+            $woId
+        ]);
+        
+        if ($updated) {
+            $statusText = $newStatus === 'working' ? 'Arbejder på opgaven' : 'Stoppet for i dag';
+            error_log("Work status updated - User: $currentUser, WO ID: $woId, Status: $newStatus");
+            echo json_encode([
+                'success' => true,
+                'message' => 'Arbejdsstatus opdateret: ' . $statusText,
+                'status' => $newStatus,
+                'icon' => $newStatus === 'working' ? '🔨' : '⏹️'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Fejl ved opdatering af arbejdsstatus.'
+            ]);
+        }
+        
+    } catch (Exception $e) {
+        error_log("Work status update error - User: $currentUser, WO ID: $woId, Error: " . $e->getMessage());
+        echo json_encode([
+            'success' => false,
+            'message' => 'Der opstod en fejl. Prøv igen.'
+        ]);
+    }
+    
+    exit();
+}
+
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
     exit();
