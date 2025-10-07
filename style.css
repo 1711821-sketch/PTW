@@ -3196,3 +3196,269 @@ div.custom-marker-black::before {
     z-index: 1000 !important;
     display: block !important;
 }
+
+/* ========================================
+ * MOBILE RESPONSIVE DESIGN - PWA OPTIMIZED
+ * ======================================== */
+
+/* Touch-friendly interactions */
+@media (hover: none) and (pointer: coarse) {
+    .button,
+    .btn,
+    a.button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-width: 24px;
+        min-height: 24px;
+    }
+}
+
+/* Small devices (phones, up to 640px) */
+@media (max-width: 640px) {
+    body {
+        font-size: 14px;
+        padding: 0;
+    }
+    
+    .container {
+        padding: 1rem;
+        margin: 0.5rem;
+        border-radius: var(--radius-md);
+    }
+    
+    /* Header adjustments */
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    /* Navigation - mobile first */
+    .navbar {
+        padding: 0.75rem 1rem;
+    }
+    
+    .navbar-links {
+        padding: 1rem;
+    }
+    
+    .navbar-links a {
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+    }
+    
+    /* Header row - stack on mobile */
+    .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .safety-sign-inline {
+        margin-left: 0;
+        width: 100%;
+        min-width: auto;
+    }
+    
+    /* Card adjustments */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    /* Buttons - full width on mobile */
+    .button,
+    .btn,
+    a.button {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .button-sm {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Form adjustments */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    textarea,
+    select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.75rem;
+    }
+    
+    /* Table responsive */
+    table {
+        font-size: 0.875rem;
+    }
+    
+    table th,
+    table td {
+        padding: 0.5rem;
+    }
+    
+    /* Make tables scroll horizontally */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Grid layouts - single column on mobile */
+    .dashboard-grid,
+    .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Login page mobile */
+    .login-container {
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .login-card {
+        padding: 1.5rem;
+    }
+    
+    /* Work order cards */
+    .work-order-card {
+        margin-bottom: 1rem;
+    }
+    
+    .work-order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    /* Card actions - stack vertically */
+    .card-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-actions .button,
+    .card-actions a {
+        width: 100%;
+    }
+    
+    /* Modal adjustments */
+    .modal-content {
+        width: 95%;
+        max-width: 95vw;
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    /* Time tracking mobile */
+    .time-input-group {
+        flex-direction: column;
+    }
+    
+    .time-input-group label {
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Medium devices (tablets, 641px to 1024px) */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .container {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .header-row {
+        flex-wrap: wrap;
+    }
+}
+
+/* Landscape phone optimization */
+@media (max-width: 896px) and (orientation: landscape) {
+    .container {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 1rem;
+    }
+    
+    h1 {
+        font-size: 1.25rem;
+    }
+}
+
+/* PWA Safe Areas - for devices with notches */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+    
+    .navbar {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-top: max(1rem, env(safe-area-inset-top));
+    }
+}
+
+/* iOS PWA Status Bar */
+@media (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+    }
+}
+
+/* Improve touch scrolling */
+* {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Better tap highlighting */
+* {
+    -webkit-tap-highlight-color: rgba(30, 64, 175, 0.1);
+}
+
+/* Smooth scrolling for PWA */
+html {
+    scroll-behavior: smooth;
+}
