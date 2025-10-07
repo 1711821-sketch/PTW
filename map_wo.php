@@ -369,7 +369,6 @@ try {
             <?php endif; ?>
             <a href="map_wo.php" style="background: rgba(255, 255, 255, 0.15); border-radius: var(--radius-md);">🗺️ Kort</a>
             <a href="dashboard.php">📊 Dashboard</a>
-            <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>

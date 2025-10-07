@@ -406,7 +406,6 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
             <a href="view_wo.php">WO Oversigt</a>
             <a href="dashboard.php">Dashboard</a>
             <a href="time_overblik.php" class="active">Timeoverblik</a>
-            <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
