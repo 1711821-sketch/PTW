@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($user['role'] === 'entreprenor') {
                     $_SESSION['entreprenor_firma'] = $user['entreprenor_firma'] ?? null;
                 }
-                header('Location: index.php');
+                header('Location: view_wo.php');
                 exit();
             }
         } else {
