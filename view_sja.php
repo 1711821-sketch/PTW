@@ -73,7 +73,7 @@ try {
         <div class="navbar-links">
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="create_sja.php">Opret ny SJA</a>
-            <a href="view_wo.php">WO Oversigt</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <a href="dashboard.php">Dashboard</a>
             <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
