@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Arbejdstilladelsessystem</title>
+    <title>Login - PTW System</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="login-card">
             <div class="login-header">
                 <h1>🔐 Login</h1>
-                <p class="login-subtitle">Arbejdsflow for Interterminals</p>
+                <p class="login-subtitle">PTW System - Interterminals</p>
             </div>
             
             <?php if ($error): ?>

@@ -1,7 +1,7 @@
 {
-  "name": "Arbejdstilladelsessystem",
-  "short_name": "Arbejdstilladelse",
-  "description": "Arbejdsflow for Interterminals - Arbejdstilladelse og SJA system",
+  "name": "PTW System",
+  "short_name": "PTW",
+  "description": "Arbejdsflow for Interterminals - PTW og SJA system",
   "start_url": "/index.php",
   "display": "standalone",
   "background_color": "#f8fafc",

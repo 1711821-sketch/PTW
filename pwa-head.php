@@ -3,8 +3,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Arbejdstilladelse">
-<meta name="application-name" content="Arbejdstilladelse">
+<meta name="apple-mobile-web-app-title" content="PTW">
+<meta name="application-name" content="PTW">
 <meta name="theme-color" content="#1e40af">
 <meta name="msapplication-TileColor" content="#1e40af">
 <meta name="msapplication-tap-highlight" content="no">
