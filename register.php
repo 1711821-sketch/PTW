@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Opret ny bruger</title>
+    <?php include 'pwa-head.php'; ?>
     <style>
         body {
             font-family: Arial, sans-serif;

@@ -51,8 +51,8 @@ function formatDanishDate($date) {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informationer - Arbejdstilladelsessystem</title>
+    <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
     <style>

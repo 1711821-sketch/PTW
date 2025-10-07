@@ -203,7 +203,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
 <head>
     <meta charset="UTF-8">
     <title>Timeoverblik - Arbejdstilladelsessystem</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

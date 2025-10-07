@@ -115,8 +115,8 @@ $consider_items = [
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vis/Print SJA</title>
+    <?php include 'pwa-head.php'; ?>
     <style>
         body { font-family: Arial, sans-serif; margin: 1rem; color: #222; }
         h1 { margin-top: 0; font-size: 1.6em; text-align: center; }

@@ -22,8 +22,8 @@ if (file_exists($data_file)) {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oversigtskort over SJA</title>
+    <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin:0; font-family: Arial, sans-serif; }

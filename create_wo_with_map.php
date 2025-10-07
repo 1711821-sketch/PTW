@@ -77,6 +77,7 @@ $defaultLng = 11.25736;
 <head>
 <meta charset="UTF-8">
 <title>Opret WO med kort</title>
+<?php include 'pwa-head.php'; ?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
 <!-- Leaflet CSS/JS for the interactive map -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

@@ -131,8 +131,8 @@ $consider_items = [
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SJA - Version <?php echo $entry['version']; ?></title>
+    <?php include 'pwa-head.php'; ?>
     <style>
         body { font-family: Arial, sans-serif; margin: 1rem; color: #222; }
         .version-banner { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin-bottom: 1rem; }
