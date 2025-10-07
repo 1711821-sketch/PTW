@@ -20,6 +20,9 @@
 
 session_start();
 
+// Set Danish timezone
+date_default_timezone_set('Europe/Copenhagen');
+
 // Redirect unauthenticated users to login
 if (!isset($_SESSION['user'])) {
     header('Location: login.php');
