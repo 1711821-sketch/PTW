@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arbejdstilladelse-v1';
+const CACHE_NAME = 'arbejdstilladelse-v2';
 const urlsToCache = [
   '/',
   '/index.php',
@@ -40,34 +40,33 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
   if (event.request.method !== 'GET') {
     return;
   }
 
   const url = new URL(event.request.url);
   
-  // Don't cache login.php or any PHP files that might redirect
+  // Don't intercept PHP files that do redirects or handle forms
   if (url.pathname.includes('login.php') || 
       url.pathname.includes('logout.php') ||
-      url.pathname.includes('handler.php')) {
+      url.pathname.includes('handler.php') ||
+      url.pathname.includes('approve_') ||
+      url.pathname.includes('delete_') ||
+      url.pathname.includes('update_')) {
     return;
   }
 
   event.respondWith(
     caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
         
         return fetch(event.request).then((response) => {
-          // Don't cache if:
-          // - No response
-          // - Not a 200 status (includes redirects 301/302)
-          // - Response type is not 'basic' (opaqueredirect, etc)
-          if (!response || 
-              response.status !== 200 || 
-              response.type !== 'basic') {
+          // Only cache successful responses
+          if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
           
@@ -78,12 +77,14 @@ self.addEventListener('fetch', (event) => {
             });
           
           return response;
+        }).catch((error) => {
+          console.log('Fetch failed:', error);
+          // Return cached fallback for documents
+          if (event.request.destination === 'document') {
+            return caches.match('/index.php');
+          }
+          throw error;
         });
-      })
-      .catch(() => {
-        if (event.request.destination === 'document') {
-          return caches.match('/index.php');
-        }
       })
   );
 });
