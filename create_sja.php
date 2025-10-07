@@ -353,8 +353,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $edit_id ? 'Rediger SJA' : 'Opret SJA'; ?></title>
+    <?php include 'pwa-head.php'; ?>
     <style>
         /* Modern CSS Variables - Design System */
         :root {

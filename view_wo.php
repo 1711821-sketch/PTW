@@ -267,8 +267,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alle Arbejdstilladelser</title>
+    <?php include 'pwa-head.php'; ?>
     <!-- Import the global stylesheet for a modern look -->
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>

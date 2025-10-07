@@ -186,6 +186,7 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <head>
 <meta charset="UTF-8">
 <title><?php echo $edit_id ? 'Rediger arbejdstilladelse' : 'Opret ny arbejdstilladelse'; ?></title>
+<?php include 'pwa-head.php'; ?>
 <!-- Include global stylesheet for modern responsive design -->
 <link rel="stylesheet" href="style.css">
 <!-- Include pdf.js and its worker for client‑side PDF parsing -->
