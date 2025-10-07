@@ -103,6 +103,13 @@ Preferred communication style: Simple, everyday language.
     - Changed login header from "Arbejdsflow for Interterminals" to "PTW System - Interterminals"
     - Updated all error messages and form labels to use PTW terminology
     - Database structure and backend logic remain unchanged (still uses work_orders table)
+  - **Navigation Simplification** (October 7, 2025):
+    - Removed "Forside" homepage entirely from navigation
+    - Users now go directly to PTW-oversigt (view_wo.php) after login
+    - Simplified landing page (index.php) now only redirects to login
+    - Removed all "Forside" navigation links from all pages (dashboard, admin, create_wo, view_wo, etc.)
+    - Updated all "Tilbage til forsiden" links to point to PTW-oversigt instead
+    - Updated all header redirects to use view_wo.php as the main landing page
 
 ### Time Tracking Features
 - **Direct Registration**: Contractors register daily hours directly on work permits
