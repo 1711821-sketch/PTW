@@ -26,7 +26,7 @@ try {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Velkommen - Arbejdstilladelsessystem</title>
+    <title>Velkommen - PTW System</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
@@ -44,9 +44,9 @@ try {
             <a href="create_sja.php">Opret SJA</a>
             <a href="view_sja.php">SJA Oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret arbejdstilladelse</a>
+                <a href="create_wo.php">Opret PTW</a>
             <?php endif; ?>
-            <a href="view_wo.php">Oversigt over arbejdstilladelser</a>
+            <a href="view_wo.php">PTW-oversigt</a>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
             <a href="info.php">Informationer</a>
@@ -77,7 +77,7 @@ try {
                 </div>
             </div>
         </div>
-        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og arbejdstilladelser.</p>
+        <p>Du er nu logget ind og kan arbejde med Sikker Job Analyse (SJA) og PTW'er.</p>
         
         <!-- Modern card-based navigation -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
@@ -94,14 +94,14 @@ try {
 
             <div class="card">
                 <div class="card-header">
-                    <h3 style="margin: 0; color: var(--primary-color);">📋 Arbejdstilladelser</h3>
+                    <h3 style="margin: 0; color: var(--primary-color);">📋 PTW'er</h3>
                 </div>
                 <div class="card-body">
-                    <p style="margin-bottom: 1rem;">Administrer arbejdstilladelser</p>
+                    <p style="margin-bottom: 1rem;">Administrer PTW'er</p>
                     <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                        <a href="create_wo.php" class="button button-success">Opret ny arbejdstilladelse</a>
+                        <a href="create_wo.php" class="button button-success">Opret ny PTW</a>
                     <?php endif; ?>
-                    <a href="view_wo.php" class="button button-secondary">Se arbejdstilladelser</a>
+                    <a href="view_wo.php" class="button button-secondary">Se PTW'er</a>
                 </div>
             </div>
 
