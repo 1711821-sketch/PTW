@@ -113,14 +113,24 @@ Preferred communication style: Simple, everyday language.
   - Robust error handling with isolated try/catch blocks for each query to ensure partial failures don't blank the page
   - Graceful degradation when data sections fail to load
 
-### Mobile Optimization Features
+### Mobile Optimization & PWA Features
+- **Progressive Web App (PWA)**: Full PWA implementation with offline capabilities (October 7, 2025):
+  - Manifest.json with iPhone-optimized configuration for "Add to Home Screen"
+  - Service worker for offline caching and improved performance
+  - Apple-specific meta tags for standalone web app mode on iOS
+  - App icons in multiple sizes (192x192, 512x512, 180x180) for all platforms
+  - Theme color and splash screen configuration
+  - Viewport settings optimized for iPhone notch and safe areas
 - **Hamburger Navigation**: Responsive slide-out navigation menu with fixed hamburger button for mobile devices
 - **Touch-Optimized Forms**: Improved input fields with 48px minimum touch targets, larger padding, and iOS-specific styling
 - **Mobile-First Buttons**: Enhanced button design with better touch feedback and 48px minimum touch targets
 - **Responsive Tables**: Mobile-optimized table display with horizontal scrolling and sticky headers
 - **Typography Scaling**: Adaptive font sizes and line heights optimized for mobile readability
-- **iPhone Compatibility**: Special handling for iOS Safari including webkit optimizations and touch-action properties
+- **iPhone Compatibility**: Special handling for iOS Safari including webkit optimizations, touch-action properties, and safe area insets
 - **Animation System**: Smooth slide-in animations for mobile navigation with proper timing and easing
+- **Dark Mode Support**: Automatic dark mode adaptation based on iOS system preferences
+- **Responsive Media Queries**: Comprehensive breakpoints for tablets (1024px), phones (768px), and small phones (375px)
+- **Landscape Mode Optimization**: Special handling for mobile landscape orientation
 
 ### SJA Version History System
 - **Automatic Versioning**: Each SJA edit creates a new version with automatic version numbering
