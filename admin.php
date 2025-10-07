@@ -405,7 +405,6 @@ if (isset($_GET['edit_message'])) {
             <a href="dashboard.php">Dashboard</a>
             <a href="view_wo.php">WO Oversigt</a>
             <a href="view_sja.php">SJA Oversigt</a>
-            <a href="info.php">Informationer</a>
             <a href="time_overblik.php">Timeoverblik</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">📱 SMS Notifikationer</a>
@@ -609,7 +608,6 @@ if (isset($_GET['edit_message'])) {
         <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-light);">
             <a href="view_wo.php" class="button button-secondary">🏠 Tilbage til PTW-oversigt</a>
             <a href="register.php" class="button" style="margin-left: 1rem;">👤 Opret ny bruger</a>
-            <a href="info.php" class="button" style="margin-left: 1rem;">📢 Se informationer</a>
         </div>
     </div>
 </body>

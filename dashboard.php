@@ -377,7 +377,6 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             <a href="view_wo.php">PTW-oversigt</a>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php" class="active">Dashboard</a>
-            <a href="info.php">Informationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
