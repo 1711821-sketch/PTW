@@ -518,7 +518,9 @@ try {
                 // Parse work status for today
                 var workStatus = null;
                 var workStatusIcon = '';
-                var today = new Date().toLocaleDateString('da-DK', {day: '2-digit', month: '2-digit', year: 'numeric'});
+                // Format date as dd-mm-yyyy to match PHP format
+                var now = new Date();
+                var today = ('0' + now.getDate()).slice(-2) + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + now.getFullYear();
                 
                 try {
                     if (e.daily_work_status) {
