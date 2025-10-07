@@ -1424,7 +1424,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         <p><a href="create_wo.php">Opret ny PTW?</a></p>
     <?php endif; ?>
     <p><a href="map_wo.php">Se oversigtskort</a></p>
-    <p><a href="index.php">Tilbage til forsiden</a></p>
     </div><!-- /.container -->
 </body>
 </html>

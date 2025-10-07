@@ -295,8 +295,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $entry_id = $posted_id;
             $message = 'SJA opdateret!';
-            // Redirect to homepage after successful update
-            header('Location: index.php');
+            // Redirect to PTW overview after successful update
+            header('Location: view_wo.php');
             exit;
         } else {
             // Insert new SJA with version tracking
@@ -317,8 +317,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $entry_id = $result['id'];
             $message = 'SJA gemt!';
-            // Redirect to homepage after successful save
-            header('Location: index.php');
+            // Redirect to PTW overview after successful save
+            header('Location: view_wo.php');
             exit;
         }
         
@@ -1130,7 +1130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="index.php" class="btn btn-secondary">← Tilbage til forsiden</a>
+                    <a href="view_wo.php" class="btn btn-secondary">← Tilbage til PTW-oversigt</a>
                     <button type="submit" name="save_sja" class="btn btn-primary">
                         <?php echo $edit_id ? 'Gem ændringer' : 'Gem SJA'; ?>
                     </button>

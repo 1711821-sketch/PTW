@@ -45,7 +45,7 @@
     <p>Hvis websitet ikke loader korrekt, kan du rydde Service Worker cachen her.</p>
     
     <button class="button" onclick="clearServiceWorker()">Ryd Service Worker</button>
-    <button class="button" onclick="window.location.href='index.php'">Gå til login</button>
+    <button class="button" onclick="window.location.href='view_wo.php'">Gå til PTW-oversigt</button>
     
     <div id="status"></div>
 

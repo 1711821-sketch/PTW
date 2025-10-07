@@ -7,7 +7,7 @@ session_start();
 
 // Admin-only access control
 if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
-    header('Location: index.php');
+    header('Location: view_wo.php');
     exit();
 }
 

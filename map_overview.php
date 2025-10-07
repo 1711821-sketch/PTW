@@ -41,7 +41,7 @@ if (file_exists($data_file)) {
         <label style="margin-left:0.5rem;"><input type="checkbox" id="showCompleted" checked> Afsluttede</label>
     </div>
     <div id="map"></div>
-    <a class="back" href="index.php">Tilbage til forsiden</a>
+    <a class="back" href="view_wo.php">Tilbage til PTW-oversigt</a>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>

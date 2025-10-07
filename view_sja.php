@@ -171,7 +171,7 @@ try {
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-light);">
             <a href="create_sja.php" class="button button-primary">➕ Opret ny SJA</a>
             <a href="map_overview.php" class="button button-secondary" style="margin-left: 1rem;">🗺️ Se oversigtskort</a>
-            <a href="index.php" class="button button-secondary" style="margin-left: 1rem;">🏠 Tilbage til forsiden</a>
+            <a href="view_wo.php" class="button button-secondary" style="margin-left: 1rem;">🏠 Tilbage til PTW-oversigt</a>
         </div>
     </div>
 </body>

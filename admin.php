@@ -27,7 +27,7 @@ function requireCSRFToken() {
 // Generate CSRF token for this session
 $csrf_token = generateCSRFToken();
 if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
-    header('Location: index.php');
+    header('Location: view_wo.php');
     exit();
 }
 
@@ -607,7 +607,7 @@ if (isset($_GET['edit_message'])) {
         </div>
         
         <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-light);">
-            <a href="index.php" class="button button-secondary">🏠 Tilbage til forsiden</a>
+            <a href="view_wo.php" class="button button-secondary">🏠 Tilbage til PTW-oversigt</a>
             <a href="register.php" class="button" style="margin-left: 1rem;">👤 Opret ny bruger</a>
             <a href="info.php" class="button" style="margin-left: 1rem;">📢 Se informationer</a>
         </div>

@@ -276,7 +276,7 @@ function formatDanishDate($date) {
         <?php endif; ?>
         
         <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-light);">
-            <a href="index.php" class="button button-secondary">🏠 Tilbage til forsiden</a>
+            <a href="view_wo.php" class="button button-secondary">🏠 Tilbage til PTW-oversigt</a>
             <a href="dashboard.php" class="button" style="margin-left: 1rem;">📊 Se Dashboard</a>
         </div>
     </div>
