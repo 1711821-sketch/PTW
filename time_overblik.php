@@ -202,7 +202,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Timeoverblik - Arbejdstilladelsessystem</title>
+    <title>Timeoverblik - PTW System</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
@@ -417,7 +417,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
     </nav>
 
     <div class="container">
-        <h1>⏱️ Timeoverblik - Timeregistrering på tværs af arbejdstilladelser</h1>
+        <h1>⏱️ Timeoverblik - Timeregistrering på tværs af PTW'er</h1>
         
         <?php if (isset($error_message)): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($error_message); ?></div>
@@ -430,7 +430,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
                 <div class="stat-value"><?php echo number_format($totalStats['total_hours'], 1); ?></div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Arbejdstilladelser</div>
+                <div class="stat-label">PTW'er</div>
                 <div class="stat-value"><?php echo $totalStats['total_work_orders']; ?></div>
             </div>
             <div class="stat-card">
@@ -457,7 +457,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
                         <input type="date" id="date_to" name="date_to" value="<?php echo htmlspecialchars($filterDateTo); ?>">
                     </div>
                     <div class="filter-field">
-                        <label for="work_order">Arbejdstilladelse:</label>
+                        <label for="work_order">PTW:</label>
                         <select id="work_order" name="work_order">
                             <option value="">Alle</option>
                             <?php foreach ($allWorkOrders as $wo): ?>
@@ -499,7 +499,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
         <!-- Top Lists -->
         <div class="top-list">
             <div class="top-card">
-                <h3>🏆 Top 5 Arbejdstilladelser (Timer)</h3>
+                <h3>🏆 Top 5 PTW'er (Timer)</h3>
                 <?php if (count($topWorkOrders) > 0): ?>
                     <?php foreach ($topWorkOrders as $index => $wo): ?>
                         <div class="top-item">

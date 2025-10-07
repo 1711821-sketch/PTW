@@ -19,7 +19,7 @@ try {
     $entry = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$id]);
     
     if (!$entry) {
-        echo '<p>Arbejdstilladelse ikke fundet.</p>';
+        echo '<p>PTW ikke fundet.</p>';
         echo '<p><a href="view_wo.php">Tilbage til oversigt</a></p>';
         exit();
     }
@@ -37,7 +37,7 @@ try {
     
 } catch (Exception $e) {
     error_log("Error loading work order for print: " . $e->getMessage());
-    echo '<p>Fejl ved indlæsning af arbejdstilladelse.</p>';
+    echo '<p>Fejl ved indlæsning af PTW.</p>';
     echo '<p><a href="view_wo.php">Tilbage til oversigt</a></p>';
     exit();
 }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
     }
     // Security check: Entrepreneur can only upload to their own firm's work orders
     elseif ($entry['entreprenor_firma'] !== $userFirma) {
-        $upload_error = 'Du kan kun uploade billeder til dit eget firmas arbejdstilladelser.';
+        $upload_error = 'Du kan kun uploade billeder til dit eget firmas PTW'er.';
         error_log("SECURITY VIOLATION: Entrepreneur $currentUser attempted to upload image to another firm's work order. User Firma: $userFirma, WO Firma: " . $entry['entreprenor_firma']);
     }
     // Check if file was uploaded
@@ -142,7 +142,7 @@ if ($statusVal === 'planning') {
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Vis/Print arbejdstilladelse</title>
+    <title>Vis/Print PTW</title>
     <?php include 'pwa-head.php'; ?>
     <!-- Import global stylesheet for consistent typography and navigation -->
     <link rel="stylesheet" href="style.css">
@@ -229,16 +229,16 @@ if ($statusVal === 'planning') {
         <a href="view_wo.php" class="action-btn btn-secondary">← Tilbage til oversigt</a>
         <a href="#" class="action-btn btn-primary" onclick="window.print();return false;">🖨️ Print</a>
     </div>
-    <h1>Arbejdstilladelse</h1>
+    <h1>PTW</h1>
     <h2>Basisinformation</h2>
     <table>
-        <tr><th>Arbejdstilladelse Nr.</th><td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
+        <tr><th>PTW Nr.</th><td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
         <tr><th>Beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
         <tr><th>P-nr beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
         <tr><th>Jobansvarlig</th><td><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
         <tr><th>Telefon</th><td><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
-        <tr><th>Arbejdstilladelse oprettet af</th><td><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
-        <tr><th>Arbejdstilladelse oprettet dato</th><td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
+        <tr><th>PTW oprettet af</th><td><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
+        <tr><th>PTW oprettet dato</th><td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
         <tr><th>Entreprenør firma</th><td><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
         <tr><th>Entreprenør kontakt</th><td><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
         <tr><th>Komponent nr.</th><td><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
@@ -310,7 +310,7 @@ if ($statusVal === 'planning') {
             <?php endforeach; ?>
         </table>
     <?php else: ?>
-        <p>Ingen tilknyttede SJA'er fundet for denne arbejdstilladelse.</p>
+        <p>Ingen tilknyttede SJA'er fundet for denne PTW.</p>
     <?php endif; ?>
     <div class="action-buttons" style="margin-top: 2rem;">
         <a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>" class="action-btn btn-primary">Opret ny SJA til denne WO</a>
@@ -359,7 +359,7 @@ if ($statusVal === 'planning') {
             <?php endif; ?>
         </table>
     <?php else: ?>
-        <p>Ingen timer registreret for denne arbejdstilladelse endnu.</p>
+        <p>Ingen timer registreret for denne PTW endnu.</p>
     <?php endif; ?>
     
     <!-- Image upload section for entrepreneurs -->

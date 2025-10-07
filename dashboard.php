@@ -132,7 +132,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
 <html lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Arbejdstilladelsessystem</title>
+    <title>Dashboard - PTW System</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <script src="navigation.js"></script>
@@ -392,7 +392,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
 
     <div class="container">
         <h1>📊 System Dashboard</h1>
-        <p>Overblik over arbejdstilladelser, sikkerhed og aktivitet</p>
+        <p>Overblik over PTW'er, sikkerhed og aktivitet</p>
         
         <?php if (isset($error_message)): ?>
             <div class="alert alert-danger">
@@ -412,14 +412,14 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             <div class="kpi-card info">
                 <div class="kpi-icon">📋</div>
                 <div class="kpi-number"><?= $totalWorkOrders ?></div>
-                <div class="kpi-label">Total Arbejdstilladelser</div>
+                <div class="kpi-label">Total PTW'er</div>
                 <div class="kpi-subtitle">Alle registrerede</div>
             </div>
             
             <div class="kpi-card success">
                 <div class="kpi-icon">🟢</div>
                 <div class="kpi-number"><?= $activeWorkOrders ?></div>
-                <div class="kpi-label">Aktive Arbejdstilladelser</div>
+                <div class="kpi-label">Aktive PTW'er</div>
                 <div class="kpi-subtitle">I gang nu</div>
             </div>
             
@@ -491,7 +491,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
         <div class="dashboard-grid">
             <div class="recent-activity">
                 <div class="chart-header">
-                    <h3 class="chart-title">🕒 Seneste Arbejdstilladelser</h3>
+                    <h3 class="chart-title">🕒 Seneste PTW'er</h3>
                 </div>
                 <?php if (!empty($recentWorkOrders)): ?>
                     <?php foreach ($recentWorkOrders as $wo): ?>
@@ -612,7 +612,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                         return strlen($label) > 15 ? substr($label, 0, 15) . '...' : $label; 
                     }, $entrepreneurLabels)) ?>,
                     datasets: [{
-                        label: 'Arbejdstilladelser',
+                        label: 'PTW'er',
                         data: <?= json_encode($entrepreneurCounts) ?>,
                         backgroundColor: chartColors.primary,
                         borderColor: chartColors.primary,
