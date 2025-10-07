@@ -37,12 +37,22 @@ $db = Database::getInstance();
 $entries = $db->fetchAll("SELECT * FROM work_orders ORDER BY created_at DESC");
 
 // If the user is an entrepreneur, restrict entries to their own firm
+// and only show work orders that are active and approved today
 if (strtolower($role) === 'entreprenor') {
     $firma = $_SESSION['entreprenor_firma'] ?? '';
     if ($firma !== '') {
+        $today = date('d-m-Y');
+        // Only load work orders for this entrepreneur's firm that are:
+        // 1. In 'active' status
+        // 2. Approved by both opgaveansvarlig and drift TODAY
         $entries = $db->fetchAll(
-            "SELECT * FROM work_orders WHERE entreprenor_firma = ? ORDER BY created_at DESC", 
-            [$firma]
+            "SELECT * FROM work_orders 
+             WHERE entreprenor_firma = ? 
+             AND status = 'active'
+             AND approvals::jsonb->>'opgaveansvarlig' = ?
+             AND approvals::jsonb->>'drift' = ?
+             ORDER BY created_at DESC", 
+            [$firma, $today, $today]
         );
     } else {
         // If no firm is defined, show nothing
