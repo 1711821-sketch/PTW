@@ -1001,6 +1001,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             .filter-group {
                 display: none;
             }
+
+            /* Hide header title and view toggle on smartphones */
+            .header-section h1 {
+                display: none;
+            }
+            
+            .view-toggle {
+                display: none;
+            }
         }
     </style>
 </head>
