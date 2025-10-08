@@ -544,9 +544,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Desktop: centered card with max-width */
         @media (min-width: 1024px) {
+            .slider-container {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
             .card-slider {
-                scroll-padding-inline: calc((100vw - 800px) / 2);
-                padding-inline: calc((100vw - 800px) / 2);
+                scroll-padding: 0;
+                padding: 0;
             }
 
             .work-permit-card {
@@ -554,13 +559,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 width: 800px;
                 min-width: 800px;
                 max-width: 800px;
-                scroll-snap-align: center;
+                scroll-snap-align: start;
                 border-radius: 16px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
             .slider-nav {
-                padding: 0;
+                max-width: 100vw;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 0 1rem;
             }
         }
 
