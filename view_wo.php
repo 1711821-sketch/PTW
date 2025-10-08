@@ -2270,7 +2270,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             });
             
             // Load saved view preference and ensure proper initialization
-            const savedView = localStorage.getItem('workPermitViewType') || 'list';
+            // On smartphones (under 768px), default to card view
+            const isMobile = window.innerWidth < 768;
+            const savedView = localStorage.getItem('workPermitViewType') || (isMobile ? 'card' : 'list');
             // Clear any existing styles that might conflict
             document.getElementById('listView').style.display = 'none';
             document.getElementById('cardView').style.display = 'none';
