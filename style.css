@@ -1669,7 +1669,7 @@ p {
         height: 100vh;
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
         flex-direction: column;
-        padding: 6rem 1rem 1rem 1rem;
+        padding: 8rem 1rem 1rem 1rem;
         box-shadow: var(--shadow-xl);
         z-index: 1000;
         backdrop-filter: blur(20px);
