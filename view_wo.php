@@ -451,9 +451,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Card Counter Bar */
         .card-counter {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -462,16 +460,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             font-weight: 600;
             color: #333;
             padding: 8px 0;
-            z-index: 1000;
+            margin-bottom: 1rem;
             display: none;
         }
 
         .card-counter.visible {
             display: block;
-        }
-
-        body.card-view-active {
-            padding-top: 40px;
         }
 
         /* Modern Card Slider Styles */
@@ -2285,22 +2279,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 listBtn.classList.add('active');
                 cardBtn.classList.remove('active');
                 
-                // Hide counter and remove body padding
+                // Hide counter
                 if (cardCounter) {
                     cardCounter.classList.remove('visible');
                 }
-                document.body.classList.remove('card-view-active');
             } else {
                 listView.style.display = 'none';
                 cardView.style.display = 'block';
                 listBtn.classList.remove('active');
                 cardBtn.classList.add('active');
                 
-                // Show counter and add body padding
+                // Show counter
                 if (cardCounter) {
                     cardCounter.classList.add('visible');
                 }
-                document.body.classList.add('card-view-active');
             }
             
             // Save preference to localStorage
