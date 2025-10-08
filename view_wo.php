@@ -456,6 +456,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             padding: 1rem 0;
         }
 
+        .slider-container {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
         .card-slider {
             display: flex;
             gap: 0;
@@ -468,49 +474,47 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             width: 100%;
         }
 
-        /* Navigation Buttons */
-        .card-nav-btn {
+        /* Navigation Buttons - positioned outside the card */
+        .slider-nav {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            padding: 0 0.5rem;
+        }
+
+        .slider-nav button {
+            pointer-events: all;
+            background: rgba(0, 0, 0, 0.5);
             border: none;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            font-size: 1.5rem;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
             cursor: pointer;
-            z-index: 10;
+            transition: background 0.2s ease, transform 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-            transition: all 0.2s ease;
         }
 
-        .card-nav-btn:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
-            transform: translateY(-50%) scale(1.1);
+        .slider-nav button:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: scale(1.1);
         }
 
-        .card-nav-btn:active {
-            transform: translateY(-50%) scale(0.95);
+        .slider-nav button:active {
+            transform: scale(0.95);
         }
 
-        .card-nav-btn:disabled {
+        .slider-nav button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
-            background: #9ca3af;
-        }
-
-        .card-nav-prev {
-            left: 0.5rem;
-        }
-
-        .card-nav-next {
-            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .card-slider::-webkit-scrollbar {
@@ -541,12 +545,26 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.4s ease, opacity 0.3s ease, box-shadow 0.2s ease;
         }
 
         .work-permit-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Desktop: centered card with max-width */
+        @media (min-width: 1024px) {
+            .work-permit-card {
+                max-width: 800px;
+                margin: 0 auto;
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .slider-nav {
+                padding: 0;
+            }
         }
 
         .card-header {
@@ -753,6 +771,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
+            .work-permit-card {
+                border-radius: 0;
+                max-width: 100%;
+                padding: 0;
+            }
+
             .card-title-text h3 {
                 font-size: 1.3rem;
             }
@@ -781,15 +805,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
 
             /* Hide navigation buttons on mobile - swipe is natural */
-            .card-nav-btn {
+            .slider-nav button {
                 display: none;
-            }
-        }
-
-        /* Desktop - add rounded corners */
-        @media (min-width: 769px) {
-            .work-permit-card {
-                border-radius: 20px;
             }
         }
 
