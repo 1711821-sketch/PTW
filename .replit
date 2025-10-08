@@ -7,16 +7,12 @@ modules = ["php-8.2", "postgresql-16", "nodejs-20"]
 channel = "stable-22_11"
 
 [deployment]
-run = ["php", "-S", "0.0.0.0:5000"]
+run = ["php", "-S", "0.0.0.0:5000", "-t", "."]
 deploymentTarget = "autoscale"
 
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 37277
-externalPort = 3003
 
 [[ports]]
 localPort = 38059
@@ -55,5 +51,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:5000"
+args = "php -S 0.0.0.0:5000 -t ."
 waitForPort = 5000
