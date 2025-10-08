@@ -449,6 +449,31 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             padding: 1.5rem;
         }
 
+        /* Card Counter Bar */
+        .card-counter {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding: 8px 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .card-counter.visible {
+            display: block;
+        }
+
+        body.card-view-active {
+            padding-top: 40px;
+        }
+
         /* Modern Card Slider Styles */
         .card-view-wrapper {
             position: relative;
@@ -1349,6 +1374,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         <!-- Card View -->
         <div id="cardView" class="card-view-wrapper" style="display: none;">
+            <!-- Card Counter Bar -->
+            <div id="cardCounter" class="card-counter">PTW 1 af <?php echo count($entries); ?></div>
+            
             <div class="slider-container">
                 <div class="card-slider" id="cardSlider">
             <?php foreach ($entries as $entry):
@@ -2249,17 +2277,30 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             const cardView = document.getElementById('cardView');
             const listBtn = document.getElementById('listViewBtn');
             const cardBtn = document.getElementById('cardViewBtn');
+            const cardCounter = document.getElementById('cardCounter');
             
             if (viewType === 'list') {
                 listView.style.display = 'block';
                 cardView.style.display = 'none';
                 listBtn.classList.add('active');
                 cardBtn.classList.remove('active');
+                
+                // Hide counter and remove body padding
+                if (cardCounter) {
+                    cardCounter.classList.remove('visible');
+                }
+                document.body.classList.remove('card-view-active');
             } else {
                 listView.style.display = 'none';
                 cardView.style.display = 'block';
                 listBtn.classList.remove('active');
                 cardBtn.classList.add('active');
+                
+                // Show counter and add body padding
+                if (cardCounter) {
+                    cardCounter.classList.add('visible');
+                }
+                document.body.classList.add('card-view-active');
             }
             
             // Save preference to localStorage
@@ -2331,8 +2372,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             const cardSlider = document.getElementById('cardSlider');
             const prevBtn = document.getElementById('prevCardBtn');
             const nextBtn = document.getElementById('nextCardBtn');
+            const cardCounter = document.getElementById('cardCounter');
             
-            if (cardSlider && prevBtn && nextBtn) {
+            if (cardSlider && prevBtn && nextBtn && cardCounter) {
+                const cards = cardSlider.querySelectorAll('.work-permit-card');
+                const totalCards = cards.length;
+                
+                // Update card counter based on scroll position
+                function updateCardCounter() {
+                    if (cards.length === 0) return;
+                    
+                    const cardWidth = cards[0].offsetWidth;
+                    const scrollLeft = cardSlider.scrollLeft;
+                    const currentIndex = Math.round(scrollLeft / cardWidth);
+                    const cardNumber = Math.min(currentIndex + 1, totalCards);
+                    
+                    cardCounter.textContent = `PTW ${cardNumber} af ${totalCards}`;
+                }
+                
                 // Previous button click
                 prevBtn.addEventListener('click', function() {
                     const cardWidth = cardSlider.querySelector('.work-permit-card').offsetWidth;
@@ -2354,11 +2411,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     nextBtn.disabled = isAtEnd;
                 }
                 
-                // Listen to scroll events
-                cardSlider.addEventListener('scroll', updateNavButtons);
+                // Combined update function
+                function updateCardNavigation() {
+                    updateNavButtons();
+                    updateCardCounter();
+                }
                 
-                // Initial button state
-                updateNavButtons();
+                // Listen to scroll events
+                cardSlider.addEventListener('scroll', updateCardNavigation);
+                
+                // Initial state
+                updateCardNavigation();
             }
             
             // Load saved view preference and ensure proper initialization
