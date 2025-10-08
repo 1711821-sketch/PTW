@@ -448,6 +448,320 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .time-modal-body {
             padding: 1.5rem;
         }
+
+        /* Modern Card Slider Styles */
+        .card-view-wrapper {
+            width: 100%;
+            padding: 1rem 0;
+        }
+
+        .card-slider {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 1rem 1rem;
+        }
+
+        .card-slider::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .card-slider::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+
+        .card-slider::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        .card-slider::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .work-permit-card {
+            flex: 0 0 auto;
+            width: calc(100vw - 3rem);
+            max-width: 500px;
+            background: var(--background-primary);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .work-permit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-title-text {
+            flex: 1;
+        }
+
+        .card-title-text h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .card-header-description {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .card-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .card-status.status-planlagt {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .card-status.status-aktiv {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .card-status.status-afsluttet {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+
+        .card-p-description {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .card-p-description strong {
+            color: var(--primary-color);
+        }
+
+        .card-divider {
+            margin: 0;
+            border: none;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex: 1;
+        }
+
+        .card-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 10px;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            min-width: 130px;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .card-approvals {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(16, 185, 129, 0.03) 100%);
+            border-radius: 12px;
+        }
+
+        .card-approvals h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .approval-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .approval-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .approval-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+
+        .approval-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .approval-status.approved {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .approval-status.pending {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .approval-item .button {
+            margin-left: auto;
+        }
+
+        .card-time-tracking {
+            padding: 1rem;
+            background: rgba(249, 115, 22, 0.03);
+            border-radius: 12px;
+        }
+
+        .card-time-tracking h4 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-light);
+            background: rgba(0, 0, 0, 0.01);
+        }
+
+        .card-actions .button {
+            flex: 1;
+            min-height: 48px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .card-actions .button:active {
+            transform: scale(0.98);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .card-slider {
+                padding: 0 0.5rem 1rem;
+            }
+
+            .work-permit-card {
+                width: calc(100vw - 2rem);
+            }
+
+            .card-title-text h3 {
+                font-size: 1.3rem;
+            }
+
+            .card-status {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .detail-label {
+                min-width: 110px;
+                font-size: 0.85rem;
+            }
+
+            .detail-value {
+                font-size: 0.85rem;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+
+            .card-actions .button {
+                width: 100%;
+                min-height: 52px;
+            }
+        }
+
+        /* Tablet and larger screens */
+        @media (min-width: 769px) {
+            .work-permit-card {
+                width: 480px;
+            }
+
+            .card-slider {
+                padding: 0 2rem 1rem;
+            }
+        }
+
+        /* Desktop - show multiple cards */
+        @media (min-width: 1200px) {
+            .card-slider {
+                gap: 2rem;
+            }
+
+            .work-permit-card {
+                width: 450px;
+            }
+        }
     </style>
 </head>
 <body>
