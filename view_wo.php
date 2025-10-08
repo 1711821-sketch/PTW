@@ -1327,10 +1327,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         <!-- Card View -->
         <div id="cardView" class="card-view-wrapper" style="display: none;">
-            <button id="prevCardBtn" class="card-nav-btn card-nav-prev" aria-label="Forrige PTW">
-                <span>◀</span>
-            </button>
-            <div class="card-slider" id="cardSlider">
+            <div class="slider-container">
+                <div class="card-slider" id="cardSlider">
             <?php foreach ($entries as $entry):
                 $status = $entry['status'] ?? 'planning';
                 // Map internal status codes to Danish labels and CSS classes
@@ -1550,10 +1548,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </div>
             </div>
             <?php endforeach; ?>
+                </div>
+                <div class="slider-nav">
+                    <button id="prevCardBtn" aria-label="Forrige PTW">◀</button>
+                    <button id="nextCardBtn" aria-label="Næste PTW">▶</button>
+                </div>
             </div>
-            <button id="nextCardBtn" class="card-nav-btn card-nav-next" aria-label="Næste PTW">
-                <span>▶</span>
-            </button>
         </div>
         
         <script>
