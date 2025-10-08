@@ -894,49 +894,83 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php endif; ?>
                 </td>
                 <td>
-                    <div>
-                        <strong title="Opgaveansvarlige">OA:</strong> <span id="oa-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>"><?php echo $oaApproved ? '✅' : '❌'; ?></span>
+                    <div class="approval-row">
+                        <span class="approval-label" title="Opgaveansvarlige">OA:</span>
+                        <span id="oa-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $oaApproved ? 'approved' : 'pending'; ?>">
+                            <?php echo $oaApproved ? '✅' : '❌'; ?>
+                        </span>
                         <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                            <button type="button" class="button button-success button-sm" 
+                            <button type="button" class="btn-approve" 
                                     id="list-oa-btn-<?php echo $entry['id']; ?>"
-                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this);">✓</button>
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this);"
+                                    title="Godkend som Opgaveansvarlig">
+                                Godkend
+                            </button>
                         <?php endif; ?>
                     </div>
-                    <div>
-                        <strong title="Driften">Drift:</strong> <span id="drift-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>"><?php echo $driftApproved ? '✅' : '❌'; ?></span>
+                    <div class="approval-row">
+                        <span class="approval-label" title="Driften">Drift:</span>
+                        <span id="drift-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $driftApproved ? 'approved' : 'pending'; ?>">
+                            <?php echo $driftApproved ? '✅' : '❌'; ?>
+                        </span>
                         <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                            <button type="button" class="button button-success button-sm" 
+                            <button type="button" class="btn-approve" 
                                     id="list-drift-btn-<?php echo $entry['id']; ?>"
-                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this);">✓</button>
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this);"
+                                    title="Godkend som Drift">
+                                Godkend
+                            </button>
                         <?php endif; ?>
                     </div>
-                    <div>
-                        <strong title="Entreprenør">Ent:</strong> <span id="ent-status-<?php echo $entry['id']; ?>" class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>"><?php echo $entApproved ? '✅' : '❌'; ?></span>
+                    <div class="approval-row">
+                        <span class="approval-label" title="Entreprenør">Ent:</span>
+                        <span id="ent-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $entApproved ? 'approved' : 'pending'; ?>">
+                            <?php echo $entApproved ? '✅' : '❌'; ?>
+                        </span>
                         <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                            <button type="button" class="button button-success button-sm" 
+                            <button type="button" class="btn-approve" 
                                     id="list-ent-btn-<?php echo $entry['id']; ?>"
-                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this);">✓</button>
+                                    onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this);"
+                                    title="Godkend som Entreprenør">
+                                Godkend
+                            </button>
                         <?php endif; ?>
                     </div>
                 </td>
                 <td class="col-actions">
-                    <a class="button button-secondary" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">Vis</a>
-                    <?php if ($role !== 'entreprenor'): ?>
-                        <a class="button" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>">Rediger</a>
-                    <?php endif; ?>
-                    <?php if ($role === 'admin'): ?>
-                        <a class="button button-danger" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
-                    <?php endif; ?>
-                    <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
-                        <button class="button button-success" onclick="openTimeModal(<?php echo $entry['id']; ?>)">⏱️</button>
-                    <?php endif; ?>
-                    <?php if ($role === 'entreprenor' && $status === 'active'): ?>
-                        <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
-                            <button id="work-btn-<?php echo $entry['id']; ?>" class="button button-primary" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')">🔨 Start</button>
-                        <?php else: ?>
-                            <button id="work-btn-<?php echo $entry['id']; ?>" class="button button-warning" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop</button>
+                    <div class="action-buttons-group">
+                        <a class="btn-icon btn-view" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>" title="Vis PTW">
+                            <span class="icon">👁️</span>
+                        </a>
+                        <?php if ($role !== 'entreprenor'): ?>
+                            <a class="btn-icon btn-edit" href="create_wo.php?id=<?php echo urlencode($entry['id']); ?>" title="Rediger PTW">
+                                <span class="icon">✏️</span>
+                            </a>
                         <?php endif; ?>
-                    <?php endif; ?>
+                        <?php if ($role === 'admin'): ?>
+                            <a class="btn-icon btn-delete" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');" title="Slet PTW">
+                                <span class="icon">🗑️</span>
+                            </a>
+                        <?php endif; ?>
+                        <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
+                            <button class="btn-icon btn-time" onclick="openTimeModal(<?php echo $entry['id']; ?>)" title="Tidsregistrering">
+                                <span class="icon">⏱️</span>
+                            </button>
+                        <?php endif; ?>
+                        <?php if ($role === 'entreprenor' && $status === 'active'): ?>
+                            <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
+                                <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-start" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')" title="Start arbejde">
+                                    <span class="icon">🔨</span>
+                                    <span class="text">Start</span>
+                                </button>
+                            <?php else: ?>
+                                <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-stop" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')" title="Stop arbejde">
+                                    <span class="icon">⏹️</span>
+                                    <span class="text">Stop</span>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
