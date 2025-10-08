@@ -459,19 +459,25 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .slider-container {
             position: relative;
             width: 100%;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         .card-slider {
             display: flex;
             gap: 0;
-            overflow-x: auto;
+            overflow-x: scroll;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             padding: 0;
             width: 100%;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .card-slider::-webkit-scrollbar {
+            display: none;
         }
 
         /* Navigation Buttons - positioned outside the card */
@@ -484,6 +490,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             justify-content: space-between;
             pointer-events: none;
             padding: 0 0.5rem;
+            z-index: 10;
         }
 
         .slider-nav button {
@@ -514,24 +521,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .slider-nav button:disabled {
             opacity: 0.3;
             cursor: not-allowed;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .card-slider::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .card-slider::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 4px;
-        }
-
-        .card-slider::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
-
-        .card-slider::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 0, 0, 0.3);
         }
 
