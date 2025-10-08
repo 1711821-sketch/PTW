@@ -1,0 +1,97 @@
+Forbedr den eksisterende boksvisning (PTW-kortvisning) på siden, så layoutet bliver mere visuelt afbalanceret og brugervenligt på både desktop og smartphone.
+
+Formål:
+– Kortet skal ikke længere fylde hele skærmens bredde på PC.
+– Navigationspilene (◀ og ▶) skal ligge udenfor kortet, centreret vertikalt.
+– Layoutet skal stadig vise ét kort ad gangen og bevare swipe-/scroll-funktionen.
+
+Gennemfør følgende justeringer:
+
+Kortets størrelse og centrering
+
+På desktop (min-width ≥ 1024 px):
+
+.work-permit-card {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+
+→ Kortet skal være centreret og have lidt luft omkring sig.
+
+Placér navigationspile udenfor kortet
+
+Opret en container omkring slideren:
+
+<div class="slider-container">
+  <div class="card-slider"> ... </div>
+  <div class="slider-nav">
+    <button id="prev">◀</button>
+    <button id="next">▶</button>
+  </div>
+</div>
+
+
+Tilføj følgende CSS:
+
+.slider-container { position: relative; width: 100%; overflow-x: hidden; }
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.slider-nav button {
+  pointer-events: all;
+  background: rgba(0,0,0,0.5);
+  border: none;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.slider-nav button:hover { background: rgba(0,0,0,0.7); }
+
+
+Responsivt design (mobilvisning)
+
+På mobil (max-width < 768 px):
+
+.work-permit-card {
+  border-radius: 0;
+  max-width: 100%;
+  padding: 1rem;
+}
+.slider-nav button { display: none; }
+
+
+→ Pilene skjules, så brugeren kun swiper på mobil.
+
+Glidende animation ved skift mellem kort
+
+.work-permit-card {
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+
+Valgfrit (men anbefales)
+
+Tilføj en tæller (fx “PTW 2 af 8”) øverst i kortet eller i progress-baren.
+
+Brug samme farver og skrifttyper som resten af systemet, så designet passer ind.
+
+Bevar:
+– Al eksisterende funktionalitet (Vis/Rediger/Slet/Godkend).
+– Backend/PHP-loops og datahåndtering.
+– Scroll-snap-logik og swipe-understøttelse.
+
+Kort sagt:
+Gør boksvisningen mere elegant og afbalanceret: ét centralt kort, luft omkring, pilene udenfor kortet, og et rent responsivt layout på både PC og mobil.
