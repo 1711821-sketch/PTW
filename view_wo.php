@@ -451,18 +451,64 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Modern Card Slider Styles */
         .card-view-wrapper {
+            position: relative;
             width: 100%;
             padding: 1rem 0;
         }
 
         .card-slider {
             display: flex;
-            gap: 1.5rem;
+            gap: 0;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             padding: 0 1rem 1rem;
+        }
+
+        /* Navigation Buttons */
+        .card-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .card-nav-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .card-nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .card-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #9ca3af;
+        }
+
+        .card-nav-prev {
+            left: 0.5rem;
+        }
+
+        .card-nav-next {
+            right: 0.5rem;
         }
 
         .card-slider::-webkit-scrollbar {
@@ -1279,7 +1325,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         <!-- Card View -->
         <div id="cardView" class="card-view-wrapper" style="display: none;">
-            <div class="card-slider">
+            <button id="prevCardBtn" class="card-nav-btn card-nav-prev" aria-label="Forrige PTW">
+                <span>◀</span>
+            </button>
+            <div class="card-slider" id="cardSlider">
             <?php foreach ($entries as $entry):
                 $status = $entry['status'] ?? 'planning';
                 // Map internal status codes to Danish labels and CSS classes
@@ -1500,6 +1549,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             </div>
             <?php endforeach; ?>
             </div>
+            <button id="nextCardBtn" class="card-nav-btn card-nav-next" aria-label="Næste PTW">
+                <span>▶</span>
+            </button>
         </div>
         
         <script>
