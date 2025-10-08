@@ -555,9 +555,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Desktop: centered card with max-width */
         @media (min-width: 1024px) {
+            .card-slider {
+                scroll-padding-inline: calc((100vw - 800px) / 2);
+                padding-inline: calc((100vw - 800px) / 2);
+            }
+
             .work-permit-card {
+                flex: 0 0 800px;
+                width: 800px;
+                min-width: 800px;
                 max-width: 800px;
-                margin: 0 auto;
+                scroll-snap-align: center;
                 border-radius: 16px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
@@ -2271,7 +2279,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             var showCompleted = document.getElementById('filterCompleted').checked;
             
             // Filter table rows
-            var rows = document.querySelectorAll('#PTW?Table tr[data-status]');
+            var rows = document.querySelectorAll('#ptwTable tr[data-status]');
             rows.forEach(function(row) {
                 var status = row.getAttribute('data-status');
                 if ((status === 'planning' && !showPlanning) ||
