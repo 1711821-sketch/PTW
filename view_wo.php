@@ -532,9 +532,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .work-permit-card {
-            flex: 0 0 100vw;
-            width: 100vw;
-            max-width: 600px;
+            flex: 0 0 100%;
+            width: 100%;
+            min-width: 100%;
             background: var(--background-primary);
             border-radius: 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -786,10 +786,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
         }
 
-        /* Desktop - center cards with max-width */
+        /* Desktop - add rounded corners */
         @media (min-width: 769px) {
             .work-permit-card {
-                margin: 0 auto;
                 border-radius: 20px;
             }
         }
