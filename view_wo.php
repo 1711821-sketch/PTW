@@ -2530,9 +2530,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     if (cards.length === 0) return;
                     
                     const cardWidth = cards[0].offsetWidth;
+                    // If card width is 0 or invalid, default to first card
+                    if (!cardWidth || cardWidth === 0) {
+                        cardCounter.textContent = `PTW 1 af ${totalCards}`;
+                        return;
+                    }
+                    
                     const scrollLeft = cardSlider.scrollLeft;
                     const currentIndex = Math.round(scrollLeft / cardWidth);
-                    const cardNumber = Math.min(currentIndex + 1, totalCards);
+                    const cardNumber = Math.min(Math.max(currentIndex + 1, 1), totalCards);
                     
                     cardCounter.textContent = `PTW ${cardNumber} af ${totalCards}`;
                 }
