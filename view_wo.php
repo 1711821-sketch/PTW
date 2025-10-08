@@ -1130,16 +1130,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <h4>✅ Godkendelser</h4>
                         <div class="approval-grid">
                             <div class="approval-item">
-                                <span class="approval-label" title="Opgaveansvarlige">Opgaveansvarlig:</span>
+                                <span class="approval-label" title="Opgaveansvarlige">OA:</span>
                                 <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>" id="oa-status-<?php echo $entry['id']; ?>">
                                     <?php echo $oaApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                    <button class="btn-approve-card ajax-approve-btn" 
                                             data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
                                             data-role="opgaveansvarlig"
-                                            id="oa-btn-<?php echo $entry['id']; ?>">
-                                        ✓ Godkend som Opgaveansvarlig
+                                            id="oa-btn-<?php echo $entry['id']; ?>"
+                                            title="Godkend som Opgaveansvarlig">
+                                        ✓ Godkend
                                     </button>
                                 <?php endif; ?>
                             </div>
@@ -1149,25 +1150,27 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                     <?php echo $driftApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                    <button class="btn-approve-card ajax-approve-btn" 
                                             data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
                                             data-role="drift"
-                                            id="drift-btn-<?php echo $entry['id']; ?>">
-                                        ✓ Godkend som Drift
+                                            id="drift-btn-<?php echo $entry['id']; ?>"
+                                            title="Godkend som Drift">
+                                        ✓ Godkend
                                     </button>
                                 <?php endif; ?>
                             </div>
                             <div class="approval-item">
-                                <span class="approval-label" title="Entreprenør">Entreprenør:</span>
+                                <span class="approval-label" title="Entreprenør">Ent:</span>
                                 <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>" id="ent-status-<?php echo $entry['id']; ?>">
                                     <?php echo $entApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
                                 </span>
                                 <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                                    <button class="button button-success button-sm ajax-approve-btn" 
+                                    <button class="btn-approve-card ajax-approve-btn" 
                                             data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
                                             data-role="entreprenor"
-                                            id="ent-btn-<?php echo $entry['id']; ?>">
-                                        ✓ Godkend som Entreprenør
+                                            id="ent-btn-<?php echo $entry['id']; ?>"
+                                            title="Godkend som Entreprenør">
+                                        ✓ Godkend
                                     </button>
                                 <?php endif; ?>
                             </div>
