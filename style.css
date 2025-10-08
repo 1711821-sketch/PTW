@@ -3255,7 +3255,7 @@ div.custom-marker-black::before {
     }
     
     .navbar-links {
-        padding: 1rem;
+        padding: 8rem 1rem 1rem 1rem;
     }
     
     .navbar-links a {
