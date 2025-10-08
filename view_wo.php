@@ -699,7 +699,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         ?>
         
         <!-- Card View -->
-        <div id="cardView" class="card-view" style="display: none;">
+        <div id="cardView" class="card-view-wrapper" style="display: none;">
+            <div class="card-slider">
             <?php foreach ($entries as $entry):
                 $status = $entry['status'] ?? 'planning';
                 // Map internal status codes to Danish labels and CSS classes
@@ -922,6 +923,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </div>
             </div>
             <?php endforeach; ?>
+            </div>
         </div>
         
         <script>
