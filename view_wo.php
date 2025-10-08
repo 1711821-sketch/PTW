@@ -923,7 +923,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
             /* Hide navigation buttons on mobile - swipe is natural */
             .counter-nav-btn {
-                display: none;
+                display: none !important;
+            }
+        }
+        
+        /* Show navigation buttons on tablet and desktop */
+        @media (min-width: 641px) {
+            .counter-nav-btn {
+                display: flex !important;
             }
         }
 
