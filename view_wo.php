@@ -996,6 +996,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 font-size: 1rem;
                 min-height: 44px;
             }
+
+            /* Hide filter buttons on smartphones */
+            .filter-group {
+                display: none;
+            }
         }
     </style>
 </head>
