@@ -460,10 +460,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: flex;
             gap: 0;
             overflow-x: auto;
+            overflow-y: hidden;
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            padding: 0 1rem 1rem;
+            padding: 0;
+            width: 100%;
         }
 
         /* Navigation Buttons */
@@ -530,14 +532,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .work-permit-card {
-            flex: 0 0 100%;
-            width: 100%;
+            flex: 0 0 100vw;
+            width: 100vw;
             max-width: 600px;
-            margin: 0 auto;
             background: var(--background-primary);
-            border-radius: 20px;
+            border-radius: 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            scroll-snap-align: center;
+            scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -752,10 +753,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Mobile optimizations */
         @media (max-width: 768px) {
-            .card-slider {
-                padding: 0 1rem 1rem;
-            }
-
             .card-title-text h3 {
                 font-size: 1.3rem;
             }
@@ -789,10 +786,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
         }
 
-        /* Tablet and larger screens */
+        /* Desktop - center cards with max-width */
         @media (min-width: 769px) {
-            .card-slider {
-                padding: 0 2rem 1rem;
+            .work-permit-card {
+                margin: 0 auto;
+                border-radius: 20px;
             }
         }
 
