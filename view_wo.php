@@ -782,6 +782,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 width: 100%;
                 min-height: 52px;
             }
+
+            /* Hide navigation buttons on mobile - swipe is natural */
+            .card-nav-btn {
+                display: none;
+            }
         }
 
         /* Tablet and larger screens */
@@ -2302,6 +2307,40 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     approveWorkPermit(id, role, event.currentTarget);
                 });
             });
+            
+            // Card slider navigation
+            const cardSlider = document.getElementById('cardSlider');
+            const prevBtn = document.getElementById('prevCardBtn');
+            const nextBtn = document.getElementById('nextCardBtn');
+            
+            if (cardSlider && prevBtn && nextBtn) {
+                // Previous button click
+                prevBtn.addEventListener('click', function() {
+                    const cardWidth = cardSlider.querySelector('.work-permit-card').offsetWidth;
+                    cardSlider.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                });
+                
+                // Next button click
+                nextBtn.addEventListener('click', function() {
+                    const cardWidth = cardSlider.querySelector('.work-permit-card').offsetWidth;
+                    cardSlider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                });
+                
+                // Update button states based on scroll position
+                function updateNavButtons() {
+                    const isAtStart = cardSlider.scrollLeft <= 10;
+                    const isAtEnd = cardSlider.scrollLeft >= cardSlider.scrollWidth - cardSlider.clientWidth - 10;
+                    
+                    prevBtn.disabled = isAtStart;
+                    nextBtn.disabled = isAtEnd;
+                }
+                
+                // Listen to scroll events
+                cardSlider.addEventListener('scroll', updateNavButtons);
+                
+                // Initial button state
+                updateNavButtons();
+            }
             
             // Load saved view preference and ensure proper initialization
             // On smartphones (under 768px), default to card view
