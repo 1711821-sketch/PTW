@@ -41,6 +41,11 @@
     --transition: all 0.2s ease-in-out;
 }
 
+/* Utility classes */
+.hidden-by-menu {
+    display: none !important;
+}
+
 /* Reset and base styles */
 * {
     box-sizing: border-box;

@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const cardCounter = document.querySelector('.card-counter');
         if (cardCounter) {
             if (navbarLinks.classList.contains('active')) {
-                cardCounter.style.display = 'none';
+                cardCounter.classList.add('hidden-by-menu');
             } else {
-                cardCounter.style.display = 'block';
+                cardCounter.classList.remove('hidden-by-menu');
             }
         }
     });
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show PTW counter again when menu closes
             const cardCounter = document.querySelector('.card-counter');
             if (cardCounter) {
-                cardCounter.style.display = 'block';
+                cardCounter.classList.remove('hidden-by-menu');
             }
         });
     });
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show PTW counter again when menu closes
             const cardCounter = document.querySelector('.card-counter');
             if (cardCounter) {
-                cardCounter.style.display = 'block';
+                cardCounter.classList.remove('hidden-by-menu');
             }
         }
     });
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show PTW counter again when switching to desktop view
             const cardCounter = document.querySelector('.card-counter');
             if (cardCounter) {
-                cardCounter.style.display = 'block';
+                cardCounter.classList.remove('hidden-by-menu');
             }
         }
     });
