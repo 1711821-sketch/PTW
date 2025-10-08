@@ -501,11 +501,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: none;
         }
 
-        /* Navigation Buttons - positioned outside the card */
+        /* Navigation Buttons - positioned inside on mobile/tablet, outside on desktop */
         .slider-nav {
             position: absolute;
             top: 50%;
-            transform: translateY(-50%);
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
             display: flex;
             justify-content: space-between;
@@ -516,23 +517,26 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         .slider-nav button {
             pointer-events: all;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
+            background: rgba(30, 64, 175, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: #fff;
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: background 0.2s ease, transform 0.2s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .slider-nav button:hover {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(30, 64, 175, 1);
             transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
         .slider-nav button:active {
@@ -586,10 +590,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
 
             .slider-nav {
-                max-width: 100vw;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                padding: 0 1rem;
+                width: calc(800px + 120px);
+                max-width: 1400px;
+                padding: 0;
+            }
+            
+            .slider-nav button {
+                margin: 0;
             }
         }
 
