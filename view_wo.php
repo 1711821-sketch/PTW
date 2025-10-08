@@ -451,7 +451,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Card Counter Bar */
         .card-counter {
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -592,7 +594,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-header {
-            padding: 1.5rem;
+            padding: 0.75rem;
             border-bottom: 1px solid var(--border-light);
         }
 
@@ -600,8 +602,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .card-title-text {
@@ -609,25 +611,42 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-title-text h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.5rem;
+            margin: 0 0 0.3rem 0;
+            font-size: 1.25rem;
             color: var(--text-primary);
             font-weight: 600;
         }
 
         .card-header-description {
             margin: 0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            line-height: 1.4;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .card-header-description.expanded {
+            -webkit-line-clamp: unset;
+        }
+        
+        .description-toggle {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-decoration: underline;
+            display: inline-block;
+            margin-top: 0.25rem;
         }
 
         .card-status {
             display: inline-flex;
             align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
             font-weight: 600;
             white-space: nowrap;
             flex-shrink: 0;
@@ -649,12 +668,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-p-description {
-            margin-top: 0.75rem;
-            padding: 0.75rem;
+            margin-top: 0.4rem;
+            padding: 0.4rem;
             background: rgba(59, 130, 246, 0.05);
             border-left: 3px solid var(--primary-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
 
         .card-p-description strong {
@@ -668,22 +687,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-content {
-            padding: 1.5rem;
+            padding: 0.75rem;
             flex: 1;
         }
 
         .card-details {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
         }
 
         .detail-item {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding: 0.75rem;
+            gap: 0.4rem;
+            padding: 0.4rem;
             background: rgba(0, 0, 0, 0.02);
-            border-radius: 10px;
+            border-radius: 6px;
         }
 
         .detail-item:last-child {
@@ -693,56 +714,87 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .detail-label {
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             flex-shrink: 0;
-            min-width: 130px;
         }
 
         .detail-value {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            line-height: 1.3;
         }
 
         .card-approvals {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
+            margin-bottom: 0.75rem;
+            padding: 0;
+        }
+
+        .card-approvals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(16, 185, 129, 0.03) 100%);
-            border-radius: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .card-approvals-header:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(16, 185, 129, 0.06) 100%);
         }
 
         .card-approvals h4 {
-            margin: 0 0 1rem 0;
-            font-size: 1.1rem;
+            margin: 0;
+            font-size: 0.95rem;
             color: var(--text-primary);
+        }
+        
+        .approvals-summary {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .toggle-icon {
+            transition: transform 0.2s ease;
+        }
+        
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
         }
 
         .approval-grid {
-            display: flex;
+            display: none;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .approval-grid.expanded {
+            display: flex;
         }
 
         .approval-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
         .approval-label {
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 0.9rem;
-            min-width: 140px;
+            font-size: 0.85rem;
+            min-width: 100px;
         }
 
         .approval-status {
             display: inline-flex;
             align-items: center;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
@@ -761,32 +813,68 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-time-tracking {
-            padding: 1rem;
+            padding: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-time-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
             background: rgba(249, 115, 22, 0.03);
-            border-radius: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .card-time-header:hover {
+            background: rgba(249, 115, 22, 0.06);
         }
 
         .card-time-tracking h4 {
-            margin: 0 0 1rem 0;
-            font-size: 1.1rem;
+            margin: 0;
+            font-size: 0.95rem;
             color: var(--text-primary);
+        }
+        
+        .time-summary {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .time-entry-section {
+            display: none;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .time-entry-section.expanded {
+            display: block;
         }
 
         .card-actions {
             display: flex;
-            gap: 0.75rem;
-            padding: 1.5rem;
+            gap: 0.5rem;
+            padding: 0.75rem;
             border-top: 1px solid var(--border-light);
             background: rgba(0, 0, 0, 0.01);
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .card-actions .button {
-            flex: 1;
-            min-height: 48px;
-            font-size: 1rem;
+            flex: 0 1 auto;
+            min-height: 32px;
+            font-size: 0.85rem;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.2s ease;
+            padding: 0.4rem 0.8rem;
+        }
+        
+        .card-actions .handlinger-btn {
+            flex: 0 1 auto;
         }
 
         .card-actions .button:active {
@@ -809,6 +897,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
             }
+            
+            /* Single column layout for details on mobile */
+            .card-details {
+                grid-template-columns: 1fr;
+            }
 
             .detail-label {
                 min-width: 110px;
@@ -820,12 +913,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
 
             .card-actions {
-                flex-direction: column;
+                flex-wrap: wrap;
             }
 
             .card-actions .button {
-                width: 100%;
-                min-height: 52px;
+                flex: 1 1 auto;
+                min-height: 36px;
             }
 
             /* Hide navigation buttons on mobile - swipe is natural */
@@ -1415,7 +1508,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <div class="card-title">
                         <div class="card-title-text">
                             <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
-                            <p class="card-header-description"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
+                            <p class="card-header-description" id="desc-<?php echo $entry['id']; ?>"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
+                            <?php if (strlen($entry['description'] ?? '') > 100): ?>
+                                <span class="description-toggle" onclick="toggleDescription(<?php echo $entry['id']; ?>)" id="desc-toggle-<?php echo $entry['id']; ?>">Vis mere</span>
+                            <?php endif; ?>
                         </div>
                         <span class="card-status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
                         <?php if ($workStatusIcon): ?>
@@ -1451,8 +1547,19 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     </div>
                     
                     <div class="card-approvals">
-                        <h4>✅ Godkendelser</h4>
-                        <div class="approval-grid">
+                        <div class="card-approvals-header" onclick="toggleApprovals(<?php echo $entry['id']; ?>)">
+                            <h4>✅ Godkendelser</h4>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="approvals-summary" id="approvals-summary-<?php echo $entry['id']; ?>">
+                                    <?php 
+                                    $approvedCount = ($oaApproved ? 1 : 0) + ($driftApproved ? 1 : 0) + ($entApproved ? 1 : 0);
+                                    echo $approvedCount === 3 ? 'Godkendt' : ($approvedCount . '/3 afventer');
+                                    ?>
+                                </span>
+                                <span class="toggle-icon" id="approvals-icon-<?php echo $entry['id']; ?>">▼</span>
+                            </div>
+                        </div>
+                        <div class="approval-grid" id="approval-grid-<?php echo $entry['id']; ?>">
                             <div class="approval-item">
                                 <span class="approval-label" title="Opgaveansvarlige">OA:</span>
                                 <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>" id="oa-status-<?php echo $entry['id']; ?>">
@@ -1503,7 +1610,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     
                     <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
                     <div class="card-time-tracking">
-                        <h4>⏱️ Tidsregistrering</h4>
+                        <div class="card-time-header" onclick="toggleTimeTracking(<?php echo $entry['id']; ?>)">
+                            <h4>⏱️ Tidsregistrering</h4>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="time-summary" id="time-summary-<?php echo $entry['id']; ?>">Klik for at registrere</span>
+                                <span class="toggle-icon" id="time-icon-<?php echo $entry['id']; ?>">▼</span>
+                            </div>
+                        </div>
                         <div class="time-entry-section" id="time-section-<?php echo $entry['id']; ?>">
                             
                             <?php if (in_array($role, ['admin', 'entreprenor'])): ?>
@@ -1627,6 +1740,48 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             setTimeout(() => {
                 notification.classList.add('notification-show');
             }, 100);
+        }
+        
+        // Toggle description expansion
+        function toggleDescription(woId) {
+            const desc = document.getElementById(`desc-${woId}`);
+            const toggle = document.getElementById(`desc-toggle-${woId}`);
+            
+            if (desc.classList.contains('expanded')) {
+                desc.classList.remove('expanded');
+                toggle.textContent = 'Vis mere';
+            } else {
+                desc.classList.add('expanded');
+                toggle.textContent = 'Vis mindre';
+            }
+        }
+        
+        // Toggle approvals section
+        function toggleApprovals(woId) {
+            const grid = document.getElementById(`approval-grid-${woId}`);
+            const icon = document.getElementById(`approvals-icon-${woId}`);
+            
+            if (grid.classList.contains('expanded')) {
+                grid.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                grid.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+        
+        // Toggle time tracking section
+        function toggleTimeTracking(woId) {
+            const section = document.getElementById(`time-section-${woId}`);
+            const icon = document.getElementById(`time-icon-${woId}`);
+            
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                section.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
         }
         
         // Modal Functions
