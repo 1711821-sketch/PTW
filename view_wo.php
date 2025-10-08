@@ -484,13 +484,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .work-permit-card {
-            flex: 0 0 auto;
-            width: calc(100vw - 3rem);
-            max-width: 500px;
+            flex: 0 0 100%;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
             background: var(--background-primary);
             border-radius: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            scroll-snap-align: start;
+            scroll-snap-align: center;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -706,11 +707,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .card-slider {
-                padding: 0 0.5rem 1rem;
-            }
-
-            .work-permit-card {
-                width: calc(100vw - 2rem);
+                padding: 0 1rem 1rem;
             }
 
             .card-title-text h3 {
@@ -743,23 +740,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         /* Tablet and larger screens */
         @media (min-width: 769px) {
-            .work-permit-card {
-                width: 480px;
-            }
-
             .card-slider {
                 padding: 0 2rem 1rem;
-            }
-        }
-
-        /* Desktop - show multiple cards */
-        @media (min-width: 1200px) {
-            .card-slider {
-                gap: 2rem;
-            }
-
-            .work-permit-card {
-                width: 450px;
             }
         }
 
