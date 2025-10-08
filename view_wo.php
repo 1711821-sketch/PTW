@@ -457,17 +457,58 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
             font-size: 16px;
             font-weight: 600;
             color: #333;
-            padding: 8px 0;
+            padding: 8px 0.5rem;
             margin-bottom: 1rem;
             display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
         }
 
         .card-counter.visible {
-            display: block;
+            display: flex;
+        }
+        
+        .counter-text {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .counter-nav-btn {
+            background: rgba(30, 64, 175, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+        
+        .counter-nav-btn:hover {
+            background: rgba(30, 64, 175, 1);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .counter-nav-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .counter-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(100, 100, 100, 0.5);
         }
 
         /* Modern Card Slider Styles */
@@ -501,53 +542,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: none;
         }
 
-        /* Navigation Buttons - positioned inside on mobile/tablet, outside on desktop */
-        .slider-nav {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-            padding: 0 0.5rem;
-            z-index: 10;
-        }
-
-        .slider-nav button {
-            pointer-events: all;
-            background: rgba(30, 64, 175, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .slider-nav button:hover {
-            background: rgba(30, 64, 175, 1);
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-        }
-
-        .slider-nav button:active {
-            transform: scale(0.95);
-        }
-
-        .slider-nav button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            background: rgba(0, 0, 0, 0.3);
-        }
 
         .work-permit-card {
             flex: 0 0 100%;
@@ -589,14 +583,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
 
-            .slider-nav {
-                width: calc(800px + 120px);
-                max-width: 1400px;
-                padding: 0;
+            .card-counter {
+                padding: 8px 1rem;
             }
             
-            .slider-nav button {
-                margin: 0;
+            .counter-nav-btn {
+                width: 36px;
+                height: 36px;
             }
         }
 
@@ -929,7 +922,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
 
             /* Hide navigation buttons on mobile - swipe is natural */
-            .slider-nav button {
+            .counter-nav-btn {
                 display: none;
             }
         }
@@ -1468,8 +1461,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         <!-- Card View -->
         <div id="cardView" class="card-view-wrapper" style="display: none;">
-            <!-- Card Counter Bar -->
-            <div id="cardCounter" class="card-counter">PTW 1 af <?php echo count($entries); ?></div>
+            <!-- Card Counter Bar with Navigation -->
+            <div id="cardCounter" class="card-counter">
+                <button id="prevCardBtn" class="counter-nav-btn" aria-label="Forrige PTW">◀</button>
+                <span class="counter-text">PTW 1 af <?php echo count($entries); ?></span>
+                <button id="nextCardBtn" class="counter-nav-btn" aria-label="Næste PTW">▶</button>
+            </div>
             
             <div class="slider-container">
                 <div class="card-slider" id="cardSlider">
@@ -1712,10 +1709,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 </div>
             </div>
             <?php endforeach; ?>
-                </div>
-                <div class="slider-nav">
-                    <button id="prevCardBtn" aria-label="Forrige PTW">◀</button>
-                    <button id="nextCardBtn" aria-label="Næste PTW">▶</button>
                 </div>
             </div>
         </div>
