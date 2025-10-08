@@ -1090,12 +1090,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <?php endif; ?>
                             </span>
                         </div>
-                        <?php if (!empty($entry['telefon'])): ?>
-                        <div class="detail-item">
-                            <span class="detail-label">📞 Telefon:</span>
-                            <span class="detail-value"><?php echo htmlspecialchars($entry['telefon']); ?></span>
-                        </div>
-                        <?php endif; ?>
                     </div>
                     
                     <div class="card-approvals">
