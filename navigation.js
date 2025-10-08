@@ -20,6 +20,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Toggle active class on navbar links to show/hide menu
         navbarLinks.classList.toggle('active');
+        
+        // Hide PTW counter when menu is open, show when closed
+        const cardCounter = document.querySelector('.card-counter');
+        if (cardCounter) {
+            if (navbarLinks.classList.contains('active')) {
+                cardCounter.style.display = 'none';
+            } else {
+                cardCounter.style.display = 'block';
+            }
+        }
     });
     
     // Close menu when clicking on a navigation link (better UX on mobile)
@@ -29,6 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close the menu when a link is clicked
             hamburgerButton.classList.remove('active');
             navbarLinks.classList.remove('active');
+            
+            // Show PTW counter again when menu closes
+            const cardCounter = document.querySelector('.card-counter');
+            if (cardCounter) {
+                cardCounter.style.display = 'block';
+            }
         });
     });
     
@@ -40,6 +56,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isClickInsideNav && navbarLinks.classList.contains('active')) {
             hamburgerButton.classList.remove('active');
             navbarLinks.classList.remove('active');
+            
+            // Show PTW counter again when menu closes
+            const cardCounter = document.querySelector('.card-counter');
+            if (cardCounter) {
+                cardCounter.style.display = 'block';
+            }
         }
     });
     
@@ -49,6 +71,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth > 480) {
             hamburgerButton.classList.remove('active');
             navbarLinks.classList.remove('active');
+            
+            // Show PTW counter again when switching to desktop view
+            const cardCounter = document.querySelector('.card-counter');
+            if (cardCounter) {
+                cardCounter.style.display = 'block';
+            }
         }
     });
 });
