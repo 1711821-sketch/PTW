@@ -2204,17 +2204,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         // AJAX approval function
         function approveWorkPermit(id, role, buttonElement) {
-            // Special confirmation for entrepreneurs
-            if (role === 'entreprenor') {
-                showEntrepreneurConfirmModal(function(confirmed) {
-                    if (confirmed) {
-                        performApproval(id, role, buttonElement);
-                    }
-                });
-                return;
-            }
-            
-            // For other roles, proceed directly
+            // Proceed with approval for all roles
             performApproval(id, role, buttonElement);
         }
         
@@ -2289,35 +2279,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 buttonElement.textContent = originalText;
             });
         }
-        
-        // Custom modal for entrepreneur confirmation
-        function showEntrepreneurConfirmModal(callback) {
-            const modal = document.createElement('div');
-            modal.className = 'custom-modal';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <p>Du har nu godkendt PTW for denne opgave, være opmærksom på at du først kan påbegynde opgaven når Driften og Opgaveansvarlig også har godkendt opgaven. Jeg bekræfter at jeg først påbegynder opgaven når Driften og Opgaveansvarlige også har godkendt opgaven</p>
-                    <div class="modal-buttons">
-                        <button class="modal-btn btn-yes">OK - Jeg forstår</button>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            modal.querySelector('.btn-yes').onclick = function() {
-                document.body.removeChild(modal);
-                callback(true);
-            };
-            
-            // Close modal when clicking outside
-            modal.onclick = function(e) {
-                if (e.target === modal) {
-                    document.body.removeChild(modal);
-                    callback(false);
-                }
-            };
-        }
+
         
         // Update work status (for entrepreneurs)
         function updateWorkStatus(woId, newStatus) {
