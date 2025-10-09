@@ -2404,6 +2404,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 if (cardCounter) {
                     cardCounter.classList.add('visible');
                 }
+                
+                // Initialize card navigation after layout is ready
+                setTimeout(function() {
+                    if (typeof updateCardNavigation === 'function') {
+                        updateCardNavigation();
+                    }
+                }, 50);
             }
             
             // Save preference to localStorage
@@ -2529,9 +2536,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 
                 // Listen to scroll events
                 cardSlider.addEventListener('scroll', updateCardNavigation);
-                
-                // Initial state
-                updateCardNavigation();
             }
             
             // Load saved view preference and ensure proper initialization
