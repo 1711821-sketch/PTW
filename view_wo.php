@@ -2489,8 +2489,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             const prevBtn = document.getElementById('prevCardBtn');
             const nextBtn = document.getElementById('nextCardBtn');
             const cardCounter = document.getElementById('cardCounter');
+            const counterText = cardCounter ? cardCounter.querySelector('.counter-text') : null;
             
-            if (cardSlider && prevBtn && nextBtn && cardCounter) {
+            if (cardSlider && prevBtn && nextBtn && counterText) {
                 const cards = cardSlider.querySelectorAll('.work-permit-card');
                 const totalCards = cards.length;
                 
@@ -2501,7 +2502,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     const cardWidth = cards[0].offsetWidth;
                     // If card width is 0 or invalid, default to first card
                     if (!cardWidth || cardWidth === 0) {
-                        cardCounter.textContent = `PTW 1 af ${totalCards}`;
+                        counterText.textContent = `PTW 1 af ${totalCards}`;
                         return;
                     }
                     
@@ -2509,7 +2510,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     const currentIndex = Math.round(scrollLeft / cardWidth);
                     const cardNumber = Math.min(Math.max(currentIndex + 1, 1), totalCards);
                     
-                    cardCounter.textContent = `PTW ${cardNumber} af ${totalCards}`;
+                    counterText.textContent = `PTW ${cardNumber} af ${totalCards}`;
                 }
                 
                 // Previous button click
