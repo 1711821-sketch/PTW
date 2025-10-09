@@ -460,12 +460,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             font-size: 16px;
             font-weight: 600;
             color: #333;
-            padding: 8px 0.5rem;
-            margin-bottom: 1rem;
+            padding: 6px 0.5rem;
+            margin-bottom: 0.5rem;
             display: none;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
+        }
+        
+        @media (max-width: 768px) {
+            .card-counter {
+                padding: 4px 0.5rem;
+                margin-bottom: 0.25rem;
+                font-size: 14px;
+            }
         }
 
         .card-counter.visible {
@@ -514,7 +522,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .card-view-wrapper {
             position: relative;
             width: 100%;
-            padding: 1rem 0;
+            padding: 0.25rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .card-view-wrapper {
+                padding: 0;
+            }
         }
 
         .slider-container {
