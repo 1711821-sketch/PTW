@@ -2577,9 +2577,9 @@ p {
     }
     
     .container {
-        padding: 1rem;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        padding: 0.5rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.5rem;
     }
     
     .work-permit-card {
@@ -3500,8 +3500,8 @@ div.custom-marker-black::before {
     }
     
     .container {
-        padding: 1rem;
-        margin: 0.5rem;
+        padding: 0.5rem;
+        margin: 0.25rem 0.5rem 0.5rem 0.5rem;
         border-radius: var(--radius-md);
     }
     
