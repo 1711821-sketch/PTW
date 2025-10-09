@@ -1611,7 +1611,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <div class="card-time-header" onclick="toggleTimeTracking(<?php echo $entry['id']; ?>)">
                             <h4>⏱️ Tidsregistrering</h4>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="time-summary" id="time-summary-<?php echo $entry['id']; ?>">Klik for at registrere</span>
+                                <span class="time-summary" id="time-summary-<?php echo $entry['id']; ?>"></span>
                                 <span class="toggle-icon" id="time-icon-<?php echo $entry['id']; ?>">▼</span>
                             </div>
                         </div>
