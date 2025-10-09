@@ -2315,9 +2315,9 @@ p {
     background: var(--background-secondary);
     border-radius: var(--radius-sm);
     padding: 0.5rem;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
     margin-bottom: 0.5rem;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #eeeeee;
     flex-shrink: 0;
 }
 
@@ -2749,7 +2749,7 @@ p {
     padding: 0.5rem;
     background-color: #f8f9fa;
     border-radius: 8px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #eeeeee;
 }
 
 .card-time-tracking h4 {
