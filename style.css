@@ -3142,7 +3142,7 @@ p {
         gap: 6px;
         padding: 0.5rem;
         margin-top: 8px;
-        border-top: 1px solid #f0f0f0;
+        border-top: none;
         flex-wrap: nowrap;
     }
     
