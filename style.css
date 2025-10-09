@@ -3627,16 +3627,25 @@ div.custom-marker-black::before {
         gap: 0.5rem;
     }
     
-    /* Card actions - stack vertically */
+    /* Card actions - horizontal side-by-side on very small screens */
     .card-actions {
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 6px;
+        flex-wrap: nowrap;
     }
     
     .card-actions .button,
+    .card-actions .handlinger-btn,
     .card-actions a {
-        width: 100%;
+        flex: 1;
+        min-width: 0;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
     }
     
     /* Modal adjustments */
