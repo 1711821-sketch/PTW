@@ -149,6 +149,8 @@ Preferred communication style: Simple, everyday language.
   - Each button has flex: 1 for equal width distribution, 40px height, 6px gap between buttons
   - display: flex with centered alignment for clean mobile app-like appearance
   - white-space: nowrap prevents text wrapping in compact layout
+  - Critical fix: Added !important override to prevent general mobile button width:100% rule from breaking horizontal layout
+  - Override applies to all button/link variants (.button, button, a, .handlinger-btn, a.button) inside .card-actions
 - **Responsive Tables**: Mobile-optimized table display with horizontal scrolling and sticky headers
 - **Typography Scaling**: Adaptive font sizes and line heights optimized for mobile readability
 - **iPhone Compatibility**: Special handling for iOS Safari including webkit optimizations and touch-action properties
