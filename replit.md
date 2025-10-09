@@ -144,6 +144,11 @@ Preferred communication style: Simple, everyday language.
 - **Hamburger Navigation**: Responsive slide-out navigation menu with fixed hamburger button for mobile devices
 - **Touch-Optimized Forms**: Improved input fields with 48px minimum touch targets, larger padding, and iOS-specific styling
 - **Mobile-First Buttons**: Enhanced button design with better touch feedback and 48px minimum touch targets
+- **Horizontal Action Buttons**: PTW card action buttons (Vis, Rediger, Slet) display side-by-side in a horizontal row on mobile (October 9, 2025):
+  - Implemented in @media (max-width: 768px) and @media (max-width: 640px) with consistent flex layout
+  - Each button has flex: 1 for equal width distribution, 40px height, 6px gap between buttons
+  - display: flex with centered alignment for clean mobile app-like appearance
+  - white-space: nowrap prevents text wrapping in compact layout
 - **Responsive Tables**: Mobile-optimized table display with horizontal scrolling and sticky headers
 - **Typography Scaling**: Adaptive font sizes and line heights optimized for mobile readability
 - **iPhone Compatibility**: Special handling for iOS Safari including webkit optimizations and touch-action properties
