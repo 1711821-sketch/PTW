@@ -3566,6 +3566,15 @@ div.custom-marker-black::before {
         margin-bottom: 0.5rem;
     }
     
+    /* EXCEPT card action buttons - those should be horizontal */
+    .card-actions .button,
+    .card-actions .handlinger-btn,
+    .card-actions a.button {
+        width: auto !important;
+        flex: 1 !important;
+        margin-bottom: 0 !important;
+    }
+    
     .button-sm {
         padding: 0.625rem 1rem;
         font-size: 0.875rem;
