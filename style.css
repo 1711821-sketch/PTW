@@ -2897,23 +2897,23 @@ p {
     
     /* Compact spacing for PTW card sections on mobile */
     .card-details {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
+        margin-top: 0.125rem;
+        margin-bottom: 0.125rem;
         padding-top: 0;
         padding-bottom: 0;
     }
     
     .card-approvals {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-        padding: 0.25rem;
+        margin-top: 0.125rem;
+        margin-bottom: 0.125rem;
+        padding: 0.125rem 0.25rem;
         border-top: 1px solid #eeeeee;
     }
     
     .card-time-tracking {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-        padding: 0.25rem;
+        margin-top: 0.125rem;
+        margin-bottom: 0.125rem;
+        padding: 0.125rem 0.25rem;
         border-top: 1px solid #eeeeee;
     }
     
