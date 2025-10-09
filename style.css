@@ -3569,7 +3569,9 @@ div.custom-marker-black::before {
     /* EXCEPT card action buttons - those should be horizontal */
     .card-actions .button,
     .card-actions .handlinger-btn,
-    .card-actions a.button {
+    .card-actions a.button,
+    .card-actions button,
+    .card-actions a {
         width: auto !important;
         flex: 1 !important;
         margin-bottom: 0 !important;
