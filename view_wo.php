@@ -464,8 +464,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             margin-bottom: 1rem;
             display: none;
             align-items: center;
-            justify-content: space-between;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 0.75rem;
         }
 
         .card-counter.visible {
@@ -473,7 +473,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
         
         .counter-text {
-            flex: 1;
             text-align: center;
         }
         
