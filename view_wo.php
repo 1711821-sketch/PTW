@@ -919,18 +919,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 flex: 1 1 auto;
                 min-height: 36px;
             }
-
-            /* Hide navigation buttons on mobile - swipe is natural */
-            .counter-nav-btn {
-                display: none !important;
-            }
-        }
-        
-        /* Show navigation buttons on tablet and desktop */
-        @media (min-width: 641px) {
-            .counter-nav-btn {
-                display: flex !important;
-            }
         }
 
         /* ========== NEW MODERN BUTTON STYLES ========== */
