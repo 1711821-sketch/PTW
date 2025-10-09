@@ -2894,6 +2894,52 @@ p {
     .time-actions {
         flex-direction: column;
     }
+    
+    /* Compact spacing for PTW card sections on mobile */
+    .card-details {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    
+    .card-approvals {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        padding: 0.25rem;
+        border-top: 1px solid #eeeeee;
+    }
+    
+    .card-time-tracking {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        padding: 0.25rem;
+        border-top: 1px solid #eeeeee;
+    }
+    
+    /* Remove extra bottom margins from child elements */
+    .card-details .detail-item:last-child,
+    .card-approvals .approval-grid,
+    .card-time-tracking .time-entry-form {
+        margin-bottom: 0;
+    }
+    
+    .card-approvals h4,
+    .card-time-tracking h4 {
+        margin: 0 0 0.25rem 0;
+    }
+    
+    /* Override form-group margins inside PTW sections */
+    .card-details .form-group,
+    .card-approvals .form-group,
+    .card-time-tracking .form-group {
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Override any card-level margins */
+    .card-content .card {
+        margin-bottom: 0.25rem;
+    }
 }
 
 /* Dashboard Time Tracking Styles */
