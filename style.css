@@ -3142,7 +3142,7 @@ p {
         gap: 6px;
         padding: 0.5rem;
         margin-top: 8px;
-        border-top: none;
+        border-top: none !important;
         flex-wrap: nowrap;
     }
     
@@ -3645,6 +3645,7 @@ div.custom-marker-black::before {
         justify-content: space-between;
         gap: 6px;
         flex-wrap: nowrap;
+        border-top: none !important;
     }
     
     .card-actions .button,
