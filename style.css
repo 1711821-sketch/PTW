@@ -2933,12 +2933,12 @@ p {
     .card-details .form-group,
     .card-approvals .form-group,
     .card-time-tracking .form-group {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.125rem;
     }
     
     /* Override any card-level margins */
     .card-content .card {
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.125rem;
     }
 }
 
