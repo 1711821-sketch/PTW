@@ -3141,8 +3141,9 @@ p {
         justify-content: space-between;
         gap: 6px;
         padding: 0.5rem;
-        margin-top: 8px;
+        margin-top: 0 !important;
         border-top: none !important;
+        background: transparent !important;
         flex-wrap: nowrap;
     }
     
@@ -3646,6 +3647,8 @@ div.custom-marker-black::before {
         gap: 6px;
         flex-wrap: nowrap;
         border-top: none !important;
+        background: transparent !important;
+        margin-top: 0 !important;
     }
     
     .card-actions .button,
