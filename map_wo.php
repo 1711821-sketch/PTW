@@ -95,11 +95,11 @@ try {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background: var(--background-primary);
+            background: white;
         }
         
         .map-controls {
-            background: var(--background-primary);
+            background: white;
             padding: 1.5rem 2rem;
             border-bottom: 1px solid var(--border-light);
             box-shadow: var(--shadow-sm);
@@ -114,7 +114,7 @@ try {
             font-size: 0.9rem;
             margin-bottom: 1rem;
             transition: var(--transition);
-            background: var(--background-primary);
+            background: white;
             color: var(--text-primary);
         }
         
@@ -243,7 +243,7 @@ try {
             position: absolute;
             bottom: 1rem;
             right: 1rem;
-            background: var(--background-primary);
+            background: white;
             padding: 0.75rem 1rem;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
