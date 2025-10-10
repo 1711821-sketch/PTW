@@ -487,12 +487,13 @@ try {
         let savedCorners = localStorage.getItem('zoneOverlayCorners');
         let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
 
-        // Default corners (approximate SGOT terminal area) - clockwise from NW
+        // Default corners (approximate SGOT terminal area)
+        // Order: top-left, top-right, bottom-left, bottom-right
         let defaultCorners = [
             L.latLng(55.207, 11.258),  // NW (top-left)
             L.latLng(55.207, 11.270),  // NE (top-right)
-            L.latLng(55.200, 11.270),  // SE (bottom-right)
-            L.latLng(55.200, 11.258)   // SW (bottom-left)
+            L.latLng(55.200, 11.258),  // SW (bottom-left)
+            L.latLng(55.200, 11.270)   // SE (bottom-right)
         ];
 
         let corners = defaultCorners;
