@@ -309,15 +309,24 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             
             /* Use shortened names on mobile */
             .step-title {
-                font-size: 0;
+                text-indent: -9999px;
+                overflow: hidden;
+                white-space: nowrap;
                 line-height: 1.1;
                 margin-bottom: 0;
                 font-weight: 700;
+                position: relative;
+                height: 1rem;
             }
             
             .step-title::before {
                 content: attr(data-short);
                 font-size: 0.7rem;
+                text-indent: 0;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                white-space: nowrap;
             }
             
             /* Hide timestamps and status text on mobile to save space */
