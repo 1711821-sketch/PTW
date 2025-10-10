@@ -424,9 +424,9 @@ try {
                 </div>
             </div>
             
-            <!-- Zone overlay instruction -->
+            <!-- Image coordinates instruction -->
             <div style="padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                <strong style="color: var(--success);">💡 Lag-kontrol:</strong> Brug lag-kontrollen (øverst til højre) til at slå OpenStreetMap og zoneklassifikationsplanen til/fra. Træk i zoneplanen for at flytte den. Juster gennemsigtighed med slideren i venstre hjørne.
+                <strong style="color: var(--success);">💡 Billedkoordinater:</strong> Klik på kortet for at se billedkoordinater (X, Y). Disse kan bruges til præcis placering af PTW-markører.
             </div>
             
             <div class="filter-controls">
@@ -464,182 +464,37 @@ try {
     var workOrdersWithSJA = <?php echo json_encode($workOrdersWithSJA); ?>;
     
 
-    // Create the map centred on Stigsnæs Gulfhavn Olie Terminal.  Adjust the
-    // zoom level to show enough detail.
-    var map = L.map('map').setView([55.205903, 11.264111], 15);
-
-    // Define base layers
-    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
+    // Initialize map with CRS.Simple for image coordinates
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -2,
+        maxZoom: 4,
+        zoomSnap: 0.25
     });
     
-    // Check if OpenStreetMap should be visible (default: true)
-    let osmVisible = localStorage.getItem('osmVisible');
-    if (osmVisible === null || osmVisible === 'true') {
-        osm.addTo(map);
-    }
-
-    // --- Zone Overlay - Simple imageOverlay (no distortion plugin) ---
-    const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png';
+    const IMG_WIDTH = 7021;
+    const IMG_HEIGHT = 4967;
+    const bounds = [[0, 0], [IMG_HEIGHT, IMG_WIDTH]]; // [[minY, minX], [maxY, maxX]]
     
-    // Load saved opacity from localStorage
-    let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
-    
-    // Load saved bounds from localStorage
-    let savedBounds = localStorage.getItem('zoneOverlayBounds');
-    let defaultBounds = [[55.200, 11.258], [55.207, 11.270]]; // [[south, west], [north, east]]
-    
-    let bounds = defaultBounds;
-    try {
-        if (savedBounds) {
-            bounds = JSON.parse(savedBounds);
-        }
-    } catch (e) {
-        console.warn('Invalid zone overlay bounds, using defaults');
-        localStorage.removeItem('zoneOverlayBounds');
-    }
-    
-    // Create simple image overlay (draggable)
-    let zoneOverlay = L.imageOverlay(OVERLAY_SRC, bounds, {
-        opacity: overlayOpacity,
-        interactive: true
-    });
-    
-    // Setup dragging for zone overlay
-    let isDragging = false;
-    let startPos = null;
-    let startBounds = null;
-    
-    function initializeZoneDragging() {
-        // If dragging already exists, just enable it
-        if (zoneOverlay.dragging) {
-            zoneOverlay.dragging.enable();
-            return;
-        }
-        
-        // Only create new dragging if element exists
-        if (zoneOverlay.getElement()) {
-            zoneOverlay.dragging = new L.Draggable(zoneOverlay.getElement());
-            
-            // Capture starting position and disable map panning
-            zoneOverlay.dragging.on('dragstart', function(e) {
-                isDragging = true;
-                map.dragging.disable();
-                startPos = e.target._newPos ? L.point(e.target._newPos) : L.point(0, 0);
-                startBounds = zoneOverlay.getBounds();
-            });
-            
-            // Update bounds during drag
-            zoneOverlay.dragging.on('drag', function(e) {
-                if (!startPos || !startBounds) return;
-                
-                const currentPos = e.target._newPos ? L.point(e.target._newPos) : startPos;
-                const offset = currentPos.subtract(startPos);
-                
-                const sw = map.latLngToContainerPoint(startBounds.getSouthWest());
-                const ne = map.latLngToContainerPoint(startBounds.getNorthEast());
-                
-                const newSw = map.containerPointToLatLng(sw.add(offset));
-                const newNe = map.containerPointToLatLng(ne.add(offset));
-                
-                const newBounds = L.latLngBounds(newSw, newNe);
-                zoneOverlay.setBounds(newBounds);
-            });
-            
-            // Save bounds and re-enable map panning
-            zoneOverlay.dragging.on('dragend', function() {
-                isDragging = false;
-                map.dragging.enable();
-                
-                const bounds = zoneOverlay.getBounds();
-                const boundsArray = [[bounds.getSouth(), bounds.getWest()], [bounds.getNorth(), bounds.getEast()]];
-                localStorage.setItem('zoneOverlayBounds', JSON.stringify(boundsArray));
-                
-                startPos = null;
-                startBounds = null;
-            });
-            
-            zoneOverlay.dragging.enable();
-        }
-    }
-    
-    // Register 'add' listener BEFORE adding to map
-    zoneOverlay.on('add', initializeZoneDragging);
-    
-    // Check if zone overlay should be visible (default: false for first time)
-    let zoneVisible = localStorage.getItem('zoneVisible');
-    if (zoneVisible === 'true') {
-        zoneOverlay.addTo(map);
-    }
-    
-    // Layer control - both as overlays so they can be toggled independently
-    const overlays = { 
-        "OpenStreetMap": osm,
-        "Zoneklassifikationsplan": zoneOverlay 
-    };
-    let layerCtrl = L.control.layers(null, overlays, { 
-        collapsed: true, 
-        position: 'topright' 
+    const zoneplan = L.imageOverlay('assets/maps/zoneplan_sgot.png', bounds, {
+        opacity: 1.0
     }).addTo(map);
     
-    // Save layer visibility state when toggled
-    map.on('overlayadd', function(e) {
-        if (e.layer === osm) {
-            localStorage.setItem('osmVisible', 'true');
-        } else if (e.layer === zoneOverlay) {
-            localStorage.setItem('zoneVisible', 'true');
-            // Initialize and enable dragging when zone overlay is added
-            initializeZoneDragging();
-        }
-    });
+    map.fitBounds(bounds);
     
-    map.on('overlayremove', function(e) {
-        if (e.layer === osm) {
-            localStorage.setItem('osmVisible', 'false');
-        } else if (e.layer === zoneOverlay) {
-            localStorage.setItem('zoneVisible', 'false');
-            // Disable dragging when zone overlay is removed
-            if (zoneOverlay.dragging) {
-                zoneOverlay.dragging.disable();
-            }
-        }
-    });
+    // Historic geographic bounds that mapped to the image
+    const GEO_BOUNDS = {
+        minLat: 55.200, maxLat: 55.207,
+        minLng: 11.258, maxLng: 11.270
+    };
     
-    // --- Opacity Control ---
-    const OpacityCtrl = L.Control.extend({
-        onAdd: function() {
-            const div = L.DomUtil.create('div', 'leaflet-bar');
-            div.style.background = '#fff';
-            div.style.padding = '8px';
-            div.style.font = '12px system-ui, sans-serif';
-            div.style.borderRadius = '6px';
-            L.DomEvent.disableClickPropagation(div);
-
-            const label = L.DomUtil.create('label', '', div);
-            label.textContent = 'Gennemsigtighed';
-            label.style.display = 'block';
-            label.style.marginBottom = '4px';
-            label.style.fontWeight = '500';
-            
-            const slider = L.DomUtil.create('input', '', div);
-            slider.type = 'range';
-            slider.min = '0.3'; 
-            slider.max = '0.9'; 
-            slider.step = '0.05';
-            slider.value = String(overlayOpacity);
-            slider.style.width = '120px';
-
-            slider.addEventListener('input', () => {
-                const op = Number(slider.value);
-                zoneOverlay.setOpacity(op);
-                localStorage.setItem('zoneOverlayOpacity', String(op));
-            });
-
-            return div;
-        }
-    });
-    map.addControl(new OpacityCtrl({ position: 'topleft' }));
+    function geoToImage(lat, lng) {
+        const y = ((GEO_BOUNDS.maxLat - lat) / (GEO_BOUNDS.maxLat - GEO_BOUNDS.minLat)) * IMG_HEIGHT;
+        const x = ((lng - GEO_BOUNDS.minLng) / (GEO_BOUNDS.maxLng - GEO_BOUNDS.minLng)) * IMG_WIDTH;
+        return {x: Math.max(0, Math.min(x, IMG_WIDTH)), y: Math.max(0, Math.min(y, IMG_HEIGHT))};
+    }
+    
+    function imgXY(x, y) { return L.latLng(y, x); }
 
     // Define custom marker icons for planning (blue), active (green) and completed (grey)
     var greenIcon = new L.Icon({
@@ -771,7 +626,8 @@ try {
                     }
                 }
                 
-                var marker = L.marker([parseFloat(lat), parseFloat(lng)], { icon: icon });
+                var coords = geoToImage(parseFloat(lat), parseFloat(lng));
+                var marker = L.marker(imgXY(coords.x, coords.y), { icon: icon });
                 
                 // Create modern popup content
                 var statusText = status === 'planning' ? 'Planlagt' : status === 'active' ? 'Aktiv' : 'Afsluttet';
@@ -913,9 +769,16 @@ try {
         updateMarkerCount();
     });
     
-    // Add map click handler to close popups when clicking on map
-    map.on('click', function() {
-        map.closePopup();
+    // Add map click handler to show image coordinates
+    map.on('click', function(e) {
+        const xy = { x: Math.round(e.latlng.lng), y: Math.round(e.latlng.lat) };
+        console.log('Klik på billed-XY:', xy);
+        
+        // Show coordinates in a temporary popup
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent('<strong>Billedkoordinater:</strong><br>X: ' + xy.x + '<br>Y: ' + xy.y)
+            .openOn(map);
     });
     
     // Fit map to show all markers if there are any

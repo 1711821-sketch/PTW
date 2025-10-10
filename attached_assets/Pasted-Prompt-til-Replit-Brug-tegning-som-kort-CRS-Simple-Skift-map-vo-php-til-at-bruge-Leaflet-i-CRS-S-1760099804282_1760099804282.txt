@@ -1,0 +1,68 @@
+Prompt til Replit: Brug tegning som kort (CRS.Simple)
+
+Skift map_vo.php til at bruge Leaflet i CRS.Simple med vores zoneplan som baggrund, uden OSM-tiles.
+
+Indlæs billedets dimensioner (bredde/height i pixels) og brug det som bounds.
+
+Brug L.imageOverlay til at lægge assets/maps/zoneplan_sgot.png som “kortet”.
+
+Sæt map.fitBounds(bounds) så hele tegningen ses.
+
+PTW-markører og polygoner placeres i billedkoordinater (x=kolonne, y=række) mappet til Leaflet-latlng som [y, x].
+
+Bevar eksisterende popups/klik – men nu i tegningens koordinatsystem.
+
+Eksempelkode (indsæt rigtige pixel-mål):
+
+// 1) Opsæt Leaflet med CRS.Simple (billede-koordinater)
+const map = L.map('map', {
+  crs: L.CRS.Simple,
+  minZoom: -2,   // tillad zoom ud
+  maxZoom: 4,
+  zoomSnap: 0.25
+});
+
+// 2) Billedstørrelse i pixels (SKIFT til de rigtige værdier)
+const imgWidth  = 4000;  // px
+const imgHeight = 2600;  // px
+
+// 3) Bounds i CRS.Simple er [ [minY, minX], [maxY, maxX] ] = [[0,0],[h,w]]
+const bounds = [[0, 0], [imgHeight, imgWidth]];
+
+// 4) Læg tegningen ind som "kort"
+const overlay = L.imageOverlay('assets/maps/zoneplan_sgot.png', bounds, {
+  opacity: 1.0
+}).addTo(map);
+
+// 5) Vis hele tegningen
+map.fitBounds(bounds);
+
+// 6) Hjælpefunktion: konverter billed-XY (px) til Leaflet latlng (y,x)
+function imgXY(x, y) { return L.latLng(y, x); }
+
+// 7) Eksempel: PTW-markør placeret på tegningen (brug dine egne koordinater)
+const ptwMarker = L.marker(imgXY(1850, 1210)).addTo(map)
+  .bindPopup('PTW #123 – Truckloading');
+
+// 8) Eksempel: polygon (område) på tegningen
+const område = L.polygon([
+  imgXY(1500, 900),
+  imgXY(1700, 900),
+  imgXY(1700, 1100),
+  imgXY(1500, 1100)
+], { fillOpacity: 0.2 }).addTo(map).bindPopup('Zone 2');
+
+// 9) (Valgfrit) målestok/koordinater: vis billed-XY ved klik for nem placering
+map.on('click', e => {
+  const xy = { x: Math.round(e.latlng.lng), y: Math.round(e.latlng.lat) };
+  console.log('Klik på billed-XY:', xy);
+});
+
+
+Vigtigt:
+
+Brug de rigtige pixelmål for zoneplan_sgot.png (kan læses i billedfilens egenskaber).
+
+Alle lag (markører, linjer, polygoner) skal bruge imgXY(x, y) fremover.
+
+Ingen GPS/lat-lon her. Hvis vi senere vil “mødes” med GPS, laver vi en simpel 2-punkts affine mapping fra WGS84 til billed-XY.
