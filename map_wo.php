@@ -564,6 +564,24 @@ try {
             if (lat && lng) {
                 var status = e.status ? e.status : 'planning';
                 
+                // Smart coordinate detection: check if coordinates are geographic or image-based
+                var x, y;
+                var latNum = parseFloat(lat);
+                var lngNum = parseFloat(lng);
+                
+                // Check if coordinates are geographic (need transformation)
+                if (latNum >= GEO_BOUNDS.minLat && latNum <= GEO_BOUNDS.maxLat && 
+                    lngNum >= GEO_BOUNDS.minLng && lngNum <= GEO_BOUNDS.maxLng) {
+                    // Geographic coordinates - transform to image
+                    var coords = geoToImage(latNum, lngNum);
+                    x = coords.x;
+                    y = coords.y;
+                } else {
+                    // Already image coordinates (Y stored in latitude, X in longitude)
+                    y = latNum;
+                    x = lngNum;
+                }
+                
                 // Check if this work order has SJA
                 var hasSJA = workOrdersWithSJA.includes(e.id);
                 
@@ -626,8 +644,7 @@ try {
                     }
                 }
                 
-                var coords = geoToImage(parseFloat(lat), parseFloat(lng));
-                var marker = L.marker(imgXY(coords.x, coords.y), { icon: icon });
+                var marker = L.marker(imgXY(x, y), { icon: icon });
                 
                 // Create modern popup content
                 var statusText = status === 'planning' ? 'Planlagt' : status === 'active' ? 'Aktiv' : 'Afsluttet';

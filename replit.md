@@ -36,6 +36,8 @@ Preferred communication style: Simple, everyday language.
     - Uses historic bounds [[55.200, 11.258], [55.207, 11.270]] as reference for linear transformation
     - PTW markers now positioned using image coordinates via imgXY(x, y) helper (maps to L.latLng(y, x))
     - Clamping to image boundaries prevents out-of-bounds coordinates
+    - Smart coordinate detection in map_wo.php: automatically detects if coordinates are geographic (transforms them) or image-based (uses directly)
+    - Database columns changed from DECIMAL(10,8) to REAL to support both geographic decimals and large image pixel values
   - **Click Coordinate Feedback**:
     - Map click handler displays image coordinates in popup: "Billedkoordinater: X: [x], Y: [y]"
     - Coordinates also logged to console for easy copying
