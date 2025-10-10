@@ -25,29 +25,25 @@ Preferred communication style: Simple, everyday language.
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
-  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as draggable map overlay in map_wo.php
-  - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
-  - Implemented using standard Leaflet imageOverlay with L.Draggable for positioning
-  - **Independent Layer Control**: Both OpenStreetMap and Zoneklassifikationsplan as toggleable overlays (not base layers)
-  - Users can display: (1) Only OpenStreetMap, (2) Only Zoneklassifikationsplan, (3) Both simultaneously
-  - Layer visibility state persisted in localStorage (osmVisible, zoneVisible keys)
-  - Added layer control (topright) to toggle both layers independently
-  - Moved map info box ("X af X arbejdsordrer vises") to bottom-right to prevent layer control overlap
-  - **Positioning System**: Drag-to-move overlay functionality using Leaflet's built-in Draggable
-  - Dragging automatically disabled when zone overlay removed, re-enabled when added back
-  - Auto-save on 'dragend' event captures bounds to localStorage (zoneOverlayBounds format: [[south,west],[north,east]])
-  - Opacity slider (0.3-0.9) in separate topleft control box for transparency adjustment
-  - User instruction banner: "Brug lag-kontrollen til at slå OpenStreetMap og zoneklassifikationsplanen til/fra. Træk i zoneplanen for at flytte den."
-  - Default bounds: [[55.200, 11.258], [55.207, 11.270]] (south-west to north-east)
-  - Bounds and layer visibility persisted in localStorage, restored on page reload
-  - Simple drag-based positioning - no complex distortion needed
-  - PTW markers render above overlay for maintained clickability
-  - **Critical Fixes for Layer Control & Dragging**:
-    - Fixed dragging initialization: 'add' event listener registered BEFORE overlay added to map
-    - Fixed dragging re-enable: `initializeZoneDragging()` now re-enables existing dragging instance on toggle
-    - Fixed layer visibility persistence: Event handlers now correctly use `e.layer` object comparison instead of `e.name`
-    - Dragging works correctly on: (1) initial load with persisted visibility, (2) layer toggle on/off cycles, (3) page reload
-    - localStorage keys: osmVisible (true/false), zoneVisible (true/false), zoneOverlayBounds, zoneOverlayOpacity
+  - **Map System Overhaul - CRS.Simple Image Coordinates**:
+    - Converted map_wo.php from geographic coordinates (WGS84) to pure image coordinates using Leaflet CRS.Simple
+    - Zoneklassifikationsplan (7021x4967px PNG) now serves as the primary "map" via L.imageOverlay
+    - Removed OpenStreetMap tiles, layer control, dragging, and opacity slider - now pure drawing-based coordinate system
+    - Image bounds: [[0, 0], [4967, 7021]] representing pixel coordinates
+    - Map configuration: `crs: L.CRS.Simple, minZoom: -2, maxZoom: 4, zoomSnap: 0.25`
+  - **Coordinate Transformation System**:
+    - Implemented geoToImage() function to convert legacy geographic coordinates to image pixels
+    - Uses historic bounds [[55.200, 11.258], [55.207, 11.270]] as reference for linear transformation
+    - PTW markers now positioned using image coordinates via imgXY(x, y) helper (maps to L.latLng(y, x))
+    - Clamping to image boundaries prevents out-of-bounds coordinates
+  - **Click Coordinate Feedback**:
+    - Map click handler displays image coordinates in popup: "Billedkoordinater: X: [x], Y: [y]"
+    - Coordinates also logged to console for easy copying
+    - Enables precise PTW marker placement using pixel coordinates
+  - **UI Updates**:
+    - New instruction banner: "💡 Billedkoordinater: Klik på kortet for at se billedkoordinater (X, Y)"
+    - Retained all existing functionality: search, filtering, status indicators, SJA markers, work status, popups
+  - **Known Limitation**: Existing PTW markers use geographic coordinates from database transformed via hardcoded bounds; may require recalibration if original calibration differed
 
 ## System Architecture
 
