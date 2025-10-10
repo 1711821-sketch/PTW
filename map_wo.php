@@ -511,23 +511,32 @@ try {
     let zoneOverlay = L.distortableImageOverlay(OVERLAY_SRC, {
         corners: corners,
         opacity: overlayOpacity,
-        selected: false,
-        suppressToolbar: false,  // Use plugin's built-in toolbar
-        actions: [
-            L.DragAction,
-            L.ScaleAction, 
-            L.DistortAction,
-            L.RotateAction,
-            L.OpacityAction,
-            L.DeleteAction,
-            L.LockAction
-        ]
+        editable: true,
+        mode: 'distort'
     }).addTo(map);
     
-    // Auto-save corners when overlay is edited
-    zoneOverlay.on('edit', function() {
-        const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
-        localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+    // Auto-save corners when overlay is edited (both mouse and touch)
+    if (zoneOverlay.on) {
+        zoneOverlay.on('edit', function() {
+            try {
+                const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
+                localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+            } catch(e) {
+                // Ignore errors during save
+            }
+        });
+    }
+    
+    // Fallback: also save on map mouseup/touchend for broader compatibility
+    map.on('mouseup touchend', function() {
+        if (zoneOverlay && zoneOverlay.getCorners) {
+            try {
+                const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
+                localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+            } catch(e) {
+                // Ignore errors
+            }
+        }
     });
 
     // Layer control
