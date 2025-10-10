@@ -116,7 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
             [
                 $current['work_order_no'], $current['p_number'], $current['mps_nr'],
                 $current['description'], $current['p_description'], $current['jobansvarlig'],
-                $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
+                $current['telefon'], $current['oprettet_af'], 
+                !empty($current['oprettet_dato']) ? $current['oprettet_dato'] : null,
                 $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
                 $current['status'], 
                 !empty($current['latitude']) ? floatval($current['latitude']) : null,
@@ -142,7 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
                 [
                     $current['work_order_no'], $current['p_number'], $current['mps_nr'],
                     $current['description'], $current['p_description'], $current['jobansvarlig'],
-                    $current['telefon'], $current['oprettet_af'], $current['oprettet_dato'],
+                    $current['telefon'], $current['oprettet_af'], 
+                    !empty($current['oprettet_dato']) ? $current['oprettet_dato'] : null,
                     $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
                     $current['status'], 
                     !empty($current['latitude']) ? floatval($current['latitude']) : null,
