@@ -25,21 +25,19 @@ Preferred communication style: Simple, everyday language.
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
-  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as distortable map overlay in map_wo.php
+  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as draggable map overlay in map_wo.php
   - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
-  - Implemented Leaflet.DistortableImage plugin (v0.21.9) from unpkg CDN with both JS and CSS
-  - CDN URLs: unpkg.com/leaflet-distortableimage@0.21.9/dist/ (both .js and .css files)
+  - Implemented using standard Leaflet imageOverlay with L.Draggable for positioning
   - Added layer control (topright) to toggle "Zoneklassifikationsplan" visibility
   - Moved map info box ("X af X arbejdsordrer vises") to bottom-right to prevent layer control overlap
-  - **Interactive Calibration System**: Full 4-corner distortion control with visible drag handles
-  - Plugin initialized with selected: true, mode: 'distort', editable: true for immediate editing
-  - White circular corner handles visible when overlay is active - drag to adjust position/rotation/skew
-  - Auto-save on 'update' event captures all corner positions to localStorage (zoneOverlayCorners format: [[lat,lng],...])
-  - Opacity slider (0.3-0.9) in separate topleft control box
-  - User instruction banner: "Træk i de hvide cirkler i hjørnerne for at justere position, rotation og distortion"
-  - Default corners: NW→NE→SE→SW clockwise (55.207,11.258 → 55.207,11.270 → 55.200,11.270 → 55.200,11.258)
-  - Corners persisted as [[lat,lng],...] array in localStorage, converted to L.latLng() on load
-  - Full calibration support: independent corner positioning allows rotation and skew adjustment
+  - **Positioning System**: Drag-to-move overlay functionality using Leaflet's built-in Draggable
+  - Overlay can be dragged anywhere on the map for manual alignment
+  - Auto-save on 'dragend' event captures bounds to localStorage (zoneOverlayBounds format: [[south,west],[north,east]])
+  - Opacity slider (0.3-0.9) in separate topleft control box for transparency adjustment
+  - User instruction banner: "Slå zoneplanen til via lag-kontrollen. Træk i zoneplanen for at flytte den."
+  - Default bounds: [[55.200, 11.258], [55.207, 11.270]] (south-west to north-east)
+  - Bounds persisted in localStorage, restored on page reload
+  - Simple drag-based positioning - no complex distortion needed
   - PTW markers render above overlay for maintained clickability
 
 ## System Architecture
