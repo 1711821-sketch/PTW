@@ -463,11 +463,37 @@ try {
     // zoom level to show enough detail.
     var map = L.map('map').setView([55.205903, 11.264111], 15);
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
+    // Define base layers
+    var baseLayers = {
+        "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        })
+    };
+
+    // Zoneklassifikationskort som overlay
+    var zoneOverlay = L.imageOverlay(
+        'assets/maps/zoneplan_sgot.png',
+        [[55.1915, 11.1410], [55.1975, 11.1620]],  // Initial bounds - may need adjustment
+        { 
+            opacity: 0.65, 
+            interactive: false 
+        }
+    );
+
+    // Define overlay layers
+    var overlays = {
+        "Zoneklassifikationsplan": zoneOverlay
+    };
+
+    // Add layer control
+    L.control.layers(baseLayers, overlays, { 
+        collapsed: true,
+        position: 'topright'
     }).addTo(map);
+
+    // Add OpenStreetMap as default base layer
+    baseLayers["OpenStreetMap"].addTo(map);
 
     // Define custom marker icons for planning (blue), active (green) and completed (grey)
     var greenIcon = new L.Icon({
