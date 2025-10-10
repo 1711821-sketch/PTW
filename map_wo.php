@@ -85,10 +85,16 @@ try {
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="style.css">
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
         .map-container {
             display: flex;
             flex-direction: column;
-            height: 400vh;
+            min-height: 100vh;
             background: var(--background-primary);
         }
         
@@ -226,8 +232,8 @@ try {
         .status-indicator.completed { color: var(--text-secondary); }
         
         #map {
-            flex: 1;
-            min-height: 0;
+            width: 100%;
+            height: 2000px;
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             overflow: hidden;
             box-shadow: var(--shadow-md);
@@ -446,7 +452,7 @@ try {
         </div>
         
         <!-- Map container -->
-        <div style="position: relative; flex: 1;">
+        <div style="position: relative;">
             <div id="map"></div>
             <div class="map-info" id="mapInfo">
                 <span id="markerCount">Indlæser...</span>
