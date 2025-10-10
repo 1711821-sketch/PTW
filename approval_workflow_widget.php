@@ -62,7 +62,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                     <?php endif; ?>
                 </div>
                 <div class="step-content">
-                    <div class="step-title">Opgaveansvarlig</div>
+                    <div class="step-title" data-short="OA">Opgaveansvarlig</div>
                     <?php if ($oaApproved && $oaTimestamp && !$compact): ?>
                         <div class="step-timestamp"><?php echo htmlspecialchars($oaTimestamp); ?></div>
                     <?php elseif (!$oaApproved): ?>
@@ -95,7 +95,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                     <?php endif; ?>
                 </div>
                 <div class="step-content">
-                    <div class="step-title">Drift</div>
+                    <div class="step-title" data-short="Drift">Drift</div>
                     <?php if ($driftApproved && $driftTimestamp && !$compact): ?>
                         <div class="step-timestamp"><?php echo htmlspecialchars($driftTimestamp); ?></div>
                     <?php elseif (!$driftApproved): ?>
@@ -128,7 +128,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                     <?php endif; ?>
                 </div>
                 <div class="step-content">
-                    <div class="step-title">Entreprenør</div>
+                    <div class="step-title" data-short="Ent">Entreprenør</div>
                     <?php if ($entApproved && $entTimestamp && !$compact): ?>
                         <div class="step-timestamp"><?php echo htmlspecialchars($entTimestamp); ?></div>
                     <?php elseif (!$entApproved): ?>
@@ -276,37 +276,92 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             font-weight: bold;
         }
         
-        /* Mobile responsive */
+        /* Ultra-compact mobile responsive */
         @media (max-width: 768px) {
+            .approval-workflow-widget {
+                padding: 0.5rem;
+                margin: 0.5rem 0;
+                border-radius: 8px;
+            }
+            
+            .approval-workflow-widget.compact {
+                padding: 0.4rem;
+                margin: 0.25rem 0;
+            }
+            
             .workflow-steps {
-                gap: 0.5rem;
+                gap: 0.25rem;
+                padding: 0.25rem 0;
             }
             
             .workflow-step {
-                min-width: 100px;
-                padding: 0.5rem;
+                min-width: 80px;
+                max-width: 85px;
+                padding: 0.35rem 0.25rem;
+                border-width: 1px;
+                border-radius: 6px;
+                gap: 0.25rem;
             }
             
             .step-icon {
-                font-size: 1.5rem;
+                font-size: 1.1rem;
+            }
+            
+            /* Use shortened names on mobile */
+            .step-title {
+                font-size: 0.7rem;
+                line-height: 1.1;
+                margin-bottom: 0;
+                font-weight: 700;
+            }
+            
+            .step-title::before {
+                content: attr(data-short);
             }
             
             .step-title {
-                font-size: 0.8rem;
+                font-size: 0;
             }
             
-            .step-timestamp,
-            .step-status {
+            .step-title::before {
                 font-size: 0.7rem;
             }
             
+            /* Hide timestamps and status text on mobile to save space */
+            .step-timestamp,
+            .step-status {
+                display: none;
+            }
+            
             .workflow-arrow {
-                font-size: 1.2rem;
+                font-size: 0.9rem;
+                margin: 0 -0.1rem;
             }
             
             .step-approve-btn {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.6rem;
+                font-size: 0;
+                padding: 0.4rem 0.3rem;
+                margin-top: 0.25rem;
+                border-radius: 4px;
+                min-height: 32px;
+                font-weight: 700;
+            }
+            
+            /* Use checkmark icon instead of text on mobile */
+            .step-approve-btn::before {
+                content: "✓";
+                font-size: 1.1rem;
+                line-height: 1;
+            }
+            
+            /* Reduce pulse animation on mobile */
+            .workflow-step.current_user {
+                animation: pulse-mobile 2s ease-in-out infinite;
+            }
+            
+            @keyframes pulse-mobile {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.03); }
             }
         }
         
