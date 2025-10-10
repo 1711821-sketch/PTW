@@ -1,0 +1,119 @@
+Skift min overlay-kalibrering til Leaflet.DistortableImage, så jeg kan justere billedet med musen (hjørnehåndtag) og gemme resultatet.
+
+1) Indlæs plugin (i <head> eller lige før </body>):
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet.distortableimage/dist/leaflet.distortableimage.css">
+<script src="https://unpkg.com/leaflet.distortableimage/dist/leaflet.distortableimage.js"></script>
+
+
+2) JS – init overlay, redigér/gem, husk i localStorage:
+
+const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png';
+
+// Hent tidligere gemte hjørner og opacity
+let savedCorners = localStorage.getItem('zoneOverlayCorners');
+let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
+
+// Default grov-bounds (brug dine nuværende hvis du har dem)
+// Hjørner skal gives i rækkefølge: NW, NE, SE, SW eller tilsvarende lukket ring.
+// Vi starter bare med et lille område inde over terminalen; det finjusteres med håndtagene:
+let defaultCorners = [
+  [55.1980, 11.1395], // NW
+  [55.1980, 11.1650], // NE
+  [55.1915, 11.1650], // SE
+  [55.1915, 11.1395]  // SW
+];
+
+let corners = savedCorners ? JSON.parse(savedCorners) : defaultCorners;
+
+// Opret distortable overlay
+let zoneOverlay = L.distortableImageOverlay(OVERLAY_SRC, {
+  corners,
+  opacity: overlayOpacity,
+  selected: false,   // start uden edit-tilstand
+  suppressToolbar: true // vi laver egen lille UI
+}).addTo(map);
+
+// Lagkontrol (toggle visning)
+const baseLayers = {
+  "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' })
+}.addTo ? undefined : null; // bevar din eksisterende OSM-init hvis du allerede har den
+
+// Hvis du bruger en eksisterende layer control, tilføj overlay sådan:
+// layerCtrl.addOverlay(zoneOverlay, "Zoneklassifikationsplan");
+// Ellers kan du oprette en ny:
+// L.control.layers({ "OpenStreetMap": osm }, { "Zoneklassifikationsplan": zoneOverlay }, { collapsed: true }).addTo(map);
+
+// Lidt UI: Redigér / Gem + Opacity
+const Ctrl = L.Control.extend({
+  onAdd: function() {
+    const div = L.DomUtil.create('div', 'leaflet-bar');
+    div.style.background = '#fff';
+    div.style.padding = '8px';
+    div.style.font = '12px system-ui, sans-serif';
+    L.DomEvent.disableClickPropagation(div);
+
+    const editBtn = L.DomUtil.create('button', '', div);
+    editBtn.textContent = 'Redigér overlay';
+    editBtn.style.display = 'block';
+    editBtn.style.marginBottom = '6px';
+
+    const saveBtn = L.DomUtil.create('button', '', div);
+    saveBtn.textContent = 'Gem placering';
+    saveBtn.style.display = 'block';
+    saveBtn.style.marginBottom = '6px';
+
+    const label = L.DomUtil.create('label', '', div);
+    label.textContent = 'Gennemsigtighed';
+    label.style.display = 'block';
+    const slider = L.DomUtil.create('input', '', div);
+    slider.type = 'range';
+    slider.min = '0.3'; slider.max = '0.9'; slider.step = '0.05';
+    slider.value = String(overlayOpacity);
+    slider.style.width = '120px';
+
+    // Hændelser
+    editBtn.addEventListener('click', () => {
+      // Toggle edit-tilstand: enable() viser håndtag, disable() låser igen
+      if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
+        zoneOverlay.editing.disable();
+        editBtn.textContent = 'Redigér overlay';
+      } else {
+        zoneOverlay.editing.enable();
+        editBtn.textContent = 'Stop redigering';
+      }
+    });
+
+    saveBtn.addEventListener('click', () => {
+      // Hent hjørner som lat/lng-par og gem
+      const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
+      localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+      // Lås redigering
+      if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
+        zoneOverlay.editing.disable();
+        editBtn.textContent = 'Redigér overlay';
+      }
+      alert('Overlay-hjørner gemt.');
+    });
+
+    slider.addEventListener('input', () => {
+      const op = Number(slider.value);
+      zoneOverlay.setOpacity(op);
+      localStorage.setItem('zoneOverlayOpacity', String(op));
+    });
+
+    return div;
+  }
+});
+map.addControl(new Ctrl({ position: 'topright' }));
+
+
+Krav:
+
+Overlayet skal kunne toggles i lagkontrollen (brug min eksisterende layerCtrl hvis den findes).
+
+Hjørner gemmes i localStorage som zoneOverlayCorners.
+
+Opacity gemmes som zoneOverlayOpacity.
+
+PTW-markører og popups skal stadig ligge ovenpå overlayet.
