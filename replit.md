@@ -12,10 +12,12 @@ Preferred communication style: Simple, everyday language.
   - New widget features color-coded status indicators (green=approved, blue=current user's turn, gray=pending)
   - Integrated approval flow visualization in both card view (view_wo.php) and print view (print_wo.php)
   - Widget shows timestamps, visual arrows, and approve buttons for authorized users
-  - **Ultra-compact mobile optimization (<768px)**: Widget reduced to 80-85px step width with abbreviated role names (OA, Drift, Ent), checkmark-only approve buttons (✓), hidden timestamps/status, and minimal spacing for smartphone display
-  - Mobile layout takes ~50% less horizontal space while maintaining touch-friendly 32px button height
-  - Fixed CSS bug where duplicate .step-title rules caused both full and abbreviated role names to display simultaneously on mobile - consolidated to single clean ruleset
-  - Resolved text overlap issue by replacing font-size: 0 method with text-indent: -9999px + absolute positioning for pseudo-elements to properly hide original text and show only abbreviated names on mobile
+  - **Ultra-compact mobile optimization (<768px)**: Widget optimized for smartphone display with all three boxes (OA, Drift, Ent) visible side-by-side without horizontal scrolling
+  - Mobile layout: 29% width per step, 2px gaps, compact arrows (0.7rem with negative margins), fits perfectly on 320px+ screens
+  - Abbreviated role names (OA, Drift, Ent) shown via CSS pseudo-elements using text-indent technique
+  - Checkmark-only approve buttons (✓), hidden timestamps/status for space efficiency
+  - Fixed CSS bugs: consolidated duplicate .step-title rules, added min-width: 0 override to allow proper flex shrinking on mobile
+  - Touch-friendly with 32px minimum button height maintained
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
