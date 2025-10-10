@@ -290,21 +290,21 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             }
             
             .workflow-steps {
-                gap: 4px;
+                gap: 2px;
                 padding: 0.25rem 0;
             }
             
             .workflow-step {
-                flex: 0 0 31%;
-                max-width: 31%;
-                padding: 0.3rem 0.15rem;
+                flex: 0 0 29%;
+                max-width: 29%;
+                padding: 0.3rem 0.1rem;
                 border-width: 1px;
                 border-radius: 6px;
                 gap: 0.2rem;
             }
             
             .step-icon {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             
             /* Use shortened names on mobile */
@@ -316,12 +316,12 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                 margin-bottom: 0;
                 font-weight: 700;
                 position: relative;
-                height: 1rem;
+                height: 0.9rem;
             }
             
             .step-title::before {
                 content: attr(data-short);
-                font-size: 0.7rem;
+                font-size: 0.65rem;
                 text-indent: 0;
                 position: absolute;
                 left: 50%;
@@ -336,8 +336,9 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             }
             
             .workflow-arrow {
-                font-size: 0.9rem;
-                margin: 0 -0.1rem;
+                font-size: 0.7rem;
+                margin: 0 -2px;
+                flex-shrink: 0;
             }
             
             .step-approve-btn {
