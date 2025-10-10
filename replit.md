@@ -25,6 +25,11 @@ Preferred communication style: Simple, everyday language.
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
+  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as toggleable map overlay in map_wo.php
+  - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
+  - Implemented Leaflet imageOverlay with 0.65 opacity, positioned over SGOT terminal area
+  - Added layer control (topright) allowing users to toggle "Zoneklassifikationsplan" on/off
+  - Overlay is non-interactive and semi-transparent to show both zones and background map
 
 ## System Architecture
 
