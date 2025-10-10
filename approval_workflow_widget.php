@@ -290,17 +290,17 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             }
             
             .workflow-steps {
-                gap: 0.25rem;
+                gap: 4px;
                 padding: 0.25rem 0;
             }
             
             .workflow-step {
-                min-width: 80px;
-                max-width: 85px;
-                padding: 0.35rem 0.25rem;
+                flex: 0 0 31%;
+                max-width: 31%;
+                padding: 0.3rem 0.15rem;
                 border-width: 1px;
                 border-radius: 6px;
-                gap: 0.25rem;
+                gap: 0.2rem;
             }
             
             .step-icon {
