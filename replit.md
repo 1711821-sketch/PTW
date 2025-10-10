@@ -7,7 +7,9 @@ A web-based PTW (Permit To Work) system designed for coordinating work between a
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
-- **October 10, 2025**: Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
+- **October 10, 2025**: 
+  - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
+  - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
 
 ## System Architecture
 
