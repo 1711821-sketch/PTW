@@ -474,7 +474,7 @@ try {
     // Zoneklassifikationskort som overlay
     var zoneOverlay = L.imageOverlay(
         'assets/maps/zoneplan_sgot.png',
-        [[55.1915, 11.1410], [55.1975, 11.1620]],  // Initial bounds - may need adjustment
+        [[55.200, 11.258], [55.212, 11.270]],  // Bounds centered on SGOT terminal - adjust as needed
         { 
             opacity: 0.65, 
             interactive: false 
