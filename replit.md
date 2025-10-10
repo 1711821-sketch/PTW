@@ -25,20 +25,21 @@ Preferred communication style: Simple, everyday language.
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
-  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as toggleable map overlay in map_wo.php
+  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as toggleable distortable map overlay in map_wo.php
   - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
-  - Implemented Leaflet imageOverlay with 0.65 opacity, positioned over SGOT terminal area
+  - Implemented Leaflet.DistortableImage plugin (v0.21.9) for interactive corner-based image overlay
+  - CDN URLs: unpkg.com/leaflet-distortableimage@0.21.9 (correct hyphenated package name)
   - Added layer control (topright) allowing users to toggle "Zoneklassifikationsplan" on/off
-  - Overlay is non-interactive and semi-transparent to show both zones and background map
   - Moved map info box ("X af X arbejdsordrer vises") from top-right to bottom-right to prevent overlap with layer control
-  - **Interactive Calibration System**: Upgraded to Leaflet.DistortableImage plugin for intuitive drag-to-adjust corner handles
-  - "Redigér overlay" button toggles edit mode showing draggable corner handles on zoneplanen
-  - "Gem placering" button saves corner positions to localStorage (zoneOverlayCorners)
+  - **Interactive Calibration System**: Drag-to-adjust corner handles for precise overlay positioning
+  - Control box (topleft) with "Redigér overlay" button to toggle edit mode showing 4 draggable corner handles
+  - "Gem placering" button saves corner positions to localStorage (zoneOverlayCorners format: [[lat,lng],...])
   - Opacity slider (0.3-0.9) for adjusting overlay transparency
+  - Default corners: NW→NE→SE→SW clockwise order (55.207,11.258 → 55.207,11.270 → 55.200,11.270 → 55.200,11.258)
+  - Corners converted to L.latLng() objects for plugin compatibility
   - Corners and opacity persist in localStorage across page loads
   - PTW markers and popups remain on top of overlay (z-order)
-  - Error handling prevents crashes from corrupted localStorage data
-  - Layer control (topright) allows toggling zoneklassifikationsplan visibility
+  - Error handling prevents crashes from corrupted localStorage data with try-catch blocks and user-friendly alerts
 
 ## System Architecture
 

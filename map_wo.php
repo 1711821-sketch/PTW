@@ -83,7 +83,7 @@ try {
     <title>Oversigtskort over WO</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.distortableimage/dist/leaflet.distortableimage.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-distortableimage@0.21.9/dist/leaflet.distortableimage.css">
     <link rel="stylesheet" href="style.css">
     <style>
         .map-container {
@@ -451,7 +451,7 @@ try {
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.distortableimage/dist/leaflet.distortableimage.js"></script>
+    <script src="https://unpkg.com/leaflet-distortableimage@0.21.9/dist/leaflet.distortableimage.js"></script>
     <script>
     // Initialise the list of entries passed from PHP.  JSON_UNESCAPED_UNICODE
     // ensures that Danish characters are output correctly.
@@ -479,16 +479,23 @@ try {
     let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
 
     // Default corners (approximate SGOT terminal area) - will be adjusted with handles
+    // Corner order: NW, NE, SE, SW (clockwise)
     let defaultCorners = [
-        [55.207, 11.258],  // NW
-        [55.207, 11.270],  // NE
-        [55.200, 11.270],  // SE
-        [55.200, 11.258]   // SW
+        L.latLng(55.207, 11.258),  // NW (top-left)
+        L.latLng(55.207, 11.270),  // NE (top-right)
+        L.latLng(55.200, 11.270),  // SE (bottom-right)
+        L.latLng(55.200, 11.258)   // SW (bottom-left)
     ];
 
     let corners = null;
     try {
-        corners = savedCorners ? JSON.parse(savedCorners) : defaultCorners;
+        if (savedCorners) {
+            const parsed = JSON.parse(savedCorners);
+            // Convert saved array format [[lat,lng],...] to L.latLng objects
+            corners = parsed.map(c => L.latLng(c[0], c[1]));
+        } else {
+            corners = defaultCorners;
+        }
     } catch (e) {
         console.warn('Invalid zone overlay corners in localStorage, using defaults:', e);
         corners = defaultCorners;
@@ -556,25 +563,38 @@ try {
 
             // Toggle edit mode
             editBtn.addEventListener('click', () => {
-                if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
-                    zoneOverlay.editing.disable();
-                    editBtn.textContent = 'Redigér overlay';
-                } else {
-                    zoneOverlay.editing.enable();
-                    editBtn.textContent = 'Stop redigering';
+                try {
+                    if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
+                        zoneOverlay.editing.disable();
+                        editBtn.textContent = 'Redigér overlay';
+                    } else {
+                        if (zoneOverlay.editing) {
+                            zoneOverlay.editing.enable();
+                            editBtn.textContent = 'Stop redigering';
+                        } else {
+                            alert('Redigeringsfunktion er ikke tilgængelig.');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Edit mode toggle error:', err);
+                    alert('Fejl ved aktivering af redigeringstilstand: ' + err.message);
                 }
             });
 
             // Save corners
             saveBtn.addEventListener('click', () => {
-                const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
-                localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
-                // Lock editing
-                if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
-                    zoneOverlay.editing.disable();
-                    editBtn.textContent = 'Redigér overlay';
+                try {
+                    const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
+                    localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+                    // Lock editing
+                    if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
+                        zoneOverlay.editing.disable();
+                        editBtn.textContent = 'Redigér overlay';
+                    }
+                    alert('Overlay-hjørner gemt.');
+                } catch (err) {
+                    alert('Fejl ved gemning af hjørner: ' + err.message);
                 }
-                alert('Overlay-hjørner gemt.');
             });
 
             // Opacity slider
