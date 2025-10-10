@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS work_orders (
     entreprenor_firma VARCHAR(100),
     entreprenor_kontakt VARCHAR(100),
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'completed', 'cancelled')),
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
+    latitude REAL,  -- Changed from DECIMAL to support both geographic (55.2) and image coordinates (0-4967)
+    longitude REAL, -- Changed from DECIMAL to support both geographic (11.2) and image coordinates (0-7021)
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
