@@ -31,13 +31,14 @@ Preferred communication style: Simple, everyday language.
   - Added layer control (topright) allowing users to toggle "Zoneklassifikationsplan" on/off
   - Overlay is non-interactive and semi-transparent to show both zones and background map
   - Moved map info box ("X af X arbejdsordrer vises") from top-right to bottom-right to prevent overlap with layer control
-  - **Interactive Calibration System**: Added calibration UI control (topleft) for precise overlay alignment
-  - Two-click calibration: Click bottom-left corner then top-right corner to set overlay bounds
+  - **Interactive Calibration System**: Upgraded to Leaflet.DistortableImage plugin for intuitive drag-to-adjust corner handles
+  - "Redigér overlay" button toggles edit mode showing draggable corner handles on zoneplanen
+  - "Gem placering" button saves corner positions to localStorage (zoneOverlayCorners)
   - Opacity slider (0.3-0.9) for adjusting overlay transparency
-  - Bounds and opacity persist in localStorage across page loads
-  - Cache-buster on overlay image URL ensures fresh loading
-  - Overlay placed in tilePane (z-order) to keep PTW markers and popups on top
+  - Corners and opacity persist in localStorage across page loads
+  - PTW markers and popups remain on top of overlay (z-order)
   - Error handling prevents crashes from corrupted localStorage data
+  - Layer control (topright) allows toggling zoneklassifikationsplan visibility
 
 ## System Architecture
 
