@@ -44,6 +44,16 @@ Preferred communication style: Simple, everyday language.
     - New instruction banner: "💡 Billedkoordinater: Klik på kortet for at se billedkoordinater (X, Y)"
     - Retained all existing functionality: search, filtering, status indicators, SJA markers, work status, popups
   - **Known Limitation**: Existing PTW markers use geographic coordinates from database transformed via hardcoded bounds; may require recalibration if original calibration differed
+  - **PTW Creation with Zone Plan (create_wo.php)**:
+    - Converted PTW creation/edit page from OpenStreetMap to zoneklassifikationsplan with CRS.Simple
+    - Users now click directly on zone plan to select PTW location instead of geographic map
+    - Smart coordinate detection: automatically identifies if existing PTW has geographic or image coordinates
+    - Geographic coordinates (lat: 55.200-55.207, lng: 11.258-11.270) are transformed to image coordinates for display
+    - New PTW saves image coordinates directly: X stored in longitude field, Y stored in latitude field
+    - Visual feedback shows "Billedkoordinater: X: [x], Y: [y]" when clicking on map
+    - Label updated to "Klik på zoneklassifikationsplanen for at vælge placering"
+    - Backward compatibility: editing existing PTW with geographic coordinates converts them to image coordinates on save
+    - Ensures consistency between creation (create_wo.php) and overview (map_wo.php) map systems
 
 ## System Architecture
 
