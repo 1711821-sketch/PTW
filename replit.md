@@ -25,21 +25,22 @@ Preferred communication style: Simple, everyday language.
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
-  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as toggleable distortable map overlay in map_wo.php
+  - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as distortable map overlay in map_wo.php
   - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
-  - Implemented Leaflet.DistortableImage plugin (v0.21.9) with both JS and CSS from unpkg CDN
-  - CDN URLs: leaflet-distortableimage@0.21.9 (JS + CSS for proper styling and functionality)
-  - Added layer control (topright) allowing users to toggle "Zoneklassifikationsplan" on/off
-  - Moved map info box ("X af X arbejdsordrer vises") from top-right to bottom-right to prevent overlap
-  - **Interactive Calibration System**: Simplified drag-to-adjust corner system using plugin's editable mode
-  - Always-on edit mode (editable: true, mode: 'distort') allows immediate corner dragging
-  - Auto-save on mouseup event captures corner positions to localStorage (zoneOverlayCorners)
-  - Opacity slider control (0.3-0.9) in separate topleft control box
-  - User instruction banner: "Dobbeltklik på zoneplanen for at redigere placering" with helpful tips
+  - Implemented Leaflet.DistortableImage plugin (v0.21.9) from unpkg CDN with both JS and CSS
+  - CDN URLs: unpkg.com/leaflet-distortableimage@0.21.9/dist/ (both .js and .css files)
+  - Added layer control (topright) to toggle "Zoneklassifikationsplan" visibility
+  - Moved map info box ("X af X arbejdsordrer vises") to bottom-right to prevent layer control overlap
+  - **Interactive Calibration System**: Full 4-corner distortion control with visible drag handles
+  - Plugin initialized with selected: true, mode: 'distort', editable: true for immediate editing
+  - White circular corner handles visible when overlay is active - drag to adjust position/rotation/skew
+  - Auto-save on 'update' event captures all corner positions to localStorage (zoneOverlayCorners format: [[lat,lng],...])
+  - Opacity slider (0.3-0.9) in separate topleft control box
+  - User instruction banner: "Træk i de hvide cirkler i hjørnerne for at justere position, rotation og distortion"
   - Default corners: NW→NE→SE→SW clockwise (55.207,11.258 → 55.207,11.270 → 55.200,11.270 → 55.200,11.258)
-  - Corners stored as L.latLng() objects for Leaflet compatibility
-  - Positions and opacity persist in localStorage across sessions
-  - PTW markers render above overlay for clickability
+  - Corners persisted as [[lat,lng],...] array in localStorage, converted to L.latLng() on load
+  - Full calibration support: independent corner positioning allows rotation and skew adjustment
+  - PTW markers render above overlay for maintained clickability
 
 ## System Architecture
 
