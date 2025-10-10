@@ -88,7 +88,7 @@ try {
         .map-container {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 150vh;
             background: var(--background-primary);
         }
         
