@@ -2566,9 +2566,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <?php else: ?>
         <p>Der er endnu ingen PTW?r oprettet.</p>
     <?php endif; ?>
-    <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-        <p><a href="create_wo.php">Opret ny PTW?</a></p>
-    <?php endif; ?>
     <p><a href="map_wo.php">Se oversigtskort</a></p>
     </div><!-- /.container -->
 </body>
