@@ -18,6 +18,10 @@ Preferred communication style: Simple, everyday language.
   - Checkmark-only approve buttons (✓), hidden timestamps/status for space efficiency
   - Fixed CSS bugs: consolidated duplicate .step-title rules, added min-width: 0 override to allow proper flex shrinking on mobile
   - Touch-friendly with 32px minimum button height maintained
+  - **Accordion functionality for approval workflow**: Wrapped approval process in fold-out section matching Tidsregistrering pattern
+  - Clickable header shows "✅ Godkendelsesproces" with dynamic status (Godkendt 0/3, 1/3, 2/3, or 3/3) based on approval count
+  - Toggle icon (▼) rotates when expanded, green background color (rgba(16, 185, 129, 0.03)) with hover effect
+  - JavaScript toggleApprovalWorkflow() function for expand/collapse behavior
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
