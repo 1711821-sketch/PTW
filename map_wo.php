@@ -473,7 +473,7 @@ try {
     // Initialize map with CRS.Simple for image coordinates
     var map = L.map('map', {
         crs: L.CRS.Simple,
-        minZoom: -2,
+        minZoom: -4,
         maxZoom: 4,
         zoomSnap: 0.25
     });
