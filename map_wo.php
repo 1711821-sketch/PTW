@@ -232,10 +232,9 @@ try {
         .status-indicator.completed { color: var(--text-secondary); }
         
         #map {
-            width: 80%;
-            height: 600px;
-            margin: 0 auto;
-            border-radius: var(--radius-lg);
+            width: 100%;
+            height: 1000px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             overflow: hidden;
             box-shadow: var(--shadow-md);
         }
