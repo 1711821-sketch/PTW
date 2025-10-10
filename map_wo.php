@@ -497,8 +497,6 @@ try {
         opacity: 1.0
     }).addTo(map);
     
-    map.fitBounds(bounds);
-    
     // Historic geographic bounds that mapped to the image
     const GEO_BOUNDS = {
         minLat: 55.200, maxLat: 55.207,
@@ -738,6 +736,28 @@ try {
     // Build the initial set of markers and add them to the map
     buildMarkers(entries);
     updateMapMarkers();
+    
+    // Automatically fit map to show all active and planning markers
+    function fitToActivePlanning() {
+        var markersToFit = [];
+        if (document.getElementById('showPlanning').checked) {
+            markersToFit = markersToFit.concat(planningMarkers);
+        }
+        if (document.getElementById('showActive').checked) {
+            markersToFit = markersToFit.concat(activeMarkers);
+        }
+        
+        if (markersToFit.length > 0) {
+            var group = L.featureGroup(markersToFit);
+            map.fitBounds(group.getBounds(), {
+                padding: [50, 50],
+                maxZoom: 1
+            });
+        }
+    }
+    
+    // Fit map to markers on initial load
+    fitToActivePlanning();
     
     // Update marker count info
     function updateMarkerCount() {
