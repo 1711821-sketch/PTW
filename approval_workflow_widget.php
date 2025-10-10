@@ -296,6 +296,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             
             .workflow-step {
                 flex: 0 0 29%;
+                min-width: 0;
                 max-width: 29%;
                 padding: 0.3rem 0.1rem;
                 border-width: 1px;
