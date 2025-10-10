@@ -235,7 +235,7 @@ try {
         
         .map-info {
             position: absolute;
-            top: 1rem;
+            bottom: 1rem;
             right: 1rem;
             background: var(--background-primary);
             padding: 0.75rem 1rem;
