@@ -42,6 +42,12 @@ Preferred communication style: Simple, everyday language.
   - Bounds and layer visibility persisted in localStorage, restored on page reload
   - Simple drag-based positioning - no complex distortion needed
   - PTW markers render above overlay for maintained clickability
+  - **Critical Fixes for Layer Control & Dragging**:
+    - Fixed dragging initialization: 'add' event listener registered BEFORE overlay added to map
+    - Fixed dragging re-enable: `initializeZoneDragging()` now re-enables existing dragging instance on toggle
+    - Fixed layer visibility persistence: Event handlers now correctly use `e.layer` object comparison instead of `e.name`
+    - Dragging works correctly on: (1) initial load with persisted visibility, (2) layer toggle on/off cycles, (3) page reload
+    - localStorage keys: osmVisible (true/false), zoneVisible (true/false), zoneOverlayBounds, zoneOverlayOpacity
 
 ## System Architecture
 
