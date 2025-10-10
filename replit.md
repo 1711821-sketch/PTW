@@ -28,15 +28,18 @@ Preferred communication style: Simple, everyday language.
   - **Zone Classification Plan Overlay**: Added zoneklassifikationsplan as draggable map overlay in map_wo.php
   - Converted PDF zone plan to high-res PNG (7021x4967px) stored in assets/maps/zoneplan_sgot.png
   - Implemented using standard Leaflet imageOverlay with L.Draggable for positioning
-  - Added layer control (topright) to toggle "Zoneklassifikationsplan" visibility
+  - **Independent Layer Control**: Both OpenStreetMap and Zoneklassifikationsplan as toggleable overlays (not base layers)
+  - Users can display: (1) Only OpenStreetMap, (2) Only Zoneklassifikationsplan, (3) Both simultaneously
+  - Layer visibility state persisted in localStorage (osmVisible, zoneVisible keys)
+  - Added layer control (topright) to toggle both layers independently
   - Moved map info box ("X af X arbejdsordrer vises") to bottom-right to prevent layer control overlap
   - **Positioning System**: Drag-to-move overlay functionality using Leaflet's built-in Draggable
-  - Overlay can be dragged anywhere on the map for manual alignment
+  - Dragging automatically disabled when zone overlay removed, re-enabled when added back
   - Auto-save on 'dragend' event captures bounds to localStorage (zoneOverlayBounds format: [[south,west],[north,east]])
   - Opacity slider (0.3-0.9) in separate topleft control box for transparency adjustment
-  - User instruction banner: "Slå zoneplanen til via lag-kontrollen. Træk i zoneplanen for at flytte den."
+  - User instruction banner: "Brug lag-kontrollen til at slå OpenStreetMap og zoneklassifikationsplanen til/fra. Træk i zoneplanen for at flytte den."
   - Default bounds: [[55.200, 11.258], [55.207, 11.270]] (south-west to north-east)
-  - Bounds persisted in localStorage, restored on page reload
+  - Bounds and layer visibility persisted in localStorage, restored on page reload
   - Simple drag-based positioning - no complex distortion needed
   - PTW markers render above overlay for maintained clickability
 

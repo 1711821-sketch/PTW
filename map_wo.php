@@ -426,7 +426,7 @@ try {
             
             <!-- Zone overlay instruction -->
             <div style="padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                <strong style="color: var(--success);">💡 Zoneklassifikationsplan:</strong> Slå zoneplanen til via lag-kontrollen (øverst til højre). Træk i zoneplanen for at flytte den. Juster gennemsigtighed med slideren i venstre hjørne.
+                <strong style="color: var(--success);">💡 Lag-kontrol:</strong> Brug lag-kontrollen (øverst til højre) til at slå OpenStreetMap og zoneklassifikationsplanen til/fra. Træk i zoneplanen for at flytte den. Juster gennemsigtighed med slideren i venstre hjørne.
             </div>
             
             <div class="filter-controls">
@@ -472,7 +472,13 @@ try {
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
-    }).addTo(map);
+    });
+    
+    // Check if OpenStreetMap should be visible (default: true)
+    let osmVisible = localStorage.getItem('osmVisible');
+    if (osmVisible === null || osmVisible === 'true') {
+        osm.addTo(map);
+    }
 
     // --- Zone Overlay - Simple imageOverlay (no distortion plugin) ---
     const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png';
@@ -498,66 +504,107 @@ try {
     let zoneOverlay = L.imageOverlay(OVERLAY_SRC, bounds, {
         opacity: overlayOpacity,
         interactive: true
-    }).addTo(map);
+    });
     
-    // Make the overlay draggable with proper bounds updating
+    // Setup dragging for zone overlay
     let isDragging = false;
     let startPos = null;
     let startBounds = null;
     
-    zoneOverlay.dragging = new L.Draggable(zoneOverlay.getElement());
-    zoneOverlay.dragging.enable();
+    function initializeZoneDragging() {
+        // If dragging already exists, just enable it
+        if (zoneOverlay.dragging) {
+            zoneOverlay.dragging.enable();
+            return;
+        }
+        
+        // Only create new dragging if element exists
+        if (zoneOverlay.getElement()) {
+            zoneOverlay.dragging = new L.Draggable(zoneOverlay.getElement());
+            
+            // Capture starting position and disable map panning
+            zoneOverlay.dragging.on('dragstart', function(e) {
+                isDragging = true;
+                map.dragging.disable();
+                startPos = e.target._newPos ? L.point(e.target._newPos) : L.point(0, 0);
+                startBounds = zoneOverlay.getBounds();
+            });
+            
+            // Update bounds during drag
+            zoneOverlay.dragging.on('drag', function(e) {
+                if (!startPos || !startBounds) return;
+                
+                const currentPos = e.target._newPos ? L.point(e.target._newPos) : startPos;
+                const offset = currentPos.subtract(startPos);
+                
+                const sw = map.latLngToContainerPoint(startBounds.getSouthWest());
+                const ne = map.latLngToContainerPoint(startBounds.getNorthEast());
+                
+                const newSw = map.containerPointToLatLng(sw.add(offset));
+                const newNe = map.containerPointToLatLng(ne.add(offset));
+                
+                const newBounds = L.latLngBounds(newSw, newNe);
+                zoneOverlay.setBounds(newBounds);
+            });
+            
+            // Save bounds and re-enable map panning
+            zoneOverlay.dragging.on('dragend', function() {
+                isDragging = false;
+                map.dragging.enable();
+                
+                const bounds = zoneOverlay.getBounds();
+                const boundsArray = [[bounds.getSouth(), bounds.getWest()], [bounds.getNorth(), bounds.getEast()]];
+                localStorage.setItem('zoneOverlayBounds', JSON.stringify(boundsArray));
+                
+                startPos = null;
+                startBounds = null;
+            });
+            
+            zoneOverlay.dragging.enable();
+        }
+    }
     
-    // Capture starting position and disable map panning
-    zoneOverlay.dragging.on('dragstart', function(e) {
-        isDragging = true;
-        map.dragging.disable(); // Disable map panning during overlay drag
-        startPos = e.target._newPos ? L.point(e.target._newPos) : L.point(0, 0);
-        startBounds = zoneOverlay.getBounds();
-    });
+    // Register 'add' listener BEFORE adding to map
+    zoneOverlay.on('add', initializeZoneDragging);
     
-    // Update bounds during drag
-    zoneOverlay.dragging.on('drag', function(e) {
-        if (!startPos || !startBounds) return;
-        
-        // Calculate pixel offset
-        const currentPos = e.target._newPos ? L.point(e.target._newPos) : startPos;
-        const offset = currentPos.subtract(startPos);
-        
-        // Convert bounds corners to container points
-        const sw = map.latLngToContainerPoint(startBounds.getSouthWest());
-        const ne = map.latLngToContainerPoint(startBounds.getNorthEast());
-        
-        // Apply offset and convert back to lat/lng
-        const newSw = map.containerPointToLatLng(sw.add(offset));
-        const newNe = map.containerPointToLatLng(ne.add(offset));
-        
-        // Update overlay bounds
-        const newBounds = L.latLngBounds(newSw, newNe);
-        zoneOverlay.setBounds(newBounds);
-    });
+    // Check if zone overlay should be visible (default: false for first time)
+    let zoneVisible = localStorage.getItem('zoneVisible');
+    if (zoneVisible === 'true') {
+        zoneOverlay.addTo(map);
+    }
     
-    // Save bounds and re-enable map panning
-    zoneOverlay.dragging.on('dragend', function() {
-        isDragging = false;
-        map.dragging.enable(); // Re-enable map panning
-        
-        const bounds = zoneOverlay.getBounds();
-        const boundsArray = [[bounds.getSouth(), bounds.getWest()], [bounds.getNorth(), bounds.getEast()]];
-        localStorage.setItem('zoneOverlayBounds', JSON.stringify(boundsArray));
-        
-        // Reset start position for next drag
-        startPos = null;
-        startBounds = null;
-    });
-    
-    // Layer control
-    const baseLayers = { "OpenStreetMap": osm };
-    const overlays = { "Zoneklassifikationsplan": zoneOverlay };
-    let layerCtrl = L.control.layers(baseLayers, overlays, { 
+    // Layer control - both as overlays so they can be toggled independently
+    const overlays = { 
+        "OpenStreetMap": osm,
+        "Zoneklassifikationsplan": zoneOverlay 
+    };
+    let layerCtrl = L.control.layers(null, overlays, { 
         collapsed: true, 
         position: 'topright' 
     }).addTo(map);
+    
+    // Save layer visibility state when toggled
+    map.on('overlayadd', function(e) {
+        if (e.layer === osm) {
+            localStorage.setItem('osmVisible', 'true');
+        } else if (e.layer === zoneOverlay) {
+            localStorage.setItem('zoneVisible', 'true');
+            // Initialize and enable dragging when zone overlay is added
+            initializeZoneDragging();
+        }
+    });
+    
+    map.on('overlayremove', function(e) {
+        if (e.layer === osm) {
+            localStorage.setItem('osmVisible', 'false');
+        } else if (e.layer === zoneOverlay) {
+            localStorage.setItem('zoneVisible', 'false');
+            // Disable dragging when zone overlay is removed
+            if (zoneOverlay.dragging) {
+                zoneOverlay.dragging.disable();
+            }
+        }
+    });
     
     // --- Opacity Control ---
     const OpacityCtrl = L.Control.extend({
