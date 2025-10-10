@@ -89,14 +89,14 @@ try {
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            background: white;
+            background: white !important;
         }
         
         .map-container {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background: white;
+            background: white !important;
         }
         
         .map-controls {
