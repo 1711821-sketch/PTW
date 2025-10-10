@@ -464,36 +464,112 @@ try {
     var map = L.map('map').setView([55.205903, 11.264111], 15);
 
     // Define base layers
-    var baseLayers = {
-        "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        })
-    };
-
-    // Zoneklassifikationskort som overlay
-    var zoneOverlay = L.imageOverlay(
-        'assets/maps/zoneplan_sgot.png',
-        [[55.200, 11.258], [55.212, 11.270]],  // Bounds centered on SGOT terminal - adjust as needed
-        { 
-            opacity: 0.65, 
-            interactive: false 
-        }
-    );
-
-    // Define overlay layers
-    var overlays = {
-        "Zoneklassifikationsplan": zoneOverlay
-    };
-
-    // Add layer control
-    L.control.layers(baseLayers, overlays, { 
-        collapsed: true,
-        position: 'topright'
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // Add OpenStreetMap as default base layer
-    baseLayers["OpenStreetMap"].addTo(map);
+    // --- Zone overlay setup with localStorage ---
+    const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png?v=' + Date.now(); // cache-buster
+
+    let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.65;
+    let saved = localStorage.getItem('zoneOverlayBounds');
+    let zoneOverlayBounds = saved ? JSON.parse(saved) : null;
+    let zoneOverlay = null;
+    let layerCtrl = null;
+
+    function ensureOverlay() {
+        if (zoneOverlay) { map.removeLayer(zoneOverlay); }
+        if (!zoneOverlayBounds) return;
+        zoneOverlay = L.imageOverlay(OVERLAY_SRC, zoneOverlayBounds, {
+            opacity: overlayOpacity,
+            interactive: false,
+            pane: 'tilePane'  // Place below markers
+        });
+    }
+
+    ensureOverlay();
+    const baseLayers = { "OpenStreetMap": osm };
+    const overlays = {};
+    if (zoneOverlay) overlays["Zoneklassifikationsplan"] = zoneOverlay;
+    layerCtrl = L.control.layers(baseLayers, overlays, { collapsed: true, position: 'topright' }).addTo(map);
+    if (zoneOverlay) zoneOverlay.addTo(map);
+
+    // --- Calibration UI Control ---
+    const CalibControl = L.Control.extend({
+        onAdd: function() {
+            const div = L.DomUtil.create('div', 'leaflet-bar');
+            div.style.background = '#fff';
+            div.style.padding = '8px';
+            div.style.font = '12px system-ui, sans-serif';
+            div.style.borderRadius = '6px';
+            L.DomEvent.disableClickPropagation(div);
+
+            const btn = L.DomUtil.create('button', '', div);
+            btn.textContent = 'Kalibrér overlay';
+            btn.style.display = 'block';
+            btn.style.marginBottom = '6px';
+            btn.style.padding = '4px 8px';
+            btn.style.cursor = 'pointer';
+            btn.style.border = '1px solid #ccc';
+            btn.style.borderRadius = '4px';
+            btn.style.background = '#f8f9fa';
+
+            const label = L.DomUtil.create('label', '', div);
+            label.textContent = 'Gennemsigtighed';
+            label.style.display = 'block';
+            label.style.marginBottom = '4px';
+            
+            const slider = L.DomUtil.create('input', '', div);
+            slider.type = 'range'; 
+            slider.min = '0.3'; 
+            slider.max = '0.9'; 
+            slider.step = '0.05';
+            slider.value = String(overlayOpacity);
+            slider.style.width = '120px';
+
+            let calibrating = false;
+            let clicks = [];
+            const onMapClick = (e) => {
+                if (!calibrating) return;
+                clicks.push([e.latlng.lat, e.latlng.lng]);
+                if (clicks.length === 2) {
+                    const lats = [clicks[0][0], clicks[1][0]].sort((a,b)=>a-b);
+                    const lngs = [clicks[0][1], clicks[1][1]].sort((a,b)=>a-b);
+                    zoneOverlayBounds = [[lats[0], lngs[0]], [lats[1], lngs[1]]];
+                    localStorage.setItem('zoneOverlayBounds', JSON.stringify(zoneOverlayBounds));
+                    clicks = []; 
+                    calibrating = false;
+
+                    ensureOverlay();
+                    if (layerCtrl) layerCtrl.remove();
+                    const newOverlays = {};
+                    if (zoneOverlay) newOverlays["Zoneklassifikationsplan"] = zoneOverlay;
+                    layerCtrl = L.control.layers({ "OpenStreetMap": osm }, newOverlays, { collapsed: true, position: 'topright' }).addTo(map);
+                    if (zoneOverlay) zoneOverlay.addTo(map);
+                    alert('Overlay kalibreret og gemt.');
+                }
+            };
+
+            btn.addEventListener('click', () => {
+                calibrating = !calibrating; 
+                clicks = [];
+                alert(calibrating
+                    ? 'Klik nederste-venstre hjørne og derefter øverste-højre på kortet.'
+                    : 'Kalibrering stoppet.');
+            });
+
+            slider.addEventListener('input', () => {
+                overlayOpacity = Number(slider.value);
+                localStorage.setItem('zoneOverlayOpacity', String(overlayOpacity));
+                if (zoneOverlay) zoneOverlay.setOpacity(overlayOpacity);
+            });
+
+            map.on('click', onMapClick);
+            return div;
+        }
+    });
+    map.addControl(new CalibControl({ position: 'topleft' }));
 
     // Define custom marker icons for planning (blue), active (green) and completed (grey)
     var greenIcon = new L.Icon({
