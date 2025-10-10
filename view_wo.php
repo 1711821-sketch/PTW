@@ -8,6 +8,9 @@ session_start();
 // Set Danish timezone
 date_default_timezone_set('Europe/Copenhagen');
 
+// Include approval workflow widget
+require_once 'approval_workflow_widget.php';
+
 // SECURITY FIX: Handle AJAX approval requests with database access control
 if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
     header('Content-Type: application/json');
@@ -1558,67 +1561,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         </div>
                     </div>
                     
-                    <div class="card-approvals">
-                        <div class="card-approvals-header" onclick="toggleApprovals(<?php echo $entry['id']; ?>)">
-                            <h4>✅ Godkendelser</h4>
-                            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="approvals-summary" id="approvals-summary-<?php echo $entry['id']; ?>">
-                                    <?php 
-                                    $approvedCount = ($oaApproved ? 1 : 0) + ($driftApproved ? 1 : 0) + ($entApproved ? 1 : 0);
-                                    echo $approvedCount === 3 ? 'Godkendt' : ($approvedCount . '/3 afventer');
-                                    ?>
-                                </span>
-                                <span class="toggle-icon" id="approvals-icon-<?php echo $entry['id']; ?>">▼</span>
-                            </div>
-                        </div>
-                        <div class="approval-grid" id="approval-grid-<?php echo $entry['id']; ?>">
-                            <div class="approval-item">
-                                <span class="approval-label" title="Opgaveansvarlige">OA:</span>
-                                <span class="approval-status <?php echo $oaApproved ? 'approved' : 'pending'; ?>" id="oa-status-<?php echo $entry['id']; ?>">
-                                    <?php echo $oaApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
-                                </span>
-                                <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
-                                    <button class="btn-approve-card ajax-approve-btn" 
-                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
-                                            data-role="opgaveansvarlig"
-                                            id="oa-btn-<?php echo $entry['id']; ?>"
-                                            title="Godkend som Opgaveansvarlig">
-                                        ✓ Godkend
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                            <div class="approval-item">
-                                <span class="approval-label" title="Driften">Drift:</span>
-                                <span class="approval-status <?php echo $driftApproved ? 'approved' : 'pending'; ?>" id="drift-status-<?php echo $entry['id']; ?>">
-                                    <?php echo $driftApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
-                                </span>
-                                <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
-                                    <button class="btn-approve-card ajax-approve-btn" 
-                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
-                                            data-role="drift"
-                                            id="drift-btn-<?php echo $entry['id']; ?>"
-                                            title="Godkend som Drift">
-                                        ✓ Godkend
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                            <div class="approval-item">
-                                <span class="approval-label" title="Entreprenør">Ent:</span>
-                                <span class="approval-status <?php echo $entApproved ? 'approved' : 'pending'; ?>" id="ent-status-<?php echo $entry['id']; ?>">
-                                    <?php echo $entApproved ? '✅ Godkendt' : '❌ Mangler'; ?>
-                                </span>
-                                <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
-                                    <button class="btn-approve-card ajax-approve-btn" 
-                                            data-id="<?php echo htmlspecialchars($entry['id']); ?>" 
-                                            data-role="entreprenor"
-                                            id="ent-btn-<?php echo $entry['id']; ?>"
-                                            title="Godkend som Entreprenør">
-                                        ✓ Godkend
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
+                    <?php 
+                    // Display visual approval workflow widget
+                    renderApprovalWorkflowWidget($entry, $role, $today, $compact = true); 
+                    ?>
                     
                     <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
                     <div class="card-time-tracking">

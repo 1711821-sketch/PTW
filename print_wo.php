@@ -8,8 +8,14 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
+// Set Danish timezone
+date_default_timezone_set('Europe/Copenhagen');
+
 // Use database instead of JSON files
 require_once 'database.php';
+
+// Include approval workflow widget
+require_once 'approval_workflow_widget.php';
 
 $id = $_GET['id'] ?? '';
 $entry = null;
@@ -250,6 +256,13 @@ if ($statusVal === 'planning') {
         <tr><th>Original PDF</th><td><a href="uploads/<?php echo urlencode($entry['pdf_file']); ?>" target="_blank">Download</a></td></tr>
         <?php endif; ?>
     </table>
+    <h2>Godkendelsesproces</h2>
+    <?php 
+    // Display visual approval workflow widget
+    $today = date('d-m-Y');
+    renderApprovalWorkflowWidget($entry, $role, $today, $compact = false); 
+    ?>
+    
     <?php if (!empty($entry['approval_history']) && is_array($entry['approval_history'])): ?>
         <h2>Godkendelseshistorik</h2>
         <table>
@@ -269,9 +282,6 @@ if ($statusVal === 'planning') {
                 </tr>
             <?php endforeach; ?>
         </table>
-    <?php else: ?>
-        <h2>Godkendelseshistorik</h2>
-        <p>Ingen godkendelser endnu.</p>
     <?php endif; ?>
 
     <!-- Section for displaying SJA entries linked to this WO -->

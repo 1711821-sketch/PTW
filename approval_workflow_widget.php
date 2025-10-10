@@ -41,15 +41,9 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
     $canApproveEnt = ($currentUserRole === 'admin' || $currentUserRole === 'entreprenor') && !$entApproved;
     
     // Determine step state (approved, current_user, pending)
-    function getStepState($approved, $canApprove) {
-        if ($approved) return 'approved';
-        if ($canApprove) return 'current_user';
-        return 'pending';
-    }
-    
-    $oaState = getStepState($oaApproved, $canApproveOA);
-    $driftState = getStepState($driftApproved, $canApproveDrift);
-    $entState = getStepState($entApproved, $canApproveEnt);
+    $oaState = $oaApproved ? 'approved' : ($canApproveOA ? 'current_user' : 'pending');
+    $driftState = $driftApproved ? 'approved' : ($canApproveDrift ? 'current_user' : 'pending');
+    $entState = $entApproved ? 'approved' : ($canApproveEnt ? 'current_user' : 'pending');
     
     $widgetId = 'approval-workflow-' . ($entry['id'] ?? uniqid());
     
@@ -77,7 +71,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                 </div>
                 <?php if ($canApproveOA): ?>
                     <button class="step-approve-btn ajax-approve-btn" 
-                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-id="<?php echo $entry['id']; ?>" 
                             data-role="opgaveansvarlig">
                         Godkend
                     </button>
@@ -110,7 +104,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                 </div>
                 <?php if ($canApproveDrift): ?>
                     <button class="step-approve-btn ajax-approve-btn" 
-                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-id="<?php echo $entry['id']; ?>" 
                             data-role="drift">
                         Godkend
                     </button>
@@ -143,7 +137,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
                 </div>
                 <?php if ($canApproveEnt): ?>
                     <button class="step-approve-btn ajax-approve-btn" 
-                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-id="<?php echo $entry['id']; ?>" 
                             data-role="entreprenor">
                         Godkend
                     </button>
