@@ -425,6 +425,11 @@ try {
                 </div>
             </div>
             
+            <!-- Zone overlay instruction -->
+            <div style="padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                <strong style="color: var(--success);">💡 Zoneklassifikationsplan:</strong> Dobbeltklik på zoneplanen for at redigere placering. Træk i hjørnerne for at justere. Positionen gemmes automatisk.
+            </div>
+            
             <div class="filter-controls">
                 <label class="filter-option" for="showPlanning">
                     <input type="checkbox" id="showPlanning" checked>
@@ -502,13 +507,28 @@ try {
         localStorage.removeItem('zoneOverlayCorners');
     }
 
-    // Create distortable overlay
+    // Create distortable overlay with built-in toolbar
     let zoneOverlay = L.distortableImageOverlay(OVERLAY_SRC, {
         corners: corners,
         opacity: overlayOpacity,
-        selected: false,  // Start without edit mode
-        suppressToolbar: true  // Use our own UI
+        selected: false,
+        suppressToolbar: false,  // Use plugin's built-in toolbar
+        actions: [
+            L.DragAction,
+            L.ScaleAction, 
+            L.DistortAction,
+            L.RotateAction,
+            L.OpacityAction,
+            L.DeleteAction,
+            L.LockAction
+        ]
     }).addTo(map);
+    
+    // Auto-save corners when overlay is edited
+    zoneOverlay.on('edit', function() {
+        const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
+        localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
+    });
 
     // Layer control
     const baseLayers = { "OpenStreetMap": osm };
@@ -518,8 +538,8 @@ try {
         position: 'topright' 
     }).addTo(map);
 
-    // --- Distortable Image UI Control ---
-    const Ctrl = L.Control.extend({
+    // --- Opacity Control ---
+    const OpacityCtrl = L.Control.extend({
         onAdd: function() {
             const div = L.DomUtil.create('div', 'leaflet-bar');
             div.style.background = '#fff';
@@ -528,30 +548,11 @@ try {
             div.style.borderRadius = '6px';
             L.DomEvent.disableClickPropagation(div);
 
-            const editBtn = L.DomUtil.create('button', '', div);
-            editBtn.textContent = 'Redigér overlay';
-            editBtn.style.display = 'block';
-            editBtn.style.marginBottom = '6px';
-            editBtn.style.padding = '4px 8px';
-            editBtn.style.cursor = 'pointer';
-            editBtn.style.border = '1px solid #ccc';
-            editBtn.style.borderRadius = '4px';
-            editBtn.style.background = '#f8f9fa';
-
-            const saveBtn = L.DomUtil.create('button', '', div);
-            saveBtn.textContent = 'Gem placering';
-            saveBtn.style.display = 'block';
-            saveBtn.style.marginBottom = '6px';
-            saveBtn.style.padding = '4px 8px';
-            saveBtn.style.cursor = 'pointer';
-            saveBtn.style.border = '1px solid #ccc';
-            saveBtn.style.borderRadius = '4px';
-            saveBtn.style.background = '#f8f9fa';
-
             const label = L.DomUtil.create('label', '', div);
             label.textContent = 'Gennemsigtighed';
             label.style.display = 'block';
             label.style.marginBottom = '4px';
+            label.style.fontWeight = '500';
             
             const slider = L.DomUtil.create('input', '', div);
             slider.type = 'range';
@@ -560,42 +561,6 @@ try {
             slider.step = '0.05';
             slider.value = String(overlayOpacity);
             slider.style.width = '120px';
-
-            // Toggle edit mode
-            editBtn.addEventListener('click', () => {
-                try {
-                    if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
-                        zoneOverlay.editing.disable();
-                        editBtn.textContent = 'Redigér overlay';
-                    } else {
-                        if (zoneOverlay.editing) {
-                            zoneOverlay.editing.enable();
-                            editBtn.textContent = 'Stop redigering';
-                        } else {
-                            alert('Redigeringsfunktion er ikke tilgængelig.');
-                        }
-                    }
-                } catch (err) {
-                    console.error('Edit mode toggle error:', err);
-                    alert('Fejl ved aktivering af redigeringstilstand: ' + err.message);
-                }
-            });
-
-            // Save corners
-            saveBtn.addEventListener('click', () => {
-                try {
-                    const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
-                    localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
-                    // Lock editing
-                    if (zoneOverlay.editing && zoneOverlay.editing._enabled) {
-                        zoneOverlay.editing.disable();
-                        editBtn.textContent = 'Redigér overlay';
-                    }
-                    alert('Overlay-hjørner gemt.');
-                } catch (err) {
-                    alert('Fejl ved gemning af hjørner: ' + err.message);
-                }
-            });
 
             // Opacity slider
             slider.addEventListener('input', () => {
@@ -607,7 +572,7 @@ try {
             return div;
         }
     });
-    map.addControl(new Ctrl({ position: 'topleft' }));
+    map.addControl(new OpacityCtrl({ position: 'topleft' }));
 
     // Define custom marker icons for planning (blue), active (green) and completed (grey)
     var greenIcon = new L.Icon({
