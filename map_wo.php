@@ -474,7 +474,13 @@ try {
 
     let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.65;
     let saved = localStorage.getItem('zoneOverlayBounds');
-    let zoneOverlayBounds = saved ? JSON.parse(saved) : null;
+    let zoneOverlayBounds = null;
+    try {
+        zoneOverlayBounds = saved ? JSON.parse(saved) : null;
+    } catch (e) {
+        console.warn('Invalid zone overlay bounds in localStorage, resetting:', e);
+        localStorage.removeItem('zoneOverlayBounds');
+    }
     let zoneOverlay = null;
     let layerCtrl = null;
 
