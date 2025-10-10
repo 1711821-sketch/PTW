@@ -309,7 +309,7 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             
             /* Use shortened names on mobile */
             .step-title {
-                font-size: 0.7rem;
+                font-size: 0;
                 line-height: 1.1;
                 margin-bottom: 0;
                 font-weight: 700;
@@ -317,13 +317,6 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
             
             .step-title::before {
                 content: attr(data-short);
-            }
-            
-            .step-title {
-                font-size: 0;
-            }
-            
-            .step-title::before {
                 font-size: 0.7rem;
             }
             
