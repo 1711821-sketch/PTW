@@ -30,6 +30,7 @@ Preferred communication style: Simple, everyday language.
   - Implemented Leaflet imageOverlay with 0.65 opacity, positioned over SGOT terminal area
   - Added layer control (topright) allowing users to toggle "Zoneklassifikationsplan" on/off
   - Overlay is non-interactive and semi-transparent to show both zones and background map
+  - Moved map info box ("X af X arbejdsordrer vises") from top-right to bottom-right to prevent overlap with layer control
 
 ## System Architecture
 
