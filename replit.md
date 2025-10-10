@@ -12,6 +12,8 @@ Preferred communication style: Simple, everyday language.
   - New widget features color-coded status indicators (green=approved, blue=current user's turn, gray=pending)
   - Integrated approval flow visualization in both card view (view_wo.php) and print view (print_wo.php)
   - Widget shows timestamps, visual arrows, and approve buttons for authorized users
+  - **Ultra-compact mobile optimization (<768px)**: Widget reduced to 80-85px step width with abbreviated role names (OA, Drift, Ent), checkmark-only approve buttons (✓), hidden timestamps/status, and minimal spacing for smartphone display
+  - Mobile layout takes ~50% less horizontal space while maintaining touch-friendly 32px button height
   - Removed "Opret ny PTW" link from print_wo.php navigation bar for cleaner interface
   - Removed "Opret ny PTW?" link from bottom of view_wo.php (kept in navigation bar)
   - Removed "Se oversigtskort" link from bottom of view_wo.php
