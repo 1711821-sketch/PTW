@@ -1738,6 +1738,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
         }
         
+        // Toggle approval workflow section
+        function toggleApprovalWorkflow(woId) {
+            const section = document.getElementById(`approval-section-${woId}`);
+            const icon = document.getElementById(`approval-icon-${woId}`);
+            
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                section.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+        
         // Modal Functions
         function openTimeModal(workOrderId) {
             const modal = document.getElementById(`timeModal${workOrderId}`);
