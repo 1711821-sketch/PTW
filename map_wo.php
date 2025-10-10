@@ -474,7 +474,8 @@ try {
     
     const IMG_WIDTH = 7021;
     const IMG_HEIGHT = 4967;
-    const bounds = [[0, 0], [IMG_HEIGHT, IMG_WIDTH]]; // [[minY, minX], [maxY, maxX]]
+    // Stretch image 50% taller while keeping width the same
+    const bounds = [[0, 0], [IMG_HEIGHT * 1.5, IMG_WIDTH]]; // [[minY, minX], [maxY, maxX]]
     
     const zoneplan = L.imageOverlay('assets/maps/zoneplan_sgot.png', bounds, {
         opacity: 1.0
