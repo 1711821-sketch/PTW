@@ -83,7 +83,6 @@ try {
     <title>Oversigtskort over WO</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-distortableimage@0.21.9/dist/leaflet.distortableimage.css">
     <link rel="stylesheet" href="style.css">
     <style>
         .map-container {
@@ -427,7 +426,7 @@ try {
             
             <!-- Zone overlay instruction -->
             <div style="padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                <strong style="color: var(--success);">💡 Zoneklassifikationsplan:</strong> Dobbeltklik på zoneplanen for at redigere placering. Træk i hjørnerne for at justere. Positionen gemmes automatisk.
+                <strong style="color: var(--success);">💡 Zoneklassifikationsplan:</strong> Klik "Redigér position" i kontrolboksen (venstre hjørne). Træk de røde hjørnemarkeringer for at justere placeringen. Klik "Lås position" når du er færdig.
             </div>
             
             <div class="filter-controls">
@@ -456,7 +455,6 @@ try {
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-distortableimage@0.21.9/dist/leaflet.distortableimage.js"></script>
     <script>
     // Initialise the list of entries passed from PHP.  JSON_UNESCAPED_UNICODE
     // ensures that Danish characters are output correctly.
@@ -476,68 +474,101 @@ try {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // --- Zone overlay setup with Leaflet.DistortableImage ---
+    // --- Simple Zone Overlay with Draggable Corners ---
     const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png';
 
-    // Load saved corners and opacity from localStorage
-    let savedCorners = localStorage.getItem('zoneOverlayCorners');
+    // Load saved bounds and opacity from localStorage
+    let savedBounds = localStorage.getItem('zoneOverlayBounds');
     let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
 
-    // Default corners (approximate SGOT terminal area) - will be adjusted with handles
-    // Corner order: NW, NE, SE, SW (clockwise)
-    let defaultCorners = [
-        L.latLng(55.207, 11.258),  // NW (top-left)
-        L.latLng(55.207, 11.270),  // NE (top-right)
-        L.latLng(55.200, 11.270),  // SE (bottom-right)
-        L.latLng(55.200, 11.258)   // SW (bottom-left)
-    ];
-
-    let corners = null;
+    // Default bounds (approximate SGOT terminal area)
+    let defaultBounds = [[55.200, 11.258], [55.207, 11.270]]; // [[south, west], [north, east]]
+    
+    let bounds = defaultBounds;
     try {
-        if (savedCorners) {
-            const parsed = JSON.parse(savedCorners);
-            // Convert saved array format [[lat,lng],...] to L.latLng objects
-            corners = parsed.map(c => L.latLng(c[0], c[1]));
-        } else {
-            corners = defaultCorners;
+        if (savedBounds) {
+            bounds = JSON.parse(savedBounds);
         }
     } catch (e) {
-        console.warn('Invalid zone overlay corners in localStorage, using defaults:', e);
-        corners = defaultCorners;
-        localStorage.removeItem('zoneOverlayCorners');
+        console.warn('Invalid zone overlay bounds, using defaults');
+        localStorage.removeItem('zoneOverlayBounds');
     }
 
-    // Create distortable overlay with built-in toolbar
-    let zoneOverlay = L.distortableImageOverlay(OVERLAY_SRC, {
-        corners: corners,
+    // Create image overlay
+    let zoneOverlay = L.imageOverlay(OVERLAY_SRC, bounds, {
         opacity: overlayOpacity,
-        editable: true,
-        mode: 'distort'
+        interactive: false
     }).addTo(map);
-    
-    // Auto-save corners when overlay is edited (both mouse and touch)
-    if (zoneOverlay.on) {
-        zoneOverlay.on('edit', function() {
-            try {
-                const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
-                localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
-            } catch(e) {
-                // Ignore errors during save
-            }
+
+    // Corner markers (NW, NE, SE, SW)
+    let cornerMarkers = [];
+    let editMode = false;
+
+    function createCornerMarkers() {
+        const b = zoneOverlay.getBounds();
+        const positions = [
+            b.getNorthWest(),  // NW
+            b.getNorthEast(),  // NE
+            b.getSouthEast(),  // SE
+            b.getSouthWest()   // SW
+        ];
+        
+        cornerMarkers.forEach(m => map.removeLayer(m));
+        cornerMarkers = [];
+
+        positions.forEach((pos, idx) => {
+            const marker = L.marker(pos, {
+                draggable: true,
+                icon: L.divIcon({
+                    className: 'zone-corner-marker',
+                    html: '<div style="width: 16px; height: 16px; background: #ef4444; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                })
+            });
+
+            marker.on('drag', function() {
+                updateOverlayBounds();
+            });
+
+            marker.on('dragend', function() {
+                saveBounds();
+            });
+
+            cornerMarkers.push(marker);
         });
     }
-    
-    // Fallback: also save on map mouseup/touchend for broader compatibility
-    map.on('mouseup touchend', function() {
-        if (zoneOverlay && zoneOverlay.getCorners) {
-            try {
-                const c = zoneOverlay.getCorners().map(ll => [ll.lat, ll.lng]);
-                localStorage.setItem('zoneOverlayCorners', JSON.stringify(c));
-            } catch(e) {
-                // Ignore errors
-            }
-        }
-    });
+
+    function updateOverlayBounds() {
+        if (cornerMarkers.length !== 4) return;
+        
+        const lats = cornerMarkers.map(m => m.getLatLng().lat);
+        const lngs = cornerMarkers.map(m => m.getLatLng().lng);
+        
+        const newBounds = [
+            [Math.min(...lats), Math.min(...lngs)],  // SW
+            [Math.max(...lats), Math.max(...lngs)]   // NE
+        ];
+        
+        zoneOverlay.setBounds(newBounds);
+    }
+
+    function saveBounds() {
+        const b = zoneOverlay.getBounds();
+        const boundsArray = [[b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]];
+        localStorage.setItem('zoneOverlayBounds', JSON.stringify(boundsArray));
+    }
+
+    function showCorners() {
+        createCornerMarkers();
+        cornerMarkers.forEach(m => m.addTo(map));
+        editMode = true;
+    }
+
+    function hideCorners() {
+        cornerMarkers.forEach(m => map.removeLayer(m));
+        editMode = false;
+    }
 
     // Layer control
     const baseLayers = { "OpenStreetMap": osm };
@@ -547,8 +578,8 @@ try {
         position: 'topright' 
     }).addTo(map);
 
-    // --- Opacity Control ---
-    const OpacityCtrl = L.Control.extend({
+    // --- Control Panel ---
+    const ZoneCtrl = L.Control.extend({
         onAdd: function() {
             const div = L.DomUtil.create('div', 'leaflet-bar');
             div.style.background = '#fff';
@@ -557,9 +588,35 @@ try {
             div.style.borderRadius = '6px';
             L.DomEvent.disableClickPropagation(div);
 
+            const editBtn = L.DomUtil.create('button', '', div);
+            editBtn.textContent = 'Redigér position';
+            editBtn.style.display = 'block';
+            editBtn.style.marginBottom = '6px';
+            editBtn.style.padding = '6px 12px';
+            editBtn.style.cursor = 'pointer';
+            editBtn.style.border = '1px solid #ddd';
+            editBtn.style.borderRadius = '4px';
+            editBtn.style.background = '#10b981';
+            editBtn.style.color = 'white';
+            editBtn.style.fontWeight = '500';
+
+            editBtn.addEventListener('click', () => {
+                if (editMode) {
+                    hideCorners();
+                    saveBounds();
+                    editBtn.textContent = 'Redigér position';
+                    editBtn.style.background = '#10b981';
+                } else {
+                    showCorners();
+                    editBtn.textContent = 'Lås position';
+                    editBtn.style.background = '#ef4444';
+                }
+            });
+
             const label = L.DomUtil.create('label', '', div);
             label.textContent = 'Gennemsigtighed';
             label.style.display = 'block';
+            label.style.marginTop = '8px';
             label.style.marginBottom = '4px';
             label.style.fontWeight = '500';
             
@@ -571,7 +628,6 @@ try {
             slider.value = String(overlayOpacity);
             slider.style.width = '120px';
 
-            // Opacity slider
             slider.addEventListener('input', () => {
                 const op = Number(slider.value);
                 zoneOverlay.setOpacity(op);
@@ -581,7 +637,7 @@ try {
             return div;
         }
     });
-    map.addControl(new OpacityCtrl({ position: 'topleft' }));
+    map.addControl(new ZoneCtrl({ position: 'topleft' }));
 
     // Define custom marker icons for planning (blue), active (green) and completed (grey)
     var greenIcon = new L.Icon({
