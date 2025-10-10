@@ -214,9 +214,6 @@ if ($statusVal === 'planning') {
     <!-- Top navigation bar -->
     <nav class="navbar">
         <a href="view_wo.php">PTW-oversigt</a>
-        <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-            <a href="create_wo.php">Opret ny PTW</a>
-        <?php endif; ?>
         <a href="map_wo.php">Kort</a>
         <!-- Include Dashboard link for consistency with other pages -->
         <a href="dashboard.php">Dashboard</a>
