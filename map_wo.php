@@ -238,6 +238,15 @@ try {
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             overflow: hidden;
             box-shadow: var(--shadow-md);
+            background: white !important;
+        }
+        
+        .leaflet-container {
+            background: white !important;
+        }
+        
+        .leaflet-pane {
+            background: white !important;
         }
         
         .map-info {
