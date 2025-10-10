@@ -393,8 +393,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     </div>
     <div class="card-body">
       <div class="form-group">
-        <label for="map">Klik på kortet for at vælge placering</label>
+        <label for="map">Klik på zoneklassifikationsplanen for at vælge placering</label>
         <div id="map"></div>
+        <p id="coordFeedback" style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);"></p>
         <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($current['latitude'] ?: $defaultLat); ?>">
         <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($current['longitude'] ?: $defaultLng); ?>">
       </div>
@@ -453,34 +454,90 @@ function markField(fieldId, found, value = '') {
   }
 }
 
-// Initialise the Leaflet map.  Use stored coordinates if available,
-// otherwise fall back to defaults defined in PHP.  A marker is added
-// when coordinates are present, and clicking the map updates the
-// marker and hidden latitude/longitude fields.
+// Initialise the Leaflet map with CRS.Simple for image coordinates
 var latInput = document.getElementById('latitude');
 var lonInput = document.getElementById('longitude');
 var initLat = <?php echo ($current['latitude'] !== '') ? json_encode($current['latitude']) : $defaultLat; ?>;
 var initLng = <?php echo ($current['longitude'] !== '') ? json_encode($current['longitude']) : $defaultLng; ?>;
-var initZoom = (<?php echo ($current['latitude'] !== '' && $current['longitude'] !== '') ? 'true' : 'false'; ?>) ? 16 : 15;
-var map = L.map('map').setView([initLat, initLng], initZoom);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
+
+// Initialize map with CRS.Simple for image coordinates
+var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 4,
+    zoomSnap: 0.25
+});
+
+const IMG_WIDTH = 7021;
+const IMG_HEIGHT = 4967;
+const bounds = [[0, 0], [IMG_HEIGHT, IMG_WIDTH]];
+
+const zoneplan = L.imageOverlay('assets/maps/zoneplan_sgot.png', bounds, {
+    opacity: 1.0
 }).addTo(map);
+
+map.fitBounds(bounds);
+
+// Historic geographic bounds for transformation
+const GEO_BOUNDS = {
+    minLat: 55.200, maxLat: 55.207,
+    minLng: 11.258, maxLng: 11.270
+};
+
+function geoToImage(lat, lng) {
+    const y = ((GEO_BOUNDS.maxLat - lat) / (GEO_BOUNDS.maxLat - GEO_BOUNDS.minLat)) * IMG_HEIGHT;
+    const x = ((lng - GEO_BOUNDS.minLng) / (GEO_BOUNDS.maxLng - GEO_BOUNDS.minLng)) * IMG_WIDTH;
+    return {x: Math.max(0, Math.min(x, IMG_WIDTH)), y: Math.max(0, Math.min(y, IMG_HEIGHT))};
+}
+
+function imgXY(x, y) { return L.latLng(y, x); }
+
+// Determine if existing coordinates are geographic or image-based
+var initX, initY;
+var hasCoords = (<?php echo ($current['latitude'] !== '' && $current['longitude'] !== '') ? 'true' : 'false'; ?>);
+
+if (hasCoords) {
+    var lat = parseFloat(initLat);
+    var lng = parseFloat(initLng);
+    
+    // Check if coordinates are geographic (need transformation)
+    if (lat >= GEO_BOUNDS.minLat && lat <= GEO_BOUNDS.maxLat && 
+        lng >= GEO_BOUNDS.minLng && lng <= GEO_BOUNDS.maxLng) {
+        // Geographic coordinates - transform to image
+        var coords = geoToImage(lat, lng);
+        initX = coords.x;
+        initY = coords.y;
+    } else {
+        // Already image coordinates (Y stored in latitude, X in longitude)
+        initY = lat;
+        initX = lng;
+    }
+}
+
 var marker = null;
-function setMarker(lat, lng) {
+function setMarker(x, y) {
     if (marker) { map.removeLayer(marker); }
-    marker = L.marker([lat, lng]).addTo(map);
-    latInput.value = lat;
-    lonInput.value = lng;
+    marker = L.marker(imgXY(x, y)).addTo(map);
+    // Store X in longitude, Y in latitude (billedkoordinater)
+    lonInput.value = Math.round(x);
+    latInput.value = Math.round(y);
+    
+    // Show coordinates feedback
+    var coordText = document.getElementById('coordFeedback');
+    if (coordText) {
+        coordText.textContent = 'Billedkoordinater: X: ' + Math.round(x) + ', Y: ' + Math.round(y);
+    }
 }
+
 // If coordinates exist, show the marker at that position
-if (<?php echo ($current['latitude'] !== '' && $current['longitude'] !== '') ? 'true' : 'false'; ?>) {
-    setMarker(initLat, initLng);
+if (hasCoords) {
+    setMarker(initX, initY);
 }
+
 // Update marker and hidden fields when the map is clicked
 map.on('click', function(e) {
-    setMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
+    // In CRS.Simple: e.latlng.lng = X, e.latlng.lat = Y
+    setMarker(e.latlng.lng, e.latlng.lat);
 });
 
 // Modern file input handling
