@@ -233,7 +233,7 @@ try {
         
         #map {
             width: 100%;
-            height: 1000px;
+            height: 800px;
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             overflow: hidden;
             box-shadow: var(--shadow-md);
