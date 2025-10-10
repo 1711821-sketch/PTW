@@ -1,0 +1,122 @@
+Jeg skal bruge en kalibrering af mit overlaybillede zoneplan_sgot.png i Leaflet.
+Lav en kalibrerings-knap i UI. Når den er aktiv, klikker man først nederste-venstre hjørne på kortet og derefter øverste-højre hjørne. Disse to klik danner L.imageOverlay-bounds for overlayet.
+
+Krav
+
+Overlay skal kunne toggles i L.control.layers som “Zoneklassifikationsplan”.
+
+Når kalibreringen er afsluttet, skal bounds gemmes i localStorage under nøglen zoneOverlayBounds. Ved page-load indlæses og bruges de gemte bounds automatisk.
+
+Der skal være en slider til opacity i 0.3–0.9, der ændrer overlayets gennemsigtighed live og gemmer værdien i localStorage under zoneOverlayOpacity.
+
+Kalibrerings-tilstand må ikke forstyrre almindelige kortklik. Den skal kunne slås fra igen.
+
+Eksempelkode
+
+// Basislag
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// Opret overlay uden bounds endnu
+let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
+let saved = localStorage.getItem('zoneOverlayBounds');
+let zoneOverlayBounds = saved ? JSON.parse(saved) : null;
+let zoneOverlay = null;
+
+function ensureOverlay() {
+  if (zoneOverlay) { map.removeLayer(zoneOverlay); }
+  if (!zoneOverlayBounds) return;
+  // Expecter format [[southWestLat, southWestLng],[northEastLat,northEastLng]]
+  zoneOverlay = L.imageOverlay('zoneplan_sgot.png', zoneOverlayBounds, {
+    opacity: overlayOpacity,
+    interactive: false
+  });
+}
+
+ensureOverlay();
+const baseLayers = { "OpenStreetMap": osm };
+const overlays = {};
+if (zoneOverlay) overlays["Zoneklassifikationsplan"] = zoneOverlay;
+const layerCtrl = L.control.layers(baseLayers, overlays, { collapsed: true }).addTo(map);
+if (zoneOverlay) zoneOverlay.addTo(map);
+
+// UI: kalibreringsknap og opacity-slider
+const CalibControl = L.Control.extend({
+  onAdd: function() {
+    const div = L.DomUtil.create('div', 'leaflet-bar');
+    div.style.background = '#fff';
+    div.style.padding = '8px';
+    div.style.lineHeight = '1.2';
+    div.style.font = '12px/1.2 system-ui, sans-serif';
+
+    // Kalibreringsknap
+    const btn = L.DomUtil.create('button', '', div);
+    btn.textContent = 'Kalibrér overlay';
+    btn.style.display = 'block';
+    btn.style.marginBottom = '6px';
+
+    // Opacity
+    const label = L.DomUtil.create('label', '', div);
+    label.textContent = 'Gennemsigtighed';
+    label.style.display = 'block';
+    const slider = L.DomUtil.create('input', '', div);
+    slider.type = 'range';
+    slider.min = '0.3';
+    slider.max = '0.9';
+    slider.step = '0.05';
+    slider.value = String(overlayOpacity);
+    slider.style.width = '120px';
+
+    L.DomEvent.disableClickPropagation(div);
+
+    // Kalibreringslogik
+    let calibrating = false;
+    let clicks = [];
+    const onMapClick = (e) => {
+      if (!calibrating) return;
+      clicks.push([e.latlng.lat, e.latlng.lng]);
+      if (clicks.length === 2) {
+        // Sortér til SW og NE
+        const lats = [clicks[0][0], clicks[1][0]].sort((a,b)=>a-b);
+        const lngs = [clicks[0][1], clicks[1][1]].sort((a,b)=>a-b);
+        zoneOverlayBounds = [[lats[0], lngs[0]], [lats[1], lngs[1]]];
+        localStorage.setItem('zoneOverlayBounds', JSON.stringify(zoneOverlayBounds));
+        clicks = [];
+        calibrating = false;
+
+        ensureOverlay();
+        layerCtrl.remove();
+        const newOverlays = {};
+        if (zoneOverlay) newOverlays["Zoneklassifikationsplan"] = zoneOverlay;
+        L.control.layers({ "OpenStreetMap": osm }, newOverlays, { collapsed: true }).addTo(map);
+        if (zoneOverlay) zoneOverlay.addTo(map);
+        alert('Overlay kalibreret og gemt.');
+      }
+    };
+
+    btn.addEventListener('click', () => {
+      calibrating = !calibrating;
+      clicks = [];
+      alert(calibrating
+        ? 'Kalibrering aktiv. Klik nederste-venstre hjørne på kortet og derefter øverste-højre.'
+        : 'Kalibrering stoppet.');
+    });
+
+   slider.addEventListener('input', () => {
+      overlayOpacity = Number(slider.value);
+      localStorage.setItem('zoneOverlayOpacity', String(overlayOpacity));
+      if (zoneOverlay) zoneOverlay.setOpacity(overlayOpacity);
+    });
+
+    map.on('click', onMapClick);
+    return div;
+  }
+});
+map.addControl(new CalibControl({ position: 'topright' }));
+
+
+Noter
+Brug første side af PDF’en konverteret til PNG i passende opløsning. Filnavn zoneplan_sgot.png i webroden eller samme mappe som map_vo.php.
+Ingen rotation forventes. Hvis billedet er roteret i forhold til nord, kan vi skifte til leaflet-imageoverlay-rotated plugin.
+Overlayet skal holde sig nederst i z-orden, så PTW-markører ligger ovenpå

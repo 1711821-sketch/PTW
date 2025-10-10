@@ -1,0 +1,102 @@
+Brug assets/maps/zoneplan_sgot.png som overlay i Leaflet.
+
+Tilføj overlayet til lagkontrollen, så det kan slås til/fra.
+
+Behold kalibrerings-UI’et (to klik: nederst-venstre, så øverst-højre), gem bounds i localStorage som zoneOverlayBounds, og en opacity-slider 0.3–0.9 gemt som zoneOverlayOpacity.
+
+Opdater koden til at bruge den rigtige sti og en lille cache-buster.
+
+// Basislag
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// --- Overlay setup ---
+const OVERLAY_SRC = 'assets/maps/zoneplan_sgot.png?v=' + Date.now(); // cache-buster
+
+let overlayOpacity = Number(localStorage.getItem('zoneOverlayOpacity')) || 0.6;
+let saved = localStorage.getItem('zoneOverlayBounds');
+let zoneOverlayBounds = saved ? JSON.parse(saved) : null;
+let zoneOverlay = null;
+
+function ensureOverlay() {
+  if (zoneOverlay) { map.removeLayer(zoneOverlay); }
+  if (!zoneOverlayBounds) return;
+  zoneOverlay = L.imageOverlay(OVERLAY_SRC, zoneOverlayBounds, {
+    opacity: overlayOpacity,
+    interactive: false
+  });
+}
+
+ensureOverlay();
+const baseLayers = { "OpenStreetMap": osm };
+const overlays = {};
+if (zoneOverlay) overlays["Zoneklassifikationsplan"] = zoneOverlay;
+const layerCtrl = L.control.layers(baseLayers, overlays, { collapsed: true }).addTo(map);
+if (zoneOverlay) zoneOverlay.addTo(map);
+
+// --- UI til kalibrering + opacity ---
+const CalibControl = L.Control.extend({
+  onAdd: function() {
+    const div = L.DomUtil.create('div', 'leaflet-bar');
+    div.style.background = '#fff';
+    div.style.padding = '8px';
+    div.style.font = '12px system-ui, sans-serif';
+    L.DomEvent.disableClickPropagation(div);
+
+    const btn = L.DomUtil.create('button', '', div);
+    btn.textContent = 'Kalibrér overlay';
+    btn.style.display = 'block';
+    btn.style.marginBottom = '6px';
+
+    const label = L.DomUtil.create('label', '', div);
+    label.textContent = 'Gennemsigtighed';
+    const slider = L.DomUtil.create('input', '', div);
+    slider.type = 'range'; slider.min = '0.3'; slider.max = '0.9'; slider.step = '0.05';
+    slider.value = String(overlayOpacity);
+    slider.style.width = '120px';
+
+    let calibrating = false;
+    let clicks = [];
+    const onMapClick = (e) => {
+      if (!calibrating) return;
+      clicks.push([e.latlng.lat, e.latlng.lng]);
+      if (clicks.length === 2) {
+        const lats = [clicks[0][0], clicks[1][0]].sort((a,b)=>a-b);
+        const lngs = [clicks[0][1], clicks[1][1]].sort((a,b)=>a-b);
+        zoneOverlayBounds = [[lats[0], lngs[0]], [lats[1], lngs[1]]];
+        localStorage.setItem('zoneOverlayBounds', JSON.stringify(zoneOverlayBounds));
+        clicks = []; calibrating = false;
+
+        ensureOverlay();
+        layerCtrl.remove();
+        const newOverlays = {};
+        if (zoneOverlay) newOverlays["Zoneklassifikationsplan"] = zoneOverlay;
+        L.control.layers({ "OpenStreetMap": osm }, newOverlays, { collapsed: true }).addTo(map);
+        if (zoneOverlay) zoneOverlay.addTo(map);
+        alert('Overlay kalibreret og gemt.');
+      }
+    };
+
+    btn.addEventListener('click', () => {
+      calibrating = !calibrating; clicks = [];
+      alert(calibrating
+        ? 'Klik nederste-venstre hjørne og derefter øverste-højre på kortet.'
+        : 'Kalibrering stoppet.');
+    });
+
+    slider.addEventListener('input', () => {
+      overlayOpacity = Number(slider.value);
+      localStorage.setItem('zoneOverlayOpacity', String(overlayOpacity));
+      if (zoneOverlay) zoneOverlay.setOpacity(overlayOpacity);
+    });
+
+    map.on('click', onMapClick);
+    return div;
+  }
+});
+map.addControl(new CalibControl({ position: 'topright' }));
+
+
+Vigtigt: Sørg for at filen faktisk kan hentes via webserveren på assets/maps/zoneplan_sgot.png (rigtig placering, ingen 404).
+Overlayet skal være nederst i z-order, så PTW-markører og popups altid ligger ovenpå
