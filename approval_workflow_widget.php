@@ -1,0 +1,351 @@
+<?php
+/**
+ * Approval Workflow Widget
+ * Displays a visual sequential approval process for PTW work orders
+ * 
+ * Shows: Opgaveansvarlig → Drift → Entreprenør
+ * with color-coded status indicators and timestamps
+ */
+
+function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact = false) {
+    $approvals = $entry['approvals'] ?? [];
+    $approval_history = $entry['approval_history'] ?? [];
+    
+    // Get approval statuses for today
+    $oaApproved = isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today;
+    $driftApproved = isset($approvals['drift']) && $approvals['drift'] === $today;
+    $entApproved = isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today;
+    
+    // Get timestamps from approval history
+    $oaTimestamp = '';
+    $driftTimestamp = '';
+    $entTimestamp = '';
+    
+    if (is_array($approval_history)) {
+        foreach ($approval_history as $hist) {
+            if (($hist['role'] ?? '') === 'opgaveansvarlig' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                $oaTimestamp = $hist['timestamp'] ?? '';
+            }
+            if (($hist['role'] ?? '') === 'drift' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                $driftTimestamp = $hist['timestamp'] ?? '';
+            }
+            if (($hist['role'] ?? '') === 'entreprenor' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                $entTimestamp = $hist['timestamp'] ?? '';
+            }
+        }
+    }
+    
+    // Determine user's ability to approve
+    $canApproveOA = ($currentUserRole === 'admin' || $currentUserRole === 'opgaveansvarlig') && !$oaApproved;
+    $canApproveDrift = ($currentUserRole === 'admin' || $currentUserRole === 'drift') && !$driftApproved;
+    $canApproveEnt = ($currentUserRole === 'admin' || $currentUserRole === 'entreprenor') && !$entApproved;
+    
+    // Determine step state (approved, current_user, pending)
+    function getStepState($approved, $canApprove) {
+        if ($approved) return 'approved';
+        if ($canApprove) return 'current_user';
+        return 'pending';
+    }
+    
+    $oaState = getStepState($oaApproved, $canApproveOA);
+    $driftState = getStepState($driftApproved, $canApproveDrift);
+    $entState = getStepState($entApproved, $canApproveEnt);
+    
+    $widgetId = 'approval-workflow-' . ($entry['id'] ?? uniqid());
+    
+    ?>
+    <div class="approval-workflow-widget <?php echo $compact ? 'compact' : ''; ?>" id="<?php echo $widgetId; ?>">
+        <div class="workflow-steps">
+            <!-- Step 1: Opgaveansvarlig -->
+            <div class="workflow-step <?php echo $oaState; ?>">
+                <div class="step-icon">
+                    <?php if ($oaApproved): ?>
+                        ✅
+                    <?php elseif ($canApproveOA): ?>
+                        👤
+                    <?php else: ?>
+                        ⏳
+                    <?php endif; ?>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Opgaveansvarlig</div>
+                    <?php if ($oaApproved && $oaTimestamp && !$compact): ?>
+                        <div class="step-timestamp"><?php echo htmlspecialchars($oaTimestamp); ?></div>
+                    <?php elseif (!$oaApproved): ?>
+                        <div class="step-status">Afventer</div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($canApproveOA): ?>
+                    <button class="step-approve-btn ajax-approve-btn" 
+                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-role="opgaveansvarlig">
+                        Godkend
+                    </button>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Arrow 1 -->
+            <div class="workflow-arrow <?php echo $oaApproved ? 'active' : ''; ?>">
+                →
+            </div>
+            
+            <!-- Step 2: Drift -->
+            <div class="workflow-step <?php echo $driftState; ?>">
+                <div class="step-icon">
+                    <?php if ($driftApproved): ?>
+                        ✅
+                    <?php elseif ($canApproveDrift): ?>
+                        👤
+                    <?php else: ?>
+                        ⏳
+                    <?php endif; ?>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Drift</div>
+                    <?php if ($driftApproved && $driftTimestamp && !$compact): ?>
+                        <div class="step-timestamp"><?php echo htmlspecialchars($driftTimestamp); ?></div>
+                    <?php elseif (!$driftApproved): ?>
+                        <div class="step-status">Afventer</div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($canApproveDrift): ?>
+                    <button class="step-approve-btn ajax-approve-btn" 
+                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-role="drift">
+                        Godkend
+                    </button>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Arrow 2 -->
+            <div class="workflow-arrow <?php echo $driftApproved ? 'active' : ''; ?>">
+                →
+            </div>
+            
+            <!-- Step 3: Entreprenør -->
+            <div class="workflow-step <?php echo $entState; ?>">
+                <div class="step-icon">
+                    <?php if ($entApproved): ?>
+                        ✅
+                    <?php elseif ($canApproveEnt): ?>
+                        👤
+                    <?php else: ?>
+                        ⏳
+                    <?php endif; ?>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">Entreprenør</div>
+                    <?php if ($entApproved && $entTimestamp && !$compact): ?>
+                        <div class="step-timestamp"><?php echo htmlspecialchars($entTimestamp); ?></div>
+                    <?php elseif (!$entApproved): ?>
+                        <div class="step-status">Afventer</div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($canApproveEnt): ?>
+                    <button class="step-approve-btn ajax-approve-btn" 
+                            data-wo-id="<?php echo $entry['id']; ?>" 
+                            data-role="entreprenor">
+                        Godkend
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .approval-workflow-widget {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .approval-workflow-widget.compact {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+        
+        .workflow-step {
+            flex: 1;
+            min-width: 140px;
+            background: white;
+            border-radius: 10px;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        /* State: Approved (Green) */
+        .workflow-step.approved {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+        
+        /* State: Current User Can Approve (Blue) */
+        .workflow-step.current_user {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        /* State: Pending (Gray) */
+        .workflow-step.pending {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            opacity: 0.7;
+        }
+        
+        .step-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+        
+        .step-content {
+            text-align: center;
+            width: 100%;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .step-timestamp {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .step-status {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .step-approve-btn {
+            margin-top: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        
+        .step-approve-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .step-approve-btn:active {
+            transform: translateY(0);
+        }
+        
+        .workflow-arrow {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .workflow-arrow.active {
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .workflow-steps {
+                gap: 0.5rem;
+            }
+            
+            .workflow-step {
+                min-width: 100px;
+                padding: 0.5rem;
+            }
+            
+            .step-icon {
+                font-size: 1.5rem;
+            }
+            
+            .step-title {
+                font-size: 0.8rem;
+            }
+            
+            .step-timestamp,
+            .step-status {
+                font-size: 0.7rem;
+            }
+            
+            .workflow-arrow {
+                font-size: 1.2rem;
+            }
+            
+            .step-approve-btn {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
+        
+        /* Compact mode for card views */
+        .approval-workflow-widget.compact .workflow-step {
+            min-width: 90px;
+            padding: 0.5rem 0.3rem;
+        }
+        
+        .approval-workflow-widget.compact .step-icon {
+            font-size: 1.3rem;
+        }
+        
+        .approval-workflow-widget.compact .step-title {
+            font-size: 0.75rem;
+        }
+        
+        .approval-workflow-widget.compact .workflow-arrow {
+            font-size: 1rem;
+        }
+        
+        @media print {
+            .approval-workflow-widget {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .step-approve-btn {
+                display: none;
+            }
+        }
+    </style>
+    <?php
+}
