@@ -618,21 +618,27 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         .card-title {
             display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
+            align-items: center;
             gap: 0.5rem;
             margin-bottom: 0.4rem;
+            flex-wrap: wrap;
         }
 
         .card-title-text {
-            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0;
+            width: 100%;
         }
 
         .card-title-text h3 {
-            margin: 0 0 0.3rem 0;
-            font-size: 1.25rem;
-            color: var(--text-primary);
+            margin: 0;
+            font-size: 18px;
+            color: #1a237e;
             font-weight: 600;
+            display: inline-block;
+            margin-right: 8px;
         }
 
         .card-header-description {
@@ -644,6 +650,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            width: 100%;
+            margin-top: 0.3rem;
         }
         
         .card-header-description.expanded {
@@ -660,28 +668,28 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-status {
-            display: inline-flex;
+            display: inline-block;
             align-items: center;
-            padding: 0.3rem 0.7rem;
-            border-radius: 16px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
             white-space: nowrap;
             flex-shrink: 0;
         }
 
         .card-status.status-planlagt {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: #3b82f6;
             color: white;
         }
 
         .card-status.status-aktiv {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #2ecc71;
             color: white;
         }
 
         .card-status.status-afsluttet {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            background: #6b7280;
             color: white;
         }
 
@@ -906,12 +914,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
 
             .card-title-text h3 {
-                font-size: 1.3rem;
+                font-size: 18px;
             }
 
             .card-status {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
+                padding: 2px 10px;
+                font-size: 13px;
             }
             
             /* Single column layout for details on mobile */
