@@ -10,10 +10,7 @@ if (!isset($_SESSION['user'])) {
 
 $username = $_SESSION['user'];
 $role = $_SESSION['role'] ?? 'user';
-$isEntrepreneur = (strtolower($role) === 'entreprenør');
-
-// Debug logging
-error_log("Dashboard - User: $username, Role: $role, IsEntrepreneur: " . ($isEntrepreneur ? 'YES' : 'NO'));
+$isEntrepreneur = (strtolower($role) === 'entreprenor');
 
 try {
     $db = Database::getInstance();
