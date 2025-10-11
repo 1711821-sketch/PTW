@@ -468,25 +468,48 @@ try {
             }
             
             .filter-controls {
-                flex-direction: row;
-                gap: 0.4rem;
-                flex-wrap: wrap;
+                flex-direction: column;
+                gap: 0.5rem;
             }
             
             .filter-option {
-                flex: 1 1 auto;
-                min-width: calc(50% - 0.2rem);
-                padding: 0.5rem 0.4rem;
-                font-size: 0.8rem;
+                width: 100%;
+                padding: 0.6rem 0.75rem;
+                font-size: 0.85rem;
             }
             
             .filter-option input[type="checkbox"] {
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
             }
             
             .status-indicator {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
+            }
+            
+            /* Hide emojis on mobile by using text-indent trick */
+            .status-indicator.planning {
+                font-size: 0;
+            }
+            .status-indicator.planning::after {
+                content: 'Planlagte';
+                font-size: 0.85rem;
+            }
+            
+            .status-indicator.active {
+                font-size: 0;
+            }
+            .status-indicator.active::after {
+                content: 'Aktive';
+                font-size: 0.85rem;
+            }
+            
+            .status-indicator.completed {
+                font-size: 0;
+            }
+            .status-indicator.completed::after {
+                content: 'Afsluttede';
+                font-size: 0.85rem;
             }
             
             .wo-popup {
