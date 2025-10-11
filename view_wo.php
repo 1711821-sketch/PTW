@@ -458,24 +458,23 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             top: 0;
             z-index: 100;
             width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            padding: 6px 0.5rem;
-            margin-bottom: 0.5rem;
+            background: #f5f5f5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            padding: 4px 0.5rem;
+            margin-bottom: 0.25rem;
             display: none;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
         
         @media (max-width: 768px) {
             .card-counter {
-                padding: 4px 0.5rem;
-                margin-bottom: 0.25rem;
-                font-size: 14px;
+                padding: 3px 0.5rem;
+                font-size: 12px;
             }
         }
 
@@ -488,27 +487,25 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
         
         .counter-nav-btn {
-            background: rgba(30, 64, 175, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 32px;
-            height: 32px;
+            background: #e0e0e0;
+            border: none;
+            color: #555;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: none;
             flex-shrink: 0;
         }
         
         .counter-nav-btn:hover {
-            background: rgba(30, 64, 175, 1);
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            background: #d0d0d0;
+            transform: scale(1.05);
         }
         
         .counter-nav-btn:active {
@@ -516,9 +513,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
         
         .counter-nav-btn:disabled {
-            opacity: 0.3;
+            opacity: 0.4;
             cursor: not-allowed;
-            background: rgba(100, 100, 100, 0.5);
+            background: #e0e0e0;
         }
 
         /* Modern Card Slider Styles */
@@ -635,7 +632,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .card-title-text h3 {
             margin: 0;
             font-size: 18px;
-            color: #1a237e;
+            color: #1976d2;
             font-weight: 600;
             display: inline-block;
             margin-right: 8px;
@@ -659,7 +656,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
         
         .description-toggle {
-            color: var(--primary-color);
+            color: #1976d2;
             font-size: 0.85rem;
             cursor: pointer;
             text-decoration: underline;
@@ -679,7 +676,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .card-status.status-planlagt {
-            background: #3b82f6;
+            background: #1976d2;
             color: white;
         }
 
@@ -696,14 +693,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .card-p-description {
             margin-top: 0.4rem;
             padding: 0.4rem;
-            background: rgba(59, 130, 246, 0.05);
-            border-left: 3px solid var(--primary-color);
+            background: #fafafa;
+            border-left: 3px solid #1976d2;
             border-radius: 4px;
             font-size: 0.85rem;
         }
 
         .card-p-description strong {
-            color: var(--primary-color);
+            color: #1976d2;
         }
 
         .card-divider {
@@ -728,9 +725,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: flex;
             align-items: flex-start;
             gap: 0.4rem;
-            padding: 0.4rem;
-            background: rgba(0, 0, 0, 0.02);
-            border-radius: 6px;
+            padding: 10px;
+            background: #f7f7f7;
+            border-radius: 10px;
+            margin-top: 8px;
         }
 
         .detail-item:last-child {
@@ -825,8 +823,12 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
 
         .approval-status.approved {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 10px;
+            font-weight: 500;
         }
 
         .approval-status.pending {
@@ -881,26 +883,22 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 
         .card-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: 6px;
             padding: 0.75rem;
             border-top: 1px solid var(--border-light);
             background: rgba(0, 0, 0, 0.01);
-            flex-wrap: wrap;
+            margin-top: 12px;
             align-items: center;
         }
 
         .card-actions .button {
-            flex: 0 1 auto;
+            flex: 1;
             min-height: 32px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
             transition: all 0.2s ease;
-            padding: 0.4rem 0.8rem;
-        }
-        
-        .card-actions .handlinger-btn {
-            flex: 0 1 auto;
+            padding: 10px;
         }
 
         .card-actions .button:active {
