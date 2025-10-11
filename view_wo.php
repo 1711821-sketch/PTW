@@ -942,6 +942,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 flex: 1 1 auto;
                 min-height: 36px;
             }
+            
+            /* Reducer afstand mellem topbjælke og navigation kun på mobil */
+            .container {
+                padding-top: 0.5rem;
+                margin-top: 0;
+            }
+            
+            .header-section {
+                margin-bottom: 0.75rem;
+            }
         }
 
         /* ========== NEW MODERN BUTTON STYLES ========== */
