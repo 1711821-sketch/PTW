@@ -469,12 +469,12 @@ try {
             
             .filter-controls {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.4rem;
             }
             
             .filter-option {
                 width: 100%;
-                padding: 0.6rem 0.75rem;
+                padding: 0.5rem 0.75rem;
                 font-size: 0.85rem;
             }
             
