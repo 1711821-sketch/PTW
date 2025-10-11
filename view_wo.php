@@ -563,9 +563,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             flex: 0 0 100%;
             width: 100%;
             min-width: 100%;
-            background: var(--background-primary);
-            border-radius: 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            padding: 14px;
+            margin: 10px 0;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
@@ -900,9 +902,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .work-permit-card {
-                border-radius: 0;
                 max-width: 100%;
-                padding: 0;
             }
 
             .card-title-text h3 {
