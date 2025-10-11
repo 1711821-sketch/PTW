@@ -464,11 +464,7 @@ try {
             }
             
             .legend-box {
-                width: 100%;
-                white-space: normal !important;
-                text-align: center;
-                font-size: 0.75rem !important;
-                line-height: 1.4;
+                display: none;
             }
             
             .filter-controls {
