@@ -246,18 +246,21 @@ if ($statusVal === 'planning') {
             td { 
                 border: none;
                 position: relative;
-                padding-left: 40%;
+                padding-left: 0;
+                padding-top: 2.5rem;
                 text-align: left;
+                min-height: 2.5rem;
             }
             td:before { 
                 position: absolute;
                 top: 0.3rem;
                 left: 0.3rem;
-                width: 38%;
-                padding-right: 0.5rem;
-                white-space: nowrap;
+                right: 0.3rem;
                 font-weight: bold;
                 content: attr(data-label);
+                display: block;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
             th { width: 100%; }
         }
