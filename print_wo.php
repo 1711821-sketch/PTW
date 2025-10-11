@@ -157,7 +157,7 @@ if ($statusVal === 'planning') {
         h1 { margin-top: 0; font-size: 1.6em; text-align: center; }
         h2 { margin-top: 1.2rem; font-size: 1.3em; border-bottom: 2px solid #0070C0; padding-bottom: 0.2rem; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
-        th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; vertical-align: top; }
+        th, td { border: 1px solid #ccc; padding: 0.4rem; text-align: left; vertical-align: top; word-wrap: break-word; }
         th { background-color: #f5f5f5; width: 25%; }
         
         /* Action buttons styling */
@@ -205,6 +205,63 @@ if ($statusVal === 'planning') {
             display: block;
         }
         
+        /* Mobile responsive styles - tablets and up */
+        @media screen and (max-width: 768px) {
+            body { margin: 0.5rem; font-size: 14px; }
+            h1 { font-size: 1.3em; }
+            h2 { font-size: 1.1em; margin-top: 1rem; }
+            
+            /* Make tables responsive */
+            table { font-size: 0.9em; }
+            th, td { padding: 0.3rem; font-size: 0.95em; }
+            
+            /* Action buttons full width on mobile */
+            .action-buttons { gap: 0.3rem; }
+            .action-btn { 
+                flex: 1 1 100%;
+                text-align: center;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9em;
+            }
+            
+            /* Image gallery - single column on mobile */
+            .image-gallery {
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
+            }
+            
+            /* Upload section adjustments */
+            .upload-section { padding: 0.8rem; }
+            .upload-section h3 { font-size: 1em; }
+            .upload-section form { flex-direction: column; }
+            .upload-section input[type="file"],
+            .upload-section button { width: 100%; min-width: auto; }
+        }
+        
+        /* Stack table cells vertically on very small screens */
+        @media screen and (max-width: 480px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { margin-bottom: 1rem; border: 1px solid #ccc; }
+            td { 
+                border: none;
+                position: relative;
+                padding-left: 40%;
+                text-align: left;
+            }
+            td:before { 
+                position: absolute;
+                top: 0.3rem;
+                left: 0.3rem;
+                width: 38%;
+                padding-right: 0.5rem;
+                white-space: nowrap;
+                font-weight: bold;
+                content: attr(data-label);
+            }
+            th { width: 100%; }
+        }
+        
         @media print {
             .action-buttons, .navbar, .upload-section { display: none; }
             body { margin: 0; }
@@ -235,25 +292,25 @@ if ($statusVal === 'planning') {
     <h1>PTW</h1>
     <h2>Basisinformation</h2>
     <table>
-        <tr><th>PTW Nr.</th><td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
-        <tr><th>Beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
-        <tr><th>P-nr beskrivelse</th><td><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
-        <tr><th>Jobansvarlig</th><td><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
-        <tr><th>Telefon</th><td><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
-        <tr><th>PTW oprettet af</th><td><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
-        <tr><th>PTW oprettet dato</th><td><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
-        <tr><th>Entreprenør firma</th><td><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
-        <tr><th>Entreprenør kontakt</th><td><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
-        <tr><th>Komponent nr.</th><td><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
-        <tr><th>Status</th><td><?php echo $statusLabel; ?></td></tr>
-        <tr><th>Lokation (lat,lng)</th><td><?php
+        <tr><th>PTW Nr.</th><td data-label="PTW Nr."><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
+        <tr><th>Beskrivelse</th><td data-label="Beskrivelse"><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
+        <tr><th>P-nr beskrivelse</th><td data-label="P-nr beskrivelse"><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
+        <tr><th>Jobansvarlig</th><td data-label="Jobansvarlig"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
+        <tr><th>Telefon</th><td data-label="Telefon"><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
+        <tr><th>PTW oprettet af</th><td data-label="PTW oprettet af"><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
+        <tr><th>PTW oprettet dato</th><td data-label="PTW oprettet dato"><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
+        <tr><th>Entreprenør firma</th><td data-label="Entreprenør firma"><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
+        <tr><th>Entreprenør kontakt</th><td data-label="Entreprenør kontakt"><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
+        <tr><th>Komponent nr.</th><td data-label="Komponent nr."><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
+        <tr><th>Status</th><td data-label="Status"><?php echo $statusLabel; ?></td></tr>
+        <tr><th>Lokation (lat,lng)</th><td data-label="Lokation (lat,lng)"><?php
             $lat = $entry['latitude'] ?? '';
             $lng = $entry['longitude'] ?? '';
             echo ($lat && $lng) ? htmlspecialchars($lat . ', ' . $lng) : '—';
         ?></td></tr>
-        <tr><th>Bemærkninger</th><td><?php echo nl2br(htmlspecialchars($entry['notes'] ?? '')); ?></td></tr>
+        <tr><th>Bemærkninger</th><td data-label="Bemærkninger"><?php echo nl2br(htmlspecialchars($entry['notes'] ?? '')); ?></td></tr>
         <?php if (!empty($entry['pdf_file'])): ?>
-        <tr><th>Original PDF</th><td><a href="uploads/<?php echo urlencode($entry['pdf_file']); ?>" target="_blank">Download</a></td></tr>
+        <tr><th>Original PDF</th><td data-label="Original PDF"><a href="uploads/<?php echo urlencode($entry['pdf_file']); ?>" target="_blank">Download</a></td></tr>
         <?php endif; ?>
     </table>
     <h2>Godkendelsesproces</h2>
@@ -269,8 +326,8 @@ if ($statusVal === 'planning') {
             <tr><th>Tidspunkt</th><th>Bruger</th><th>Rolle</th></tr>
             <?php foreach ($entry['approval_history'] as $hist): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
-                    <td><?php 
+                    <td data-label="Tidspunkt"><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
+                    <td data-label="Bruger"><?php 
                         $userDisplay = htmlspecialchars($hist['user'] ?? '');
                         // If this is an entrepreneur approval and company name is available, show it
                         if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
@@ -278,7 +335,7 @@ if ($statusVal === 'planning') {
                         }
                         echo $userDisplay;
                     ?></td>
-                    <td><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
+                    <td data-label="Rolle"><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
@@ -309,10 +366,10 @@ if ($statusVal === 'planning') {
                 $opgave = $basic_info['opgave'] ?? 'SJA';
             ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($sja['id']); ?></td>
-                    <td><?php echo htmlspecialchars($opgave); ?></td>
-                    <td><?php echo htmlspecialchars($sja['created_at'] ?? ''); ?></td>
-                    <td><a href="print_sja.php?id=<?php echo urlencode($sja['id']); ?>">Se SJA</a></td>
+                    <td data-label="SJA ID"><?php echo htmlspecialchars($sja['id']); ?></td>
+                    <td data-label="Opgave"><?php echo htmlspecialchars($opgave); ?></td>
+                    <td data-label="Oprettet"><?php echo htmlspecialchars($sja['created_at'] ?? ''); ?></td>
+                    <td data-label="Handlinger"><a href="print_sja.php?id=<?php echo urlencode($sja['id']); ?>">Se SJA</a></td>
                 </tr>
             <?php endforeach; ?>
         </table>
@@ -355,14 +412,14 @@ if ($statusVal === 'planning') {
                 $total_all_hours += floatval($consumption['total_timer'] ?? 0);
             ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($consumption['brugernavn'] ?? ''); ?></td>
-                    <td><?php echo number_format(floatval($consumption['total_timer'] ?? 0), 2, ',', '.') . ' timer'; ?></td>
+                    <td data-label="Brugernavn"><?php echo htmlspecialchars($consumption['brugernavn'] ?? ''); ?></td>
+                    <td data-label="Samlet timeforbrug"><?php echo number_format(floatval($consumption['total_timer'] ?? 0), 2, ',', '.') . ' timer'; ?></td>
                 </tr>
             <?php endforeach; ?>
             <?php if (count($time_consumption) > 1): ?>
                 <tr style="border-top: 2px solid #333; font-weight: bold;">
-                    <td><strong>Total</strong></td>
-                    <td><strong><?php echo number_format($total_all_hours, 2, ',', '.') . ' timer'; ?></strong></td>
+                    <td data-label="Brugernavn"><strong>Total</strong></td>
+                    <td data-label="Samlet timeforbrug"><strong><?php echo number_format($total_all_hours, 2, ',', '.') . ' timer'; ?></strong></td>
                 </tr>
             <?php endif; ?>
         </table>
