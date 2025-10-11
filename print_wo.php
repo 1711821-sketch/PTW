@@ -242,25 +242,20 @@ if ($statusVal === 'planning') {
         @media screen and (max-width: 480px) {
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { margin-bottom: 1rem; border: 1px solid #ccc; }
+            tr { margin-bottom: 1rem; border: 1px solid #ccc; padding: 0.5rem; }
             td { 
                 border: none;
-                position: relative;
-                padding-left: 0;
-                padding-top: 2.5rem;
+                padding: 0.6rem;
                 text-align: left;
-                min-height: 2.5rem;
             }
             td:before { 
-                position: absolute;
-                top: 0.3rem;
-                left: 0.3rem;
-                right: 0.3rem;
+                display: block;
                 font-weight: bold;
                 content: attr(data-label);
-                display: block;
+                margin-bottom: 0.4rem;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
+                color: #333;
             }
             th { width: 100%; }
         }
