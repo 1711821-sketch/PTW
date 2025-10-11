@@ -468,23 +468,25 @@ try {
             }
             
             .filter-controls {
-                flex-direction: column;
-                gap: 0.4rem;
+                flex-direction: row;
+                gap: 0.3rem;
+                justify-content: space-between;
             }
             
             .filter-option {
-                width: 100%;
-                padding: 0.5rem 0.75rem;
-                font-size: 0.85rem;
+                flex: 1;
+                padding: 0.5rem 0.25rem;
+                font-size: 0.75rem;
+                justify-content: center;
             }
             
             .filter-option input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
+                width: 16px;
+                height: 16px;
             }
             
             .status-indicator {
-                font-size: 0.85rem;
+                font-size: 0.75rem;
             }
             
             /* Hide emojis on mobile by using text-indent trick */
@@ -493,7 +495,7 @@ try {
             }
             .status-indicator.planning::after {
                 content: 'Planlagte';
-                font-size: 0.85rem;
+                font-size: 0.75rem;
             }
             
             .status-indicator.active {
@@ -501,7 +503,7 @@ try {
             }
             .status-indicator.active::after {
                 content: 'Aktive';
-                font-size: 0.85rem;
+                font-size: 0.75rem;
             }
             
             .status-indicator.completed {
@@ -509,7 +511,7 @@ try {
             }
             .status-indicator.completed::after {
                 content: 'Afsluttede';
-                font-size: 0.85rem;
+                font-size: 0.75rem;
             }
             
             .wo-popup {
