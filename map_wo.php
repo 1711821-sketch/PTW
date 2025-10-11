@@ -241,6 +241,21 @@ try {
             background: white !important;
         }
         
+        @media (max-width: 768px) {
+            #map {
+                height: calc(100vh - 280px);
+                min-height: 400px;
+                border-radius: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #map {
+                height: calc(100vh - 320px);
+                min-height: 350px;
+            }
+        }
+        
         .leaflet-container {
             background: white !important;
         }
@@ -381,14 +396,21 @@ try {
                 padding: 1rem;
             }
             
+            .search-box {
+                max-width: 100%;
+                font-size: 16px;
+            }
+            
             .filter-controls {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.75rem;
+                flex-direction: row;
+                gap: 0.5rem;
             }
             
             .filter-option {
+                flex: 1;
                 justify-content: center;
+                padding: 0.6rem 0.5rem;
+                font-size: 0.8rem;
             }
             
             .map-info {
@@ -396,11 +418,88 @@ try {
                 top: auto;
                 right: auto;
                 margin: 1rem;
+                text-align: center;
             }
             
             .wo-popup {
                 min-width: 250px;
                 padding: 1rem;
+            }
+            
+            .wo-popup-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .wo-popup-title {
+                font-size: 1rem;
+            }
+            
+            .wo-popup-label {
+                min-width: 70px;
+                font-size: 0.8rem;
+            }
+            
+            .wo-popup-value {
+                font-size: 0.8rem;
+            }
+            
+            .wo-popup-actions {
+                flex-direction: column;
+            }
+            
+            .wo-popup-btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .map-controls {
+                padding: 0.75rem;
+            }
+            
+            body {
+                font-size: 14px;
+            }
+            
+            .legend-box {
+                width: 100%;
+                white-space: normal !important;
+                text-align: center;
+                font-size: 0.75rem !important;
+                line-height: 1.4;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .filter-option {
+                width: 100%;
+                padding: 0.65rem 0.5rem;
+                font-size: 0.85rem;
+            }
+            
+            .filter-option input[type="checkbox"] {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .wo-popup {
+                padding: 0.75rem;
+                min-width: 200px;
+            }
+            
+            .wo-popup-detail {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .wo-popup-label {
+                font-weight: 600;
+                margin-bottom: 0.1rem;
             }
         }
     </style>
@@ -435,7 +534,7 @@ try {
             <!-- Search and legend row -->
             <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
                 <input type="text" id="search" class="search-box" placeholder="🔍 Søg i beskrivelse, jobansvarlig, entreprenør..." style="margin-bottom: 0; flex: 1; min-width: 200px;">
-                <div style="padding: 0.5rem 0.75rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">
+                <div class="legend-box" style="padding: 0.5rem 0.75rem; background: rgba(59, 130, 246, 0.05); border: 1px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">
                     <strong style="color: var(--text-primary);">Forklaring:</strong> ● = SJA tilknyttet | 🔨 = Arbejder | ⏹️ = Stoppet
                 </div>
             </div>
