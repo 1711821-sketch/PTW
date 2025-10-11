@@ -1205,13 +1205,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     </style>
 </head>
 <body>
-    <!-- Top navigation bar with hamburger menu -->
-    <nav class="navbar">
-        <button class="navbar-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-        </button>
+    <!-- Top navigation bar -->
+    <nav class="navbar" style="display: none;">
         <div class="navbar-links">
             <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
