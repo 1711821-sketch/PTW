@@ -10,11 +10,39 @@ if (!isset($_SESSION['user'])) {
 
 $username = $_SESSION['user'];
 $role = $_SESSION['role'] ?? 'user';
+$isEntrepreneur = (strtolower($role) === 'entreprenør');
 
 try {
     $db = Database::getInstance();
     
-    // === CORE STATISTICS QUERIES ===
+    // === ENTREPRENEUR DASHBOARD - Different view for contractors ===
+    if ($isEntrepreneur) {
+        $firma = $_SESSION['entreprenor_firma'] ?? '';
+        
+        $entrepreneurPTWs = $db->fetchAll("
+            SELECT 
+                wo.*,
+                COALESCE(SUM(te.hours), 0) as total_hours
+            FROM work_orders wo
+            LEFT JOIN time_entries te ON wo.id = te.work_order_id
+            WHERE wo.entreprenor_firma = ?
+            GROUP BY wo.id
+            ORDER BY 
+                CASE 
+                    WHEN wo.status = 'active' THEN 1
+                    WHEN wo.status = 'planning' THEN 2
+                    WHEN wo.status = 'completed' THEN 3
+                    ELSE 4
+                END,
+                wo.created_at DESC
+        ", [$firma]);
+        
+        $planningPTWs = array_filter($entrepreneurPTWs, fn($ptw) => $ptw['status'] === 'planning');
+        $activePTWs = array_filter($entrepreneurPTWs, fn($ptw) => $ptw['status'] === 'active');
+        $completedPTWs = array_filter($entrepreneurPTWs, fn($ptw) => $ptw['status'] === 'completed');
+    }
+    
+    // === CORE STATISTICS QUERIES (for non-entrepreneurs) ===
     
     // 1. Work Order Statistics
     $totalWorkOrders = $db->fetch("SELECT COUNT(*) as count FROM work_orders")['count'];
@@ -104,6 +132,12 @@ try {
     
 } catch (Exception $e) {
     // Fallback values if database query fails
+    if ($isEntrepreneur) {
+        $entrepreneurPTWs = [];
+        $planningPTWs = [];
+        $activePTWs = [];
+        $completedPTWs = [];
+    }
     $totalWorkOrders = 0;
     $activeWorkOrders = 0;
     $completedWorkOrders = 0;
@@ -341,6 +375,144 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             opacity: 0.5;
         }
         
+        /* Entrepreneur Dashboard Specific Styles */
+        .entrepreneur-dashboard {
+            padding: 1rem 0;
+        }
+        
+        .ptw-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .section-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .section-badge.planning {
+            background: var(--warning-color);
+        }
+        
+        .section-badge.active {
+            background: var(--success-color);
+        }
+        
+        .section-badge.completed {
+            background: var(--text-light);
+        }
+        
+        .ptw-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .ptw-card {
+            background: var(--background-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .ptw-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+        
+        .ptw-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ptw-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .ptw-hours {
+            background: var(--primary-light);
+            color: white;
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .ptw-description {
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .ptw-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .ptw-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .ptw-meta-icon {
+            opacity: 0.7;
+        }
+        
+        .empty-section {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: var(--background-secondary);
+            border-radius: var(--radius-lg);
+            color: var(--text-light);
+        }
+        
+        .empty-section-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        
         @media (max-width: 768px) {
             .kpi-grid {
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -358,6 +530,28 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             
             .safety-days {
                 font-size: 2rem;
+            }
+            
+            .ptw-card {
+                padding: 1rem;
+            }
+            
+            .ptw-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .ptw-hours {
+                align-self: flex-end;
+            }
+            
+            .ptw-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .section-header {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -387,14 +581,153 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
     </nav>
 
     <div class="container">
-        <h1>📊 System Dashboard</h1>
-        <p>Overblik over PTW'er, sikkerhed og aktivitet</p>
+        <?php if ($isEntrepreneur): ?>
+            <h1>📋 Mine PTW'er</h1>
+            <p>Oversigt over alle PTW'er for <?= htmlspecialchars($firma ?? 'dit firma') ?></p>
+        <?php else: ?>
+            <h1>📊 System Dashboard</h1>
+            <p>Overblik over PTW'er, sikkerhed og aktivitet</p>
+        <?php endif; ?>
         
         <?php if (isset($error_message)): ?>
             <div class="alert alert-danger">
                 <strong>Advarsel:</strong> <?= htmlspecialchars($error_message) ?>
             </div>
         <?php endif; ?>
+
+        <?php if ($isEntrepreneur): ?>
+            <!-- ENTREPRENEUR DASHBOARD -->
+            <div class="entrepreneur-dashboard">
+                
+                <!-- Active PTWs -->
+                <div class="ptw-section">
+                    <div class="section-header">
+                        <h2 class="section-title">🟢 Aktive PTW'er</h2>
+                        <span class="section-badge active"><?= count($activePTWs) ?></span>
+                    </div>
+                    <?php if (!empty($activePTWs)): ?>
+                        <div class="ptw-list">
+                            <?php foreach ($activePTWs as $ptw): ?>
+                                <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
+                                    <div class="ptw-card-header">
+                                        <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                    </div>
+                                    <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
+                                    <div class="ptw-meta">
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">👷</span>
+                                            <span><?= htmlspecialchars($ptw['jobansvarlig'] ?? 'Ikke tildelt') ?></span>
+                                        </div>
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">📅</span>
+                                            <span><?= date('d/m/Y', strtotime($ptw['created_at'])) ?></span>
+                                        </div>
+                                        <?php if (!empty($ptw['components'])): ?>
+                                            <div class="ptw-meta-item">
+                                                <span class="ptw-meta-icon">🔧</span>
+                                                <span><?= htmlspecialchars($ptw['components']) ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-section">
+                            <div class="empty-section-icon">📋</div>
+                            <p>Ingen aktive PTW'er i øjeblikket</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Planning PTWs -->
+                <div class="ptw-section">
+                    <div class="section-header">
+                        <h2 class="section-title">📝 PTW'er i Planlægning</h2>
+                        <span class="section-badge planning"><?= count($planningPTWs) ?></span>
+                    </div>
+                    <?php if (!empty($planningPTWs)): ?>
+                        <div class="ptw-list">
+                            <?php foreach ($planningPTWs as $ptw): ?>
+                                <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
+                                    <div class="ptw-card-header">
+                                        <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                    </div>
+                                    <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
+                                    <div class="ptw-meta">
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">👷</span>
+                                            <span><?= htmlspecialchars($ptw['jobansvarlig'] ?? 'Ikke tildelt') ?></span>
+                                        </div>
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">📅</span>
+                                            <span><?= date('d/m/Y', strtotime($ptw['created_at'])) ?></span>
+                                        </div>
+                                        <?php if (!empty($ptw['components'])): ?>
+                                            <div class="ptw-meta-item">
+                                                <span class="ptw-meta-icon">🔧</span>
+                                                <span><?= htmlspecialchars($ptw['components']) ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-section">
+                            <div class="empty-section-icon">📝</div>
+                            <p>Ingen PTW'er i planlægning</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Completed PTWs -->
+                <div class="ptw-section">
+                    <div class="section-header">
+                        <h2 class="section-title">✅ Afsluttede PTW'er</h2>
+                        <span class="section-badge completed"><?= count($completedPTWs) ?></span>
+                    </div>
+                    <?php if (!empty($completedPTWs)): ?>
+                        <div class="ptw-list">
+                            <?php foreach ($completedPTWs as $ptw): ?>
+                                <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
+                                    <div class="ptw-card-header">
+                                        <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                    </div>
+                                    <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
+                                    <div class="ptw-meta">
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">👷</span>
+                                            <span><?= htmlspecialchars($ptw['jobansvarlig'] ?? 'Ikke tildelt') ?></span>
+                                        </div>
+                                        <div class="ptw-meta-item">
+                                            <span class="ptw-meta-icon">📅</span>
+                                            <span><?= date('d/m/Y', strtotime($ptw['created_at'])) ?></span>
+                                        </div>
+                                        <?php if (!empty($ptw['components'])): ?>
+                                            <div class="ptw-meta-item">
+                                                <span class="ptw-meta-icon">🔧</span>
+                                                <span><?= htmlspecialchars($ptw['components']) ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-section">
+                            <div class="empty-section-icon">✅</div>
+                            <p>Ingen afsluttede PTW'er endnu</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+        <?php else: ?>
+            <!-- STANDARD DASHBOARD FOR OTHER ROLES -->
 
         <!-- Safety Highlight -->
         <div class="safety-highlight">
@@ -547,6 +880,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                 <?php endif; ?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 
     <script>
@@ -608,7 +942,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                         return strlen($label) > 15 ? substr($label, 0, 15) . '...' : $label; 
                     }, $entrepreneurLabels)) ?>,
                     datasets: [{
-                        label: 'PTW'er',
+                        label: 'PTW\'er',
                         data: <?= json_encode($entrepreneurCounts) ?>,
                         backgroundColor: chartColors.primary,
                         borderColor: chartColors.primary,
