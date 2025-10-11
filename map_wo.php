@@ -440,11 +440,6 @@ try {
                 </div>
             </div>
             
-            <!-- Image coordinates instruction -->
-            <div style="padding: 0.5rem 0.75rem; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                <strong style="color: var(--success);">💡 Billedkoordinater:</strong> Klik på kortet for at se billedkoordinater (X, Y). Disse kan bruges til præcis placering af PTW-markører.
-            </div>
-            
             <div class="filter-controls">
                 <label class="filter-option" for="showPlanning">
                     <input type="checkbox" id="showPlanning" checked>
