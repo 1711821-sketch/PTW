@@ -1206,11 +1206,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
 </head>
 <body>
     <!-- Top navigation bar -->
-    <nav class="navbar" style="display: none;">
+    <nav class="navbar">
+        <button class="navbar-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
         <div class="navbar-links">
             <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret ny PTW?</a>
+                <a href="create_wo.php">Opret ny PTW</a>
             <?php endif; ?>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
