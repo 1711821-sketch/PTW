@@ -8,6 +8,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
+  - **Billedsletning og udvidet formatunderstøttelse (print_wo.php)**:
+    - Entreprenører kan nu slette uploadede billeder med bekræftelsesdialog
+    - Filstørrelsesgrænse øget fra 10MB til 50MB for højopløselige smartphone-billeder
+    - Udvidet formatunderstøttelse: JPEG, PNG, GIF, WebP, AVIF (kun browser-renderable formater)
+    - Slet-knap (🗑️) tilføjet til hvert billede i galleriet for autoriserede brugere
+    - Sikkerhedstjek: Kun entreprenører kan slette billeder fra deres eget firmas PTW'er
+    - Sletning fjerner både fil fra disk og reference fra database atomisk
+    - UI-vejledning tilføjet for iPhone-brugere om at indstille kamera til JPEG-format
+    - Print-funktionalitet skjuler slet-knapper automatisk
+    - SVG, HEIC, TIFF og BMP ekskluderet for at undgå XSS-sårbarheder og browser-kompatibilitetsproblemer
   - **Kollapsible sektioner i print_wo.php**: Alle hovedsektioner er nu fold-ud elementer for bedre pladsudnyttelse
   - **Basisinformation** (📋), **Godkendelsesproces** (✅), **Godkendelseshistorik** (📜), **Tilknyttede SJA'er** (📝), **Timeforbrug** (⏱️), og **Dokumentationsbilleder** (📸) er alle kollapsible top-level sektioner
   - Godkendelsesproces bruges direkte fra approval_workflow_widget.php (har egen kollapsibel wrapper)
