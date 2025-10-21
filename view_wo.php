@@ -11,6 +11,12 @@ date_default_timezone_set('Europe/Copenhagen');
 // Include approval workflow widget
 require_once 'approval_workflow_widget.php';
 
+// Helper function to normalize role names for consistent comparison
+// Converts "Entreprenør" -> "entreprenor", "Drift" -> "drift", etc.
+function normalizeRole($role) {
+    return str_replace(['ø', 'æ', 'å'], ['o', 'ae', 'aa'], strtolower($role));
+}
+
 // SECURITY FIX: Handle AJAX approval requests with database access control
 if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
     header('Content-Type: application/json');
@@ -20,9 +26,10 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
     $sessionRole = $_SESSION['role'] ?? '';
     $currentUser = $_SESSION['user'] ?? '';
     
-    // Normalize role names to lowercase for comparison
-    $approveRoleLc = strtolower($approveRole);
-    $sessionRoleLc = strtolower($sessionRole);
+    // Normalize role names to lowercase and remove Danish characters for comparison
+    // This ensures consistency: "Entreprenør" -> "entreprenor"
+    $approveRoleLc = normalizeRole($approveRole);
+    $sessionRoleLc = normalizeRole($sessionRole);
     
     // Check permissions
     if ($sessionRoleLc !== 'admin' && $sessionRoleLc !== $approveRoleLc) {
@@ -164,7 +171,7 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
     $currentUser = $_SESSION['user'] ?? '';
     
     // Only entrepreneurs can update work status
-    if (strtolower($sessionRole) !== 'entreprenor') {
+    if (normalizeRole($sessionRole) !== 'entreprenor') {
         echo json_encode([
             'success' => false,
             'message' => 'Kun entreprenører kan opdatere arbejdsstatus.'
@@ -261,14 +268,14 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$role = $_SESSION['role'] ?? 'user';
+$role = normalizeRole($_SESSION['role'] ?? 'user');
 
 // Enhanced access control using database instead of JSON files
 require_once 'database.php';
 
 $entries = [];
 $currentUser = $_SESSION['user'] ?? '';
-$currentRole = $_SESSION['role'] ?? '';
+$currentRole = normalizeRole($_SESSION['role'] ?? '');
 
 try {
     $db = Database::getInstance();
