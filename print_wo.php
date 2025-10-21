@@ -51,6 +51,67 @@ try {
 // Handle image upload for entrepreneurs
 $upload_message = '';
 $upload_error = '';
+$delete_message = '';
+$delete_error = '';
+
+// Handle image deletion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_image'])) {
+    $currentUser = $_SESSION['user'] ?? '';
+    $currentRole = $_SESSION['role'] ?? '';
+    $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+    $image_to_delete = $_POST['image_filename'] ?? '';
+    
+    // Security check: Only entrepreneurs can delete
+    if ($currentRole !== 'entreprenor') {
+        $delete_error = 'Kun entreprenører kan slette billeder.';
+    }
+    // Security check: Entrepreneur can only delete from their own firm's work orders
+    elseif ($entry['entreprenor_firma'] !== $userFirma) {
+        $delete_error = 'Du kan kun slette billeder fra dit eget firmas PTW\'er.';
+        error_log("SECURITY VIOLATION: Entrepreneur $currentUser attempted to delete image from another firm's work order. User Firma: $userFirma, WO Firma: " . $entry['entreprenor_firma']);
+    }
+    elseif (empty($image_to_delete)) {
+        $delete_error = 'Intet billednavn angivet.';
+    }
+    else {
+        // Verify the image exists in the database
+        $current_images = $entry['completion_images'] ?? [];
+        $image_index = array_search($image_to_delete, $current_images);
+        
+        if ($image_index === false) {
+            $delete_error = 'Billedet blev ikke fundet i databasen.';
+        }
+        else {
+            // Remove from array
+            array_splice($current_images, $image_index, 1);
+            
+            try {
+                // Update database
+                $db->execute("
+                    UPDATE work_orders 
+                    SET completion_images = ?, updated_at = NOW()
+                    WHERE id = ?
+                ", [json_encode($current_images), $entry['id']]);
+                
+                // Delete physical file
+                $file_path = __DIR__ . '/uploads/work_order_images/' . $image_to_delete;
+                if (file_exists($file_path)) {
+                    @unlink($file_path);
+                }
+                
+                $delete_message = 'Billedet er slettet med succes!';
+                $entry['completion_images'] = $current_images;
+                
+                error_log("Image deleted successfully - User: $currentUser, WO ID: " . $entry['id'] . ", Filename: $image_to_delete");
+            } catch (Exception $e) {
+                $delete_error = 'Fejl ved sletning af billedet fra databasen.';
+                error_log("Error deleting image from database: " . $e->getMessage());
+            }
+        }
+    }
+}
+
+// Handle image upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
     $currentUser = $_SESSION['user'] ?? '';
     $currentRole = $_SESSION['role'] ?? '';
@@ -81,20 +142,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
         finfo_close($finfo);
         
         // Map MIME types to safe file extensions (NEVER use user-supplied extension)
+        // Extended format support for all smartphones and devices
         $mime_to_extension = [
             'image/jpeg' => 'jpg',
             'image/jpg' => 'jpg',
             'image/png' => 'png',
             'image/gif' => 'gif',
-            'image/webp' => 'webp'
+            'image/webp' => 'webp',
+            'image/heic' => 'heic',
+            'image/heif' => 'heif',
+            'image/heic-sequence' => 'heic',
+            'image/heif-sequence' => 'heif',
+            'image/bmp' => 'bmp',
+            'image/x-ms-bmp' => 'bmp',
+            'image/tiff' => 'tiff',
+            'image/svg+xml' => 'svg',
+            'image/avif' => 'avif'
         ];
         
         if (!isset($mime_to_extension[$mime_type])) {
-            $upload_error = 'Kun billedfiler (JPEG, PNG, GIF, WebP) er tilladt.';
+            $upload_error = 'Kun billedfiler (JPEG, PNG, GIF, WebP, HEIC, BMP, TIFF, SVG, AVIF) er tilladt.';
         }
-        // Validate file size (max 10MB)
-        elseif ($file['size'] > 10485760) {
-            $upload_error = 'Billedet må ikke være større end 10MB.';
+        // Validate file size (max 50MB for high-resolution smartphone images)
+        elseif ($file['size'] > 52428800) {
+            $upload_error = 'Billedet må ikke være større end 50MB.';
         }
         else {
             // SECURITY: Use extension based on MIME type, NOT user-supplied filename
