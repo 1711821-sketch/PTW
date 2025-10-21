@@ -15,7 +15,8 @@ Preferred communication style: Simple, everyday language.
     - Reduced menu button size from 48x48px to 36x36px (25% smaller footprint)
     - Sticky navbar with optimal 52px height for mobile devices
     - Foldable menu contains only navigation links + log out (username moved to header)
-    - Backwards compatible with all existing pages using legacy navbar markup
+    - Implemented across ALL 11 pages: dashboard.php, view_wo.php, create_wo.php, map_wo.php, admin.php, time_overblik.php, view_sja.php, print_wo.php, sja_history.php, sja_compare.php, sms_admin.php
+    - Responsive CSS classes: nav-user-mobile (visible <480px), nav-user-desktop (visible ≥480px)
     - Desktop view unchanged: full "Logget ind som [name] (role)" text shown in navbar
   - **PWA App Icon Update**: Replaced app icons with new professional design featuring safety helmet and PTW branding
     - New icon-192.png (13 KB) and icon-512.png (133 KB) created with blue background and white safety helmet logo
