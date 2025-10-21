@@ -365,6 +365,21 @@ if ($statusVal === 'planning') {
             }
         }
         
+        /* Override approval workflow styling to match other sections in print view */
+        .card-approval-header {
+            background: rgba(59, 130, 246, 0.05) !important;
+            padding: 0.75rem 1rem !important;
+            border-radius: 8px !important;
+        }
+        
+        .card-approval-header:hover {
+            background: rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        .card-approval-workflow h4 {
+            font-size: 1.1rem !important;
+        }
+        
         @media print {
             .action-buttons, .navbar, .upload-section { display: none; }
             body { margin: 0; }
