@@ -8,6 +8,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
+  - **PWA App Icon Update**: Replaced app icons with new professional design featuring safety helmet and PTW branding
+    - New icon-192.png (13 KB) and icon-512.png (133 KB) created with blue background and white safety helmet logo
+    - Service worker cache version updated to 'arbejdstilladelse-v3' to force client updates
+    - Icons optimized for PWA installation on mobile devices and home screen
   - **Billedsletning og udvidet formatunderstøttelse (print_wo.php)**:
     - Entreprenører kan nu slette uploadede billeder med bekræftelsesdialog
     - Filstørrelsesgrænse øget fra 10MB til 50MB for højopløselige smartphone-billeder
