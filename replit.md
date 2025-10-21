@@ -8,21 +8,6 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
-  - **Web Push Notifications for PTW Approvals**:
-    - Implemented real-time push notifications for entrepreneurs when PTW is approved
-    - Service Worker (service-worker.js) updated with push event handlers and notification click handling
-    - Database table `push_subscriptions` stores user subscription data (endpoint, p256dh_key, auth_token)
-    - VAPID keys generated and stored in push_config.php for secure server-to-client push
-    - Backend endpoints: push_subscribe.php, push_unsubscribe.php, push_send.php for subscription management
-    - Security: Ownership verification prevents users from deleting other users' subscriptions
-    - Frontend: push_notifications.js provides PushNotificationManager for subscription handling
-    - Auto-prompt: Entrepreneurs see notification permission request 5 seconds after login (unless already subscribed or recently dismissed)
-    - Role detection normalized to handle Danish characters ("Entreprenør") correctly
-    - Notification triggers: 1) When Drift approves PTW (prompts entrepreneur to approve), 2) When all three roles approve (PTW fully active)
-    - Notification includes work order number, deep link to PTW detail page (print_wo.php), and action buttons
-    - Click on notification focuses/opens PTW in browser window
-    - Uses web-push-php library (Minishlink) for server-side push delivery
-    - PWA-based solution works on modern browsers supporting Web Push API
   - **Billedsletning og udvidet formatunderstøttelse (print_wo.php)**:
     - Entreprenører kan nu slette uploadede billeder med bekræftelsesdialog
     - Filstørrelsesgrænse øget fra 10MB til 50MB for højopløselige smartphone-billeder

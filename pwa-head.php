@@ -19,20 +19,23 @@
 <!-- PWA Manifest -->
 <link rel="manifest" href="/manifest.json">
 
-<!-- Service Worker Registration -->
+<!-- Service Worker Unregistration (temporarily disabled) -->
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(registration => {
-        console.log('ServiceWorker registered:', registration);
-      })
-      .catch(error => {
-        console.log('ServiceWorker registration failed:', error);
-      });
+  window.addEventListener('load', async () => {
+    // Unregister any existing service workers
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (let registration of registrations) {
+      await registration.unregister();
+      console.log('ServiceWorker unregistered');
+    }
+    
+    // Clear all caches
+    const cacheNames = await caches.keys();
+    for (let cacheName of cacheNames) {
+      await caches.delete(cacheName);
+      console.log('Cache cleared:', cacheName);
+    }
   });
 }
 </script>
-
-<!-- Push Notifications -->
-<script src="/push_notifications.js"></script>

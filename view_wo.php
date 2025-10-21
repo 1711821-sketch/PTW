@@ -11,12 +11,6 @@ date_default_timezone_set('Europe/Copenhagen');
 // Include approval workflow widget
 require_once 'approval_workflow_widget.php';
 
-// Helper function to normalize role names for consistent comparison
-// Converts "Entreprenør" -> "entreprenor", "Drift" -> "drift", etc.
-function normalizeRole($role) {
-    return str_replace(['ø', 'æ', 'å'], ['o', 'ae', 'aa'], strtolower($role));
-}
-
 // SECURITY FIX: Handle AJAX approval requests with database access control
 if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST['role'])) {
     header('Content-Type: application/json');
@@ -26,10 +20,9 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
     $sessionRole = $_SESSION['role'] ?? '';
     $currentUser = $_SESSION['user'] ?? '';
     
-    // Normalize role names to lowercase and remove Danish characters for comparison
-    // This ensures consistency: "Entreprenør" -> "entreprenor"
-    $approveRoleLc = normalizeRole($approveRole);
-    $sessionRoleLc = normalizeRole($sessionRole);
+    // Normalize role names to lowercase for comparison
+    $approveRoleLc = strtolower($approveRole);
+    $sessionRoleLc = strtolower($sessionRole);
     
     // Check permissions
     if ($sessionRoleLc !== 'admin' && $sessionRoleLc !== $approveRoleLc) {
@@ -114,30 +107,6 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         if ($updated) {
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
-            
-            // Check if all three approvals are complete (Opgaveansvarlig, Drift, Entreprenor)
-            $allApproved = isset($approvals['opgaveansvarlig']) && 
-                          isset($approvals['drift']) && 
-                          isset($approvals['entreprenor']);
-            
-            // Send push notification to entrepreneur when Drift approves (making it ready for entrepreneur approval)
-            if ($approveRoleLc === 'drift' && !isset($approvals['entreprenor'])) {
-                require_once 'push_send.php';
-                $notifTitle = '🔔 PTW klar til godkendelse';
-                $notifBody = 'PTW ' . ($workOrder['work_order_no'] ?? $approveId) . ' er godkendt af Drift og klar til din godkendelse.';
-                $notifUrl = '/print_wo.php?id=' . $approveId;
-                sendPushToEntrepreneurFirma($workOrder['entreprenor_firma'], $notifTitle, $notifBody, $notifUrl);
-            }
-            
-            // Send notification when PTW becomes fully active (all three approved)
-            if ($allApproved) {
-                require_once 'push_send.php';
-                $notifTitle = '✅ PTW Aktiv';
-                $notifBody = 'PTW ' . ($workOrder['work_order_no'] ?? $approveId) . ' er nu fuldt godkendt og aktiv. Du kan begynde arbejdet.';
-                $notifUrl = '/print_wo.php?id=' . $approveId;
-                sendPushToEntrepreneurFirma($workOrder['entreprenor_firma'], $notifTitle, $notifBody, $notifUrl);
-            }
-            
             echo json_encode([
                 'success' => true,
                 'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.'
@@ -171,7 +140,7 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
     $currentUser = $_SESSION['user'] ?? '';
     
     // Only entrepreneurs can update work status
-    if (normalizeRole($sessionRole) !== 'entreprenor') {
+    if (strtolower($sessionRole) !== 'entreprenor') {
         echo json_encode([
             'success' => false,
             'message' => 'Kun entreprenører kan opdatere arbejdsstatus.'
@@ -268,14 +237,14 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$role = normalizeRole($_SESSION['role'] ?? 'user');
+$role = $_SESSION['role'] ?? 'user';
 
 // Enhanced access control using database instead of JSON files
 require_once 'database.php';
 
 $entries = [];
 $currentUser = $_SESSION['user'] ?? '';
-$currentRole = normalizeRole($_SESSION['role'] ?? '');
+$currentRole = $_SESSION['role'] ?? '';
 
 try {
     $db = Database::getInstance();
