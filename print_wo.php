@@ -260,6 +260,45 @@ if ($statusVal === 'planning') {
             th { width: 100%; }
         }
         
+        /* Collapsible sections styling */
+        .card-collapsible-section {
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+        
+        .card-section-header:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .card-section-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            border-bottom: none;
+            padding: 0;
+        }
+        
+        .collapsible-section-content {
+            display: none;
+            margin-top: 0.75rem;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .collapsible-section-content.expanded {
+            display: block;
+        }
+        
         /* Collapsible approval history styling */
         .card-approval-history {
             padding: 0;
@@ -335,7 +374,8 @@ if ($statusVal === 'planning') {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            /* Show approval history when printing */
+            /* Show all collapsible sections when printing */
+            .collapsible-section-content,
             .approval-history-section {
                 display: block !important;
             }
@@ -362,30 +402,48 @@ if ($statusVal === 'planning') {
         <a href="#" class="action-btn btn-primary" onclick="window.print();return false;">🖨️ Print</a>
     </div>
     <h1>PTW</h1>
-    <h2>Basisinformation</h2>
-    <table>
-        <tr><th>PTW Nr.</th><td data-label="PTW Nr."><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
-        <tr><th>Beskrivelse</th><td data-label="Beskrivelse"><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
-        <tr><th>P-nr beskrivelse</th><td data-label="P-nr beskrivelse"><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
-        <tr><th>Jobansvarlig</th><td data-label="Jobansvarlig"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
-        <tr><th>Telefon</th><td data-label="Telefon"><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
-        <tr><th>PTW oprettet af</th><td data-label="PTW oprettet af"><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
-        <tr><th>PTW oprettet dato</th><td data-label="PTW oprettet dato"><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
-        <tr><th>Entreprenør firma</th><td data-label="Entreprenør firma"><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
-        <tr><th>Entreprenør kontakt</th><td data-label="Entreprenør kontakt"><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
-        <tr><th>Komponent nr.</th><td data-label="Komponent nr."><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
-        <tr><th>Status</th><td data-label="Status"><?php echo $statusLabel; ?></td></tr>
-        <tr><th>Lokation (lat,lng)</th><td data-label="Lokation (lat,lng)"><?php
-            $lat = $entry['latitude'] ?? '';
-            $lng = $entry['longitude'] ?? '';
-            echo ($lat && $lng) ? htmlspecialchars($lat . ', ' . $lng) : '—';
-        ?></td></tr>
-        <tr><th>Bemærkninger</th><td data-label="Bemærkninger"><?php echo nl2br(htmlspecialchars($entry['notes'] ?? '')); ?></td></tr>
-        <?php if (!empty($entry['pdf_file'])): ?>
-        <tr><th>Original PDF</th><td data-label="Original PDF"><a href="uploads/<?php echo urlencode($entry['pdf_file']); ?>" target="_blank">Download</a></td></tr>
-        <?php endif; ?>
-    </table>
-    <h2>Godkendelsesproces</h2>
+    
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'basis')">
+            <h2>📋 Basisinformation</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="toggle-icon" id="basis-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="basis-section-<?php echo $entry['id']; ?>">
+            <table>
+                <tr><th>PTW Nr.</th><td data-label="PTW Nr."><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
+                <tr><th>Beskrivelse</th><td data-label="Beskrivelse"><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
+                <tr><th>P-nr beskrivelse</th><td data-label="P-nr beskrivelse"><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
+                <tr><th>Jobansvarlig</th><td data-label="Jobansvarlig"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
+                <tr><th>Telefon</th><td data-label="Telefon"><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
+                <tr><th>PTW oprettet af</th><td data-label="PTW oprettet af"><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>
+                <tr><th>PTW oprettet dato</th><td data-label="PTW oprettet dato"><?php echo htmlspecialchars($entry['oprettet_dato'] ?? ''); ?></td></tr>
+                <tr><th>Entreprenør firma</th><td data-label="Entreprenør firma"><?php echo htmlspecialchars($entry['entreprenor_firma'] ?? ''); ?></td></tr>
+                <tr><th>Entreprenør kontakt</th><td data-label="Entreprenør kontakt"><?php echo htmlspecialchars($entry['entreprenor_kontakt'] ?? ''); ?></td></tr>
+                <tr><th>Komponent nr.</th><td data-label="Komponent nr."><?php echo nl2br(htmlspecialchars($entry['components'] ?? '')); ?></td></tr>
+                <tr><th>Status</th><td data-label="Status"><?php echo $statusLabel; ?></td></tr>
+                <tr><th>Lokation (lat,lng)</th><td data-label="Lokation (lat,lng)"><?php
+                    $lat = $entry['latitude'] ?? '';
+                    $lng = $entry['longitude'] ?? '';
+                    echo ($lat && $lng) ? htmlspecialchars($lat . ', ' . $lng) : '—';
+                ?></td></tr>
+                <tr><th>Bemærkninger</th><td data-label="Bemærkninger"><?php echo nl2br(htmlspecialchars($entry['notes'] ?? '')); ?></td></tr>
+                <?php if (!empty($entry['pdf_file'])): ?>
+                <tr><th>Original PDF</th><td data-label="Original PDF"><a href="uploads/<?php echo urlencode($entry['pdf_file']); ?>" target="_blank">Download</a></td></tr>
+                <?php endif; ?>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'approval')">
+            <h2>✅ Godkendelsesproces</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="toggle-icon" id="approval-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="approval-section-<?php echo $entry['id']; ?>">
     <?php 
     // Display visual approval workflow widget
     $today = date('d-m-Y');
@@ -422,9 +480,18 @@ if ($statusVal === 'planning') {
             </div>
         </div>
     <?php endif; ?>
+        </div>
+    </div>
 
     <!-- Section for displaying SJA entries linked to this WO -->
-    <h2>Tilknyttede SJA'er</h2>
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'sja')">
+            <h2>📝 Tilknyttede SJA'er</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="toggle-icon" id="sja-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="sja-section-<?php echo $entry['id']; ?>">
     <?php
         // Load SJA entries from database that reference this work order
         $attached_sja = [];
@@ -462,9 +529,18 @@ if ($statusVal === 'planning') {
         <a href="create_sja.php?wo_id=<?php echo urlencode($entry['id']); ?>" class="action-btn btn-primary">Opret ny SJA til denne PTW</a>
         <a href="view_sja.php" class="action-btn btn-secondary">Se SJA Oversigt</a>
     </div>
+        </div>
+    </div>
 
     <!-- Section for displaying time consumption for this work order -->
-    <h2>Timeforbrug</h2>
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'time')">
+            <h2>⏱️ Timeforbrug</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="toggle-icon" id="time-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="time-section-<?php echo $entry['id']; ?>">
     <?php
         // Load time entries from database that reference this work order
         $time_consumption = [];
@@ -508,6 +584,8 @@ if ($statusVal === 'planning') {
     <?php else: ?>
         <p>Ingen timer registreret for denne PTW endnu.</p>
     <?php endif; ?>
+        </div>
+    </div>
     
     <!-- Image upload section for entrepreneurs -->
     <?php 
@@ -517,7 +595,14 @@ if ($statusVal === 'planning') {
     $canUpload = ($currentRole === 'entreprenor' && $entry['entreprenor_firma'] === $userFirma);
     ?>
     
-    <h2>Dokumentationsbilleder</h2>
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'images')">
+            <h2>📸 Dokumentationsbilleder</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="toggle-icon" id="images-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="images-section-<?php echo $entry['id']; ?>">
     
     <?php if ($canUpload): ?>
         <div class="upload-section" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
@@ -566,6 +651,8 @@ if ($statusVal === 'planning') {
     <?php else: ?>
         <p style="color: #666; font-style: italic;">Ingen dokumentationsbilleder uploadet endnu.</p>
     <?php endif; ?>
+        </div>
+    </div>
     
     </div><!-- /.container -->
     
@@ -584,10 +671,10 @@ if ($statusVal === 'planning') {
             }
         }
         
-        // Toggle approval workflow section
-        function toggleApprovalWorkflow(woId) {
-            const section = document.getElementById(`approval-section-${woId}`);
-            const icon = document.getElementById(`approval-icon-${woId}`);
+        // Generic toggle function for all collapsible sections
+        function toggleSection(woId, sectionName) {
+            const section = document.getElementById(`${sectionName}-section-${woId}`);
+            const icon = document.getElementById(`${sectionName}-icon-${woId}`);
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
