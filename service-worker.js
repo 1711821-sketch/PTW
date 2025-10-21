@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arbejdstilladelse-v2';
+const CACHE_NAME = 'arbejdstilladelse-v3';
 const urlsToCache = [
   '/',
   '/index.php',
@@ -22,6 +22,72 @@ self.addEventListener('install', (event) => {
       })
   );
   self.skipWaiting();
+});
+
+// Push notification handler
+self.addEventListener('push', (event) => {
+  console.log('Push notification received:', event);
+  
+  let notificationData = {
+    title: 'PTW Notifikation',
+    body: 'Du har en ny besked',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    data: {
+      url: '/view_wo.php'
+    }
+  };
+
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      notificationData = {
+        title: payload.title || notificationData.title,
+        body: payload.body || notificationData.body,
+        icon: payload.icon || notificationData.icon,
+        badge: payload.badge || notificationData.badge,
+        data: payload.data || notificationData.data
+      };
+    } catch (e) {
+      console.log('Error parsing push data:', e);
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: notificationData.icon,
+      badge: notificationData.badge,
+      data: notificationData.data,
+      requireInteraction: true,
+      vibrate: [200, 100, 200]
+    })
+  );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  console.log('Notification clicked:', event);
+  event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || '/view_wo.php';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.navigate(urlToOpen);
+            return client.focus();
+          }
+        }
+        // If no window is open, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
 });
 
 self.addEventListener('activate', (event) => {

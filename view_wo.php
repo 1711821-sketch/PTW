@@ -107,6 +107,38 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         if ($updated) {
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
+            
+            // Send push notifications to entrepreneurs based on approval status
+            require_once 'push_send.php';
+            
+            $oaApproved = isset($approvals['opgaveansvarlig']);
+            $driftApproved = isset($approvals['drift']);
+            $entApproved = isset($approvals['entreprenor']);
+            $firma = $workOrder['entreprenor_firma'] ?? '';
+            $workOrderNo = $workOrder['work_order_no'] ?? $approveId;
+            
+            // If Drift just approved and entrepreneur hasn't yet, notify them
+            if ($approveRoleLc === 'drift' && $driftApproved && !$entApproved && $firma) {
+                sendPushToEntrepreneurs(
+                    $firma,
+                    "PTW afventer din godkendelse",
+                    "PTW nr. $workOrderNo er godkendt af opgaveansvarlig og drift. Klik for at godkende.",
+                    "/print_wo.php?id=$approveId"
+                );
+                error_log("Sent push notification to entrepreneurs of $firma - PTW ready for entrepreneur approval");
+            }
+            
+            // If all three roles have approved, notify entrepreneurs that PTW is active
+            if ($oaApproved && $driftApproved && $entApproved && $firma) {
+                sendPushToEntrepreneurs(
+                    $firma,
+                    "✅ PTW er nu aktiv!",
+                    "PTW nr. $workOrderNo er fuldt godkendt og klar til brug. God arbejdslyst!",
+                    "/print_wo.php?id=$approveId"
+                );
+                error_log("Sent push notification to entrepreneurs of $firma - PTW fully approved and active");
+            }
+            
             echo json_encode([
                 'success' => true,
                 'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.'
