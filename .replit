@@ -7,7 +7,7 @@ modules = ["php-8.2", "postgresql-16", "nodejs-20", "php-8.3"]
 channel = "stable-22_11"
 
 [deployment]
-run = ["php", "-S", "0.0.0.0:5000"]
+run = ["php", "-S", "0.0.0.0:5000", "router.php"]
 deploymentTarget = "vm"
 
 [[ports]]
@@ -15,8 +15,8 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 36971
-externalPort = 3002
+localPort = 39179
+externalPort = 3001
 
 [[ports]]
 localPort = 41193
@@ -51,5 +51,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:5000"
+args = "php -S 0.0.0.0:5000 router.php"
 waitForPort = 5000
