@@ -8,7 +8,7 @@ channel = "stable-22_11"
 
 [deployment]
 run = ["php", "-S", "0.0.0.0:5000"]
-deploymentTarget = "autoscale"
+deploymentTarget = "vm"
 
 [[ports]]
 localPort = 5000
