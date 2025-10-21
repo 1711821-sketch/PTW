@@ -102,12 +102,13 @@ $current_version = $entry['version'] ?? 1;
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
         <div class="navbar-links">
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="create_sja.php">Opret ny SJA</a>
             <a href="view_wo.php">WO Oversigt</a>
             <a href="dashboard.php">Dashboard</a>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?></span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>

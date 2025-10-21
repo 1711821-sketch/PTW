@@ -147,10 +147,11 @@ function highlightDiff($val1, $val2) {
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
         <div class="navbar-links">
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="sja_history.php?id=<?php echo urlencode($id); ?>">← Tilbage til historik</a>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?></span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?></span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>

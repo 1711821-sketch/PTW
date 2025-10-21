@@ -401,6 +401,7 @@ if (isset($_GET['edit_message'])) {
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
         <div class="navbar-links">
             <a href="dashboard.php">Dashboard</a>
             <a href="view_wo.php">WO Oversigt</a>
@@ -408,7 +409,7 @@ if (isset($_GET['edit_message'])) {
             <a href="time_overblik.php">Timeoverblik</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">📱 SMS Notifikationer</a>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>

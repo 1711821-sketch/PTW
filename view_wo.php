@@ -1212,6 +1212,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?></span>
         <div class="navbar-links">
             <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
@@ -1223,7 +1224,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($role ?? ''); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>

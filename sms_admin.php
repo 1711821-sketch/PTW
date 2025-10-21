@@ -142,11 +142,12 @@ $recipients = $smsNotifier->getRecipients();
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
         <div class="navbar-links">
             <a href="view_wo.php">PTW-oversigt</a>
             <a href="admin.php">Admin</a>
             <a href="sms_admin.php">SMS Notifikationer</a>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>)</span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo htmlspecialchars($_SESSION['role']); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>

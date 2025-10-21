@@ -401,6 +401,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
         <div class="navbar-links">
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="view_wo.php">WO Oversigt</a>
@@ -409,7 +410,7 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
             <?php if ($role === 'admin'): ?>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>
