@@ -26,6 +26,10 @@ externalPort = 4200
 localPort = 44485
 externalPort = 3001
 
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
 [agent]
 expertMode = true
 integrations = ["javascript_object_storage:1.0.0"]
@@ -47,9 +51,9 @@ name = "PHP Server"
 author = "agent"
 
 [workflows.workflow.metadata]
-outputType = "webview"
+outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:5000"
-waitForPort = 5000
+args = "php -S 0.0.0.0:8080 -t ."
+waitForPort = 8080
