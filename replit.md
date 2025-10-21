@@ -8,13 +8,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
-  - **Kollapsibel godkendelseshistorik**: Godkendelseshistorik i print_wo.php er nu et fold-ud element for at spare plads
-  - Clickable header viser "📜 Godkendelseshistorik" med antal godkendelser (f.eks. "3 godkendelser")
-  - Toggle-ikon (▼) roterer når udvidet, blå/lilla baggrundsfarve med hover-effekt
-  - JavaScript toggleApprovalHistory() funktion for expand/collapse funktionalitet
-  - Historikken er som standard skjult/lukket, men kan udvides ved klik
-  - Print-funktionalitet sikrer at historikken altid vises ved print
-  - CSS-animation (slideDown) for glat åbning af sektionen
+  - **Kollapsible sektioner i print_wo.php**: Alle hovedsektioner er nu fold-ud elementer for bedre pladsudnyttelse
+  - **Basisinformation** (📋), **Godkendelsesproces** (✅), **Tilknyttede SJA'er** (📝), **Timeforbrug** (⏱️), og **Dokumentationsbilleder** (📸) er alle kollapsible
+  - Clickable headers med ikoner og toggle-pil (▼) der roterer ved udvid/luk
+  - Blå baggrundsfarve med hover-effekt på alle section headers
+  - Generisk JavaScript toggleSection(woId, sectionName) funktion for alle sektioner
+  - Alle sektioner er som standard skjult/lukket for at spare plads på siden
+  - Print-funktionalitet sikrer at alle sektioner altid vises ved print
+  - CSS-animation (slideDown) for glat åbning af sektionerne
+  - **Kollapsibel godkendelseshistorik**: Godkendelseshistorik er indlejret i Godkendelsesproces som et separat fold-ud element
+  - Lilla baggrundsfarve for historik-header, viser antal godkendelser (f.eks. "3 godkendelser")
 - **October 10, 2025**: 
   - Added visual sequential approval workflow widget showing the approval process flow (Opgaveansvarlig → Drift → Entreprenør)
   - New widget features color-coded status indicators (green=approved, blue=current user's turn, gray=pending)
