@@ -1,6 +1,5 @@
 {
     "require": {
-        "twilio/sdk": "^8.8",
-        "minishlink/web-push": "^9.0"
+        "twilio/sdk": "^8.8"
     }
 }
