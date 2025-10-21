@@ -142,26 +142,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image'])) {
         finfo_close($finfo);
         
         // Map MIME types to safe file extensions (NEVER use user-supplied extension)
-        // Extended format support for all smartphones and devices
+        // Extended format support for modern smartphones
+        // NOTE: Only formats that browsers can render natively are allowed
+        // NOTE: SVG excluded due to XSS security concerns
+        // NOTE: HEIC/HEIF/TIFF/BMP excluded as they cannot be displayed in standard browsers
         $mime_to_extension = [
             'image/jpeg' => 'jpg',
             'image/jpg' => 'jpg',
             'image/png' => 'png',
             'image/gif' => 'gif',
             'image/webp' => 'webp',
-            'image/heic' => 'heic',
-            'image/heif' => 'heif',
-            'image/heic-sequence' => 'heic',
-            'image/heif-sequence' => 'heif',
-            'image/bmp' => 'bmp',
-            'image/x-ms-bmp' => 'bmp',
-            'image/tiff' => 'tiff',
-            'image/svg+xml' => 'svg',
             'image/avif' => 'avif'
         ];
         
         if (!isset($mime_to_extension[$mime_type])) {
-            $upload_error = 'Kun billedfiler (JPEG, PNG, GIF, WebP, HEIC, BMP, TIFF, SVG, AVIF) er tilladt.';
+            $upload_error = 'Kun billedfiler der kan vises i browsere er tilladt (JPEG, PNG, GIF, WebP, AVIF). iPhone-brugere: Indstil kameraet til at gemme som JPEG i Indstillinger → Kamera → Formater → Mest kompatibel.';
         }
         // Validate file size (max 50MB for high-resolution smartphone images)
         elseif ($file['size'] > 52428800) {
@@ -460,6 +455,11 @@ if ($statusVal === 'planning') {
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            /* Hide delete buttons when printing */
+            .image-card form[method="POST"] {
+                display: none !important;
+            }
+            
             /* Show all collapsible sections when printing */
             .collapsible-section-content,
             .approval-history-section {
@@ -683,7 +683,7 @@ if ($statusVal === 'planning') {
     <?php if ($canUpload): ?>
         <div class="upload-section" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
             <h3 style="margin-top: 0; font-size: 1.1em;">Upload dokumentationsbilleder</h3>
-            <p style="margin-bottom: 1rem; color: #666;">Upload billeder for at dokumentere afsluttet arbejde. Tilladt: JPEG, PNG, GIF, WebP (maks. 10MB)</p>
+            <p style="margin-bottom: 1rem; color: #666;">Upload billeder for at dokumentere afsluttet arbejde. Tilladt: JPEG, PNG, GIF, WebP, AVIF (maks. 50MB). <strong>iPhone-brugere:</strong> Indstil kameraet til at gemme som JPEG i Indstillinger → Kamera → Formater → Mest kompatibel.</p>
             
             <?php if ($upload_message): ?>
                 <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; border-radius: 4px;">
@@ -694,6 +694,18 @@ if ($statusVal === 'planning') {
             <?php if ($upload_error): ?>
                 <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 4px;">
                     ❌ <?php echo htmlspecialchars($upload_error); ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($delete_message): ?>
+                <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; border-radius: 4px;">
+                    ✅ <?php echo htmlspecialchars($delete_message); ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($delete_error): ?>
+                <div style="padding: 0.75rem; margin-bottom: 1rem; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; border-radius: 4px;">
+                    ❌ <?php echo htmlspecialchars($delete_error); ?>
                 </div>
             <?php endif; ?>
             
@@ -718,8 +730,19 @@ if ($statusVal === 'planning') {
                              alt="Dokumentationsbillede" 
                              style="width: 100%; height: 200px; object-fit: cover; display: block;">
                     </a>
-                    <div style="padding: 0.5rem; background-color: #f8f9fa; font-size: 0.85em; color: #666; text-align: center;">
-                        Klik for at se i fuld størrelse
+                    <div style="padding: 0.5rem; background-color: #f8f9fa; font-size: 0.85em; color: #666;">
+                        <div style="text-align: center; margin-bottom: 0.5rem;">
+                            Klik for at se i fuld størrelse
+                        </div>
+                        <?php if ($canUpload): ?>
+                            <form method="POST" style="margin: 0;" onsubmit="return confirm('Er du sikker på, at du vil slette dette billede? Denne handling kan ikke fortrydes.');">
+                                <input type="hidden" name="image_filename" value="<?php echo htmlspecialchars($image_filename); ?>">
+                                <button type="submit" name="delete_image" value="1" 
+                                        style="width: 100%; padding: 0.4rem; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; font-weight: 500;">
+                                    🗑️ Slet billede
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
