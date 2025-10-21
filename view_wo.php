@@ -107,6 +107,30 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         if ($updated) {
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
+            
+            // Check if all three approvals are complete (Opgaveansvarlig, Drift, Entreprenor)
+            $allApproved = isset($approvals['opgaveansvarlig']) && 
+                          isset($approvals['drift']) && 
+                          isset($approvals['entreprenor']);
+            
+            // Send push notification to entrepreneur when Drift approves (making it ready for entrepreneur approval)
+            if ($approveRoleLc === 'drift' && !isset($approvals['entreprenor'])) {
+                require_once 'push_send.php';
+                $notifTitle = '🔔 PTW klar til godkendelse';
+                $notifBody = 'PTW ' . ($workOrder['work_order_no'] ?? $approveId) . ' er godkendt af Drift og klar til din godkendelse.';
+                $notifUrl = '/print_wo.php?id=' . $approveId;
+                sendPushToEntrepreneurFirma($workOrder['entreprenor_firma'], $notifTitle, $notifBody, $notifUrl);
+            }
+            
+            // Send notification when PTW becomes fully active (all three approved)
+            if ($allApproved) {
+                require_once 'push_send.php';
+                $notifTitle = '✅ PTW Aktiv';
+                $notifBody = 'PTW ' . ($workOrder['work_order_no'] ?? $approveId) . ' er nu fuldt godkendt og aktiv. Du kan begynde arbejdet.';
+                $notifUrl = '/print_wo.php?id=' . $approveId;
+                sendPushToEntrepreneurFirma($workOrder['entreprenor_firma'], $notifTitle, $notifBody, $notifUrl);
+            }
+            
             echo json_encode([
                 'success' => true,
                 'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.'

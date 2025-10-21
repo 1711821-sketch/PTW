@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arbejdstilladelse-v2';
+const CACHE_NAME = 'arbejdstilladelse-v3';
 const urlsToCache = [
   '/',
   '/index.php',
@@ -37,6 +37,61 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Handle push notifications
+self.addEventListener('push', (event) => {
+  if (!event.data) {
+    return;
+  }
+  
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: data.icon || '/icon-192.png',
+    badge: '/icon-192.png',
+    vibrate: [200, 100, 200],
+    data: {
+      url: data.url || '/view_wo.php'
+    },
+    actions: [
+      { action: 'open', title: 'Åbn PTW' },
+      { action: 'close', title: 'Luk' }
+    ],
+    requireInteraction: true
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  if (event.action === 'close') {
+    return;
+  }
+  
+  const urlToOpen = event.notification.data.url;
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        // Check if there's already a window open with the app
+        for (let i = 0; i < windowClients.length; i++) {
+          const client = windowClients[i];
+          if (client.url.includes(urlToOpen.split('?')[0]) && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If not, open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
 });
 
 self.addEventListener('fetch', (event) => {
