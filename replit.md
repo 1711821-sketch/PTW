@@ -8,11 +8,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
-  - **Ultra-Compact Dot Menu Navigation**: Replaced hamburger menu with modern 3-dot vertical menu on mobile
-    - Changed from 3 horizontal lines (☰) to 3 vertical dots (⋮) for more modern, compact design
-    - Reduced mobile menu button size from 48x48px to 36x36px (25% smaller footprint)
-    - Updated hover and active-state animations with subtle scaling effects
-    - Touch-friendly with improved gap-based spacing for better visual clarity
+  - **Ultra-Compact Mobile Header with Inline Navigation**: Completely redesigned mobile navigation for maximum space efficiency
+    - Replaced fixed hamburger menu with inline dot menu (⋮) positioned in navbar flow
+    - Compact header structure: Dot menu (⋮) | Username - all in one clean line
+    - Username always visible in mobile header (removed from foldable menu to avoid duplication)
+    - Reduced menu button size from 48x48px to 36x36px (25% smaller footprint)
+    - Sticky navbar with optimal 52px height for mobile devices
+    - Foldable menu contains only navigation links + log out (username moved to header)
+    - Backwards compatible with all existing pages using legacy navbar markup
+    - Desktop view unchanged: full "Logget ind som [name] (role)" text shown in navbar
   - **PWA App Icon Update**: Replaced app icons with new professional design featuring safety helmet and PTW branding
     - New icon-192.png (13 KB) and icon-512.png (133 KB) created with blue background and white safety helmet logo
     - Service worker cache version updated to 'arbejdstilladelse-v3' to force client updates
