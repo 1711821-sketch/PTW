@@ -98,6 +98,22 @@ async function unsubscribeFromPush() {
         const subscription = await registration.pushManager.getSubscription();
         
         if (subscription) {
+            // Send unsubscribe request to backend to remove from database
+            try {
+                await fetch('/push_unsubscribe.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        endpoint: subscription.endpoint
+                    })
+                });
+            } catch (backendError) {
+                console.error('Failed to remove subscription from backend:', backendError);
+            }
+            
+            // Unsubscribe from browser
             await subscription.unsubscribe();
             console.log('Unsubscribed from push notifications');
         }

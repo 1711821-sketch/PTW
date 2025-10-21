@@ -1251,6 +1251,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <?php endif; ?>
             <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
+            <a href="notification_settings.php">Notifikationer</a>
             <?php if ($role === 'admin'): ?>
                 <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>

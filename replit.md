@@ -8,6 +8,20 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
+  - **Web Push Notifications System**:
+    - Implementeret komplet push notification system baseret på Web Push API med VAPID authentication
+    - Brugere kan aktivere/deaktivere notifikationer via notification_settings.php
+    - Service worker (service-worker.js) håndterer push events og notification clicks
+    - Backend endpoints: push_subscribe.php (gem subscriptions), push_unsubscribe.php (fjern subscriptions), push_send.php (send notifikationer)
+    - Database tabel `push_subscriptions` gemmer endpoint, p256dh_key, auth_token for hver enhed
+    - Automatisk notifikation til entreprenører når drift godkender PTW (afventer entreprenør godkendelse)
+    - Automatisk notifikation til entreprenører når alle tre roller har godkendt (PTW er aktiv)
+    - Notifikationer sendes til alle entreprenører i firmaet via sendPushToEntrepreneurs() funktion
+    - Frontend JavaScript (push_notifications.js) håndterer permission requests og subscription management
+    - VAPID keys genereret og gemt i push_config.php (ikke i git)
+    - Expired subscriptions fjernes automatisk efter failed delivery attempts
+    - Navigation links til "Notifikationer" tilføjet i view_wo.php, dashboard.php, map_wo.php
+    - web-push-php bibliotek brugt til server-side push notification sending
   - **Billedsletning og udvidet formatunderstøttelse (print_wo.php)**:
     - Entreprenører kan nu slette uploadede billeder med bekræftelsesdialog
     - Filstørrelsesgrænse øget fra 10MB til 50MB for højopløselige smartphone-billeder
@@ -95,6 +109,7 @@ Preferred communication style: Simple, everyday language.
 ### Core Features
 - **Role-Based Access Control**: Differentiated access for Admin, Entrepreneur, Task Manager, and Operations. Entrepreneurs can only view approved, active work orders relevant to their firm.
 - **Approval Workflow**: Multi-stage approval process (entrepreneur, task manager, operations) with timestamped history and status tracking.
+- **Push Notifications**: Web Push notification system sends real-time alerts to entrepreneurs when PTW approval status changes. Users can enable/disable notifications per device via settings page.
 - **Data Management**: Structured PTW data, risk assessment forms (SJA), and user management with company associations.
 - **Time Tracking**: Contractors register daily hours on work permits; admins have a comprehensive reporting page (`time_overblik.php`) with filtering, statistics, and charts.
 - **SJA Version History**: Automatic versioning for SJA edits, historical snapshots with metadata, version viewing, and side-by-side comparison.
@@ -107,8 +122,11 @@ Preferred communication style: Simple, everyday language.
 - **Web Standards**: HTML5, CSS3, JavaScript.
 
 ### Database Dependencies
-- **PostgreSQL**: Primary database for all persistent project data.
+- **PostgreSQL**: Primary database for all persistent project data (work orders, SJA, time tracking, users, push subscriptions).
 - **Neon PostgreSQL**: Managed PostgreSQL database service via Replit integration.
+
+### External Libraries
+- **web-push-php**: PHP library for sending Web Push notifications with VAPID authentication (installed via Composer).
 
 ### Asset Management
 - **Google Fonts**: Inter font family for typography.
