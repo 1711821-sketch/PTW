@@ -1706,6 +1706,10 @@ p {
         top: 0;
         min-height: 44px;
         gap: 0.5rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        z-index: 100;
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow-md);
     }
     
     /* Mobile username display next to dot menu */
@@ -3574,6 +3578,9 @@ div.custom-marker-black::before {
     /* Navigation - mobile first */
     .navbar {
         padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow-md);
     }
     
     .navbar-links {
