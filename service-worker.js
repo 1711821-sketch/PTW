@@ -1,4 +1,4 @@
-const CACHE_NAME = 'arbejdstilladelse-v2';
+const CACHE_NAME = 'arbejdstilladelse-v3';
 const urlsToCache = [
   '/',
   '/index.php',
