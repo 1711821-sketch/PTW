@@ -57,8 +57,8 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
     
     ?>
     <div class="card-approval-workflow">
-        <div class="card-approval-header" onclick="toggleApprovalWorkflow(<?php echo $entry['id']; ?>)">
-            <h4>✅ Godkendelsesproces</h4>
+        <div class="card-section-header" onclick="toggleApprovalWorkflow(<?php echo $entry['id']; ?>)">
+            <h2>✅ Godkendelsesproces</h2>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="approval-summary"><?php echo $statusText; ?></span>
                 <span class="toggle-icon" id="approval-icon-<?php echo $entry['id']; ?>">▼</span>
@@ -170,27 +170,6 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
         .card-approval-workflow {
             padding: 0;
             margin-bottom: 0.75rem;
-        }
-
-        .card-approval-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: rgba(16, 185, 129, 0.03);
-            border-radius: 6px;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .card-approval-header:hover {
-            background: rgba(16, 185, 129, 0.06);
-        }
-
-        .card-approval-workflow h4 {
-            margin: 0;
-            font-size: 0.95rem;
-            color: var(--text-primary);
         }
         
         .approval-summary {
