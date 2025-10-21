@@ -7,6 +7,14 @@ A web-based PTW (Permit To Work) system designed for coordinating work between a
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+- **October 21, 2025**:
+  - **Kollapsibel godkendelseshistorik**: Godkendelseshistorik i print_wo.php er nu et fold-ud element for at spare plads
+  - Clickable header viser "📜 Godkendelseshistorik" med antal godkendelser (f.eks. "3 godkendelser")
+  - Toggle-ikon (▼) roterer når udvidet, blå/lilla baggrundsfarve med hover-effekt
+  - JavaScript toggleApprovalHistory() funktion for expand/collapse funktionalitet
+  - Historikken er som standard skjult/lukket, men kan udvides ved klik
+  - Print-funktionalitet sikrer at historikken altid vises ved print
+  - CSS-animation (slideDown) for glat åbning af sektionen
 - **October 10, 2025**: 
   - Added visual sequential approval workflow widget showing the approval process flow (Opgaveansvarlig → Drift → Entreprenør)
   - New widget features color-coded status indicators (green=approved, blue=current user's turn, gray=pending)
