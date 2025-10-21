@@ -296,7 +296,22 @@ body {
     transform: translateY(0);
 }
 
-.navbar .nav-user {
+/* Base username styling (for legacy pages) */
+.navbar .nav-user,
+.navbar-links .nav-user {
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* Mobile username (just name) - hidden on desktop */
+.navbar .nav-user-mobile {
+    display: none;
+}
+
+/* Desktop username (full text with role) - uses base styling */
+.navbar-links .nav-user-desktop {
     margin-left: auto;
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.9);
@@ -1635,27 +1650,41 @@ p {
     /* Mobile navigation - Show dot menu, hide desktop nav */
     .navbar-toggle {
         display: flex !important; /* Show dot menu on mobile */
-        position: fixed;
-        top: 0.75rem;
-        right: 0.75rem;
-        z-index: 1001;
-        background: rgba(30, 64, 175, 0.95);
+        position: relative;
+        background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(10px);
         border-radius: 8px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-sm);
         min-height: 36px;
         min-width: 36px;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        z-index: 10;
     }
     
     .navbar {
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
-        position: relative;
-        min-height: 60px;
+        position: sticky;
+        top: 0;
+        min-height: 52px;
+        gap: 0.75rem;
+    }
+    
+    /* Mobile username display next to dot menu */
+    .navbar .nav-user-mobile {
+        display: inline-block !important;
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.95);
+        flex-shrink: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     
     /* Hide navigation links by default on mobile */
@@ -1717,18 +1746,9 @@ p {
         box-shadow: var(--shadow-sm);
     }
     
-    .navbar-links .nav-user {
-        width: 100%;
-        margin: 0.5rem 0;
-        font-size: 0.85rem;
-        font-weight: 400;
-        padding: 0.75rem 1.25rem;
-        text-align: center;
-        border-top: 2px solid rgba(255, 255, 255, 0.2);
-        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-md);
-        color: rgba(255, 255, 255, 0.9);
+    /* Hide desktop username from foldable menu (mobile shows username in header) */
+    .navbar-links .nav-user-desktop {
+        display: none !important;
     }
     
     .navbar-links .logout-link {

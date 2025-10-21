@@ -564,6 +564,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
             <span class="hamburger-line"></span>
             <span class="hamburger-line"></span>
         </button>
+        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
         <div class="navbar-links">
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
                 <a href="create_wo.php">Opret PTW</a>
@@ -575,7 +576,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                 <a href="time_overblik.php">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
-            <span class="nav-user">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
+            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
             <a class="logout-link" href="logout.php">Log ud</a>
         </div>
     </nav>
