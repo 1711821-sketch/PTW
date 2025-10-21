@@ -213,9 +213,10 @@ const PushNotificationManager = {
 
 // Auto-prompt for entrepreneurs after 5 seconds if not already subscribed
 document.addEventListener('DOMContentLoaded', async () => {
-    // Only show for entrepreneurs
+    // Only show for entrepreneurs (normalize text for case-insensitive match)
     const userRole = document.querySelector('.nav-user')?.textContent;
-    if (!userRole || !userRole.includes('entreprenor')) {
+    const normalizedRole = userRole?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!normalizedRole || !normalizedRole.includes('entreprenor')) {
         return;
     }
     
