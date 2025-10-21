@@ -260,6 +260,72 @@ if ($statusVal === 'planning') {
             th { width: 100%; }
         }
         
+        /* Collapsible approval history styling */
+        .card-approval-history {
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+        
+        .card-history-header:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .card-history-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            border-bottom: none;
+            padding: 0;
+        }
+        
+        .history-count {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        .toggle-icon {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+        
+        .approval-history-section {
+            display: none;
+            margin-top: 0.75rem;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .approval-history-section.expanded {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+        
         @media print {
             .action-buttons, .navbar, .upload-section { display: none; }
             body { margin: 0; }
@@ -267,6 +333,14 @@ if ($statusVal === 'planning') {
             h2 { font-size: 1.2em; border-color: #000; }
             .image-gallery {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            /* Show approval history when printing */
+            .approval-history-section {
+                display: block !important;
+            }
+            .toggle-icon {
+                display: none;
             }
         }
     </style>
@@ -319,24 +393,34 @@ if ($statusVal === 'planning') {
     ?>
     
     <?php if (!empty($entry['approval_history']) && is_array($entry['approval_history'])): ?>
-        <h2>Godkendelseshistorik</h2>
-        <table>
-            <tr><th>Tidspunkt</th><th>Bruger</th><th>Rolle</th></tr>
-            <?php foreach ($entry['approval_history'] as $hist): ?>
-                <tr>
-                    <td data-label="Tidspunkt"><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
-                    <td data-label="Bruger"><?php 
-                        $userDisplay = htmlspecialchars($hist['user'] ?? '');
-                        // If this is an entrepreneur approval and company name is available, show it
-                        if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
-                            $userDisplay .= ' (' . htmlspecialchars($hist['company']) . ')';
-                        }
-                        echo $userDisplay;
-                    ?></td>
-                    <td data-label="Rolle"><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+        <div class="card-approval-history">
+            <div class="card-history-header" onclick="toggleApprovalHistory(<?php echo $entry['id']; ?>)">
+                <h2>📜 Godkendelseshistorik</h2>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="history-count"><?php echo count($entry['approval_history']); ?> godkendelser</span>
+                    <span class="toggle-icon" id="history-icon-<?php echo $entry['id']; ?>">▼</span>
+                </div>
+            </div>
+            <div class="approval-history-section" id="history-section-<?php echo $entry['id']; ?>">
+                <table>
+                    <tr><th>Tidspunkt</th><th>Bruger</th><th>Rolle</th></tr>
+                    <?php foreach ($entry['approval_history'] as $hist): ?>
+                        <tr>
+                            <td data-label="Tidspunkt"><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
+                            <td data-label="Bruger"><?php 
+                                $userDisplay = htmlspecialchars($hist['user'] ?? '');
+                                // If this is an entrepreneur approval and company name is available, show it
+                                if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
+                                    $userDisplay .= ' (' . htmlspecialchars($hist['company']) . ')';
+                                }
+                                echo $userDisplay;
+                            ?></td>
+                            <td data-label="Rolle"><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        </div>
     <?php endif; ?>
 
     <!-- Section for displaying SJA entries linked to this WO -->
@@ -484,5 +568,35 @@ if ($statusVal === 'planning') {
     <?php endif; ?>
     
     </div><!-- /.container -->
+    
+    <script>
+        // Toggle approval history section
+        function toggleApprovalHistory(woId) {
+            const section = document.getElementById(`history-section-${woId}`);
+            const icon = document.getElementById(`history-icon-${woId}`);
+            
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                section.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+        
+        // Toggle approval workflow section
+        function toggleApprovalWorkflow(woId) {
+            const section = document.getElementById(`approval-section-${woId}`);
+            const icon = document.getElementById(`approval-icon-${woId}`);
+            
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                icon.classList.remove('expanded');
+            } else {
+                section.classList.add('expanded');
+                icon.classList.add('expanded');
+            }
+        }
+    </script>
 </body>
 </html>
