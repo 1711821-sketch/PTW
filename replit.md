@@ -8,6 +8,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 21, 2025**:
+  - **Ultra-Compact Dot Menu Navigation**: Replaced hamburger menu with modern 3-dot vertical menu on mobile
+    - Changed from 3 horizontal lines (☰) to 3 vertical dots (⋮) for more modern, compact design
+    - Reduced mobile menu button size from 48x48px to 36x36px (25% smaller footprint)
+    - Updated hover and active-state animations with subtle scaling effects
+    - Touch-friendly with improved gap-based spacing for better visual clarity
   - **PWA App Icon Update**: Replaced app icons with new professional design featuring safety helmet and PTW branding
     - New icon-192.png (13 KB) and icon-512.png (133 KB) created with blue background and white safety helmet logo
     - Service worker cache version updated to 'arbejdstilladelse-v3' to force client updates
