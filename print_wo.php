@@ -436,52 +436,42 @@ if ($statusVal === 'planning') {
         </div>
     </div>
     
-    <div class="card-collapsible-section">
-        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'approval')">
-            <h2>✅ Godkendelsesproces</h2>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span class="toggle-icon" id="approval-icon-<?php echo $entry['id']; ?>">▼</span>
-            </div>
-        </div>
-        <div class="collapsible-section-content" id="approval-section-<?php echo $entry['id']; ?>">
     <?php 
-    // Display visual approval workflow widget
+    // Display visual approval workflow widget (already has its own collapsible wrapper)
     $today = date('d-m-Y');
     renderApprovalWorkflowWidget($entry, $role, $today, $compact = false); 
     ?>
     
     <?php if (!empty($entry['approval_history']) && is_array($entry['approval_history'])): ?>
-        <div class="card-approval-history">
-            <div class="card-history-header" onclick="toggleApprovalHistory(<?php echo $entry['id']; ?>)">
-                <h2>📜 Godkendelseshistorik</h2>
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span class="history-count"><?php echo count($entry['approval_history']); ?> godkendelser</span>
-                    <span class="toggle-icon" id="history-icon-<?php echo $entry['id']; ?>">▼</span>
-                </div>
-            </div>
-            <div class="approval-history-section" id="history-section-<?php echo $entry['id']; ?>">
-                <table>
-                    <tr><th>Tidspunkt</th><th>Bruger</th><th>Rolle</th></tr>
-                    <?php foreach ($entry['approval_history'] as $hist): ?>
-                        <tr>
-                            <td data-label="Tidspunkt"><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
-                            <td data-label="Bruger"><?php 
-                                $userDisplay = htmlspecialchars($hist['user'] ?? '');
-                                // If this is an entrepreneur approval and company name is available, show it
-                                if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
-                                    $userDisplay .= ' (' . htmlspecialchars($hist['company']) . ')';
-                                }
-                                echo $userDisplay;
-                            ?></td>
-                            <td data-label="Rolle"><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </table>
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'history')">
+            <h2>📜 Godkendelseshistorik</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="history-count"><?php echo count($entry['approval_history']); ?> godkendelser</span>
+                <span class="toggle-icon" id="history-icon-<?php echo $entry['id']; ?>">▼</span>
             </div>
         </div>
-    <?php endif; ?>
+        <div class="collapsible-section-content" id="history-section-<?php echo $entry['id']; ?>">
+            <table>
+                <tr><th>Tidspunkt</th><th>Bruger</th><th>Rolle</th></tr>
+                <?php foreach ($entry['approval_history'] as $hist): ?>
+                    <tr>
+                        <td data-label="Tidspunkt"><?php echo htmlspecialchars($hist['timestamp'] ?? ''); ?></td>
+                        <td data-label="Bruger"><?php 
+                            $userDisplay = htmlspecialchars($hist['user'] ?? '');
+                            // If this is an entrepreneur approval and company name is available, show it
+                            if (($hist['role'] ?? '') === 'entreprenor' && !empty($hist['company'])) {
+                                $userDisplay .= ' (' . htmlspecialchars($hist['company']) . ')';
+                            }
+                            echo $userDisplay;
+                        ?></td>
+                        <td data-label="Rolle"><?php echo htmlspecialchars($hist['role'] ?? ''); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- Section for displaying SJA entries linked to this WO -->
     <div class="card-collapsible-section">
@@ -657,10 +647,10 @@ if ($statusVal === 'planning') {
     </div><!-- /.container -->
     
     <script>
-        // Toggle approval history section
-        function toggleApprovalHistory(woId) {
-            const section = document.getElementById(`history-section-${woId}`);
-            const icon = document.getElementById(`history-icon-${woId}`);
+        // Generic toggle function for all collapsible sections
+        function toggleSection(woId, sectionName) {
+            const section = document.getElementById(`${sectionName}-section-${woId}`);
+            const icon = document.getElementById(`${sectionName}-icon-${woId}`);
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
@@ -671,10 +661,10 @@ if ($statusVal === 'planning') {
             }
         }
         
-        // Generic toggle function for all collapsible sections
-        function toggleSection(woId, sectionName) {
-            const section = document.getElementById(`${sectionName}-section-${woId}`);
-            const icon = document.getElementById(`${sectionName}-icon-${woId}`);
+        // Toggle approval workflow section (for approval_workflow_widget.php)
+        function toggleApprovalWorkflow(woId) {
+            const section = document.getElementById(`approval-section-${woId}`);
+            const icon = document.getElementById(`approval-icon-${woId}`);
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
