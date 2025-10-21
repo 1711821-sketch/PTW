@@ -224,44 +224,43 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* Hamburger menu button - hidden by default, shown only on mobile */
+/* Dot menu button (3 vertical dots) - hidden by default, shown only on mobile */
 .navbar-toggle {
     display: none;
     flex-direction: column;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border-radius: var(--radius-sm);
     transition: var(--transition);
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     touch-action: manipulation;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
 }
 
 .navbar-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .hamburger-line {
-    width: 25px;
-    height: 3px;
+    width: 5px;
+    height: 5px;
     background-color: #fff;
-    margin: 3px 0;
+    border-radius: 50%;
     transition: var(--transition);
-    border-radius: 2px;
 }
 
-/* Hamburger animation when active */
-.navbar-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
+/* Dot menu animation when active - subtle scale effect */
+.navbar-toggle.active .hamburger-line {
+    background-color: #fff;
+    transform: scale(1.1);
 }
 
 .navbar-toggle.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.navbar-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
+    transform: scale(1.3);
 }
 
 /* Navigation links container */
@@ -1633,19 +1632,19 @@ p {
         padding: 1rem 0;
     }
     
-    /* Mobile navigation - Show hamburger, hide desktop nav */
+    /* Mobile navigation - Show dot menu, hide desktop nav */
     .navbar-toggle {
-        display: flex !important; /* Show hamburger menu on mobile */
+        display: flex !important; /* Show dot menu on mobile */
         position: fixed;
         top: 0.75rem;
         right: 0.75rem;
         z-index: 1001;
-        background: rgba(30, 64, 175, 0.9);
+        background: rgba(30, 64, 175, 0.95);
         backdrop-filter: blur(10px);
         border-radius: 8px;
         box-shadow: var(--shadow-md);
-        min-height: 48px;
-        min-width: 48px;
+        min-height: 36px;
+        min-width: 36px;
         align-items: center;
         justify-content: center;
     }
