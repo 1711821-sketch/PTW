@@ -334,6 +334,39 @@ body {
     box-shadow: var(--shadow-md);
 }
 
+/* Mobile navbar wrapper - visible container for hamburger and mobile username */
+.navbar-mobile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Mobile-specific navbar layout */
+@media (max-width: 768px) {
+    .navbar-mobile {
+        justify-content: space-between;
+        width: 100%;
+    }
+    
+    /* Show hamburger menu on mobile */
+    .navbar-toggle {
+        display: flex;
+    }
+    
+    /* Show mobile username */
+    .navbar .nav-user-mobile {
+        display: block;
+        font-weight: 600;
+        color: white;
+        font-size: 1rem;
+    }
+    
+    /* Hide desktop username on mobile */
+    .navbar-links .nav-user-desktop {
+        display: none;
+    }
+}
+
 /* Modern table styles */
 table {
     width: 100%;

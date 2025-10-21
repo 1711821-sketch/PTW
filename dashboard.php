@@ -559,12 +559,14 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
 <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <button class="navbar-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-        </button>
-        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
+        <div class="navbar-mobile">
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
+        </div>
         <div class="navbar-links">
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
                 <a href="create_wo.php">Opret PTW</a>

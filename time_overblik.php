@@ -396,12 +396,14 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
 </head>
 <body>
     <nav class="navbar">
-        <button class="navbar-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-        </button>
-        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
+        <div class="navbar-mobile">
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
+        </div>
         <div class="navbar-links">
             <a href="view_sja.php">SJA Oversigt</a>
             <a href="view_wo.php">WO Oversigt</a>

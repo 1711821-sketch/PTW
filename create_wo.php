@@ -230,12 +230,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <body>
     <!-- Top navigation bar with hamburger menu -->
     <nav class="navbar">
-        <button class="navbar-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-            <span class="hamburger-line"></span>
-        </button>
-        <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?></span>
+        <div class="navbar-mobile">
+            <button class="navbar-toggle" aria-label="Toggle navigation">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?></span>
+        </div>
         <div class="navbar-links">
             <a href="view_wo.php">PTW-oversigt</a>
             <?php if (in_array($role ?? '', ['admin','opgaveansvarlig','drift'])): ?>
