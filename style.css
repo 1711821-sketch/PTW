@@ -1725,13 +1725,34 @@ p {
         white-space: nowrap;
     }
     
+    /* Backdrop overlay when menu is open */
+    .navbar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
+        pointer-events: auto;
+    }
+    
+    .navbar-backdrop.active {
+        display: block;
+        opacity: 1;
+    }
+    
     /* Hide navigation links by default on mobile */
     .navbar-links {
         display: none; /* Hidden by default */
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
+        width: 280px;
+        max-width: 85%;
         height: 100vh;
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
         flex-direction: column;
@@ -1741,6 +1762,7 @@ p {
         backdrop-filter: blur(20px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        transform: translateX(-100%);
     }
     
     /* Show navigation links when active with slide-in animation */

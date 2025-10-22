@@ -13,70 +13,65 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Add click event listener to hamburger button
-    hamburgerButton.addEventListener('click', function() {
-        // Toggle active class on hamburger button for animation
-        hamburgerButton.classList.toggle('active');
+    // Create backdrop element dynamically
+    const backdrop = document.createElement('div');
+    backdrop.className = 'navbar-backdrop';
+    document.body.appendChild(backdrop);
+    
+    // Function to close the menu
+    function closeMenu() {
+        hamburgerButton.classList.remove('active');
+        navbarLinks.classList.remove('active');
+        backdrop.classList.remove('active');
         
-        // Toggle active class on navbar links to show/hide menu
-        navbarLinks.classList.toggle('active');
-        
-        // Hide PTW counter when menu is open, show when closed
+        // Show PTW counter again when menu closes
         const cardCounter = document.querySelector('.card-counter');
         if (cardCounter) {
-            if (navbarLinks.classList.contains('active')) {
-                cardCounter.classList.add('hidden-by-menu');
-            } else {
-                cardCounter.classList.remove('hidden-by-menu');
-            }
+            cardCounter.classList.remove('hidden-by-menu');
         }
+    }
+    
+    // Function to open the menu
+    function openMenu() {
+        hamburgerButton.classList.add('active');
+        navbarLinks.classList.add('active');
+        backdrop.classList.add('active');
+        
+        // Hide PTW counter when menu is open
+        const cardCounter = document.querySelector('.card-counter');
+        if (cardCounter) {
+            cardCounter.classList.add('hidden-by-menu');
+        }
+    }
+    
+    // Add click event listener to hamburger button
+    hamburgerButton.addEventListener('click', function() {
+        // Toggle menu state
+        if (navbarLinks.classList.contains('active')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+    
+    // Close menu when clicking on the backdrop
+    backdrop.addEventListener('click', function() {
+        closeMenu();
     });
     
     // Close menu when clicking on a navigation link (better UX on mobile)
     const navLinks = navbarLinks.querySelectorAll('a');
     navLinks.forEach(function(link) {
         link.addEventListener('click', function() {
-            // Close the menu when a link is clicked
-            hamburgerButton.classList.remove('active');
-            navbarLinks.classList.remove('active');
-            
-            // Show PTW counter again when menu closes
-            const cardCounter = document.querySelector('.card-counter');
-            if (cardCounter) {
-                cardCounter.classList.remove('hidden-by-menu');
-            }
+            closeMenu();
         });
-    });
-    
-    // Close menu when clicking outside of navigation (optional enhancement)
-    document.addEventListener('click', function(event) {
-        const isClickInsideNav = navbarLinks.contains(event.target) || hamburgerButton.contains(event.target);
-        
-        // If click is outside navigation and menu is open, close it
-        if (!isClickInsideNav && navbarLinks.classList.contains('active')) {
-            hamburgerButton.classList.remove('active');
-            navbarLinks.classList.remove('active');
-            
-            // Show PTW counter again when menu closes
-            const cardCounter = document.querySelector('.card-counter');
-            if (cardCounter) {
-                cardCounter.classList.remove('hidden-by-menu');
-            }
-        }
     });
     
     // Handle window resize - ensure menu state is correct when switching between desktop/mobile
     window.addEventListener('resize', function() {
         // If window becomes larger than mobile breakpoint, ensure menu is in correct state
         if (window.innerWidth > 480) {
-            hamburgerButton.classList.remove('active');
-            navbarLinks.classList.remove('active');
-            
-            // Show PTW counter again when switching to desktop view
-            const cardCounter = document.querySelector('.card-counter');
-            if (cardCounter) {
-                cardCounter.classList.remove('hidden-by-menu');
-            }
+            closeMenu();
         }
     });
 });
