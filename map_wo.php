@@ -264,6 +264,22 @@ try {
             background: white !important;
         }
         
+        /* Fix z-index for mobile menu - ensure backdrop covers map */
+        @media (max-width: 768px) {
+            .navbar-backdrop {
+                z-index: 999 !important;
+            }
+            
+            .navbar-links {
+                z-index: 1000 !important;
+            }
+            
+            .map-container {
+                position: relative;
+                z-index: 1;
+            }
+        }
+        
         .map-info {
             position: absolute;
             bottom: 1rem;
