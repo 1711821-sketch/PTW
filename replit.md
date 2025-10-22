@@ -7,6 +7,17 @@ A web-based PTW (Permit To Work) system designed for coordinating work between a
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+- **October 22, 2025**:
+  - **Email Notifications for New User Registrations**:
+    - Implemented SendGrid email integration via Replit connector for automatic admin notifications
+    - Created `email_helper.php` with SendGrid API v3 integration using Replit connector pattern
+    - Admin receives professional HTML email at edin.zubcevic@interterminals.dk when new users register
+    - Email includes username, role, and firma (for entrepreneurs) with direct link to admin panel
+    - Error handling logs failures without blocking user registration flow
+    - Requires SendGrid sender identity verification for edin.zubcevic@interterminals.dk before production use
+    - Security: Uses Replit connector credentials (REPL_IDENTITY/WEB_REPL_RENEWAL tokens) for API key management
+  - **Navigation Menu Fix**: Corrected hamburger menu links in time_overblik.php to match other pages (PTW-oversigt, Opret ny PTW, Kort, Dashboard, Timeoverblik, Admin)
+  - **Emergency Admin Creation**: Resolved production database login issue by creating admin user directly in production database (emergency script subsequently deleted for security)
 - **October 21, 2025**:
   - **Ultra-Compact Mobile Header with Inline Navigation**: Completely redesigned mobile navigation for maximum space efficiency
     - Replaced fixed hamburger menu with inline dot menu (⋮) positioned in navbar flow
@@ -105,6 +116,7 @@ Preferred communication style: Simple, everyday language.
 - **Data Storage**: PostgreSQL database for all persistent data (work orders, SJA entries, time tracking, user management).
 - **Authentication**: Password hashing (bcrypt), role-based access control, PHP sessions for user state.
 - **Database Layer**: Custom PDO-based class for secure queries.
+- **Email Notifications**: SendGrid integration via Replit connector for transactional emails (admin notifications for new user registrations).
 
 ### Core Features
 - **Role-Based Access Control**: Differentiated access for Admin, Entrepreneur, Task Manager, and Operations. Entrepreneurs can only view approved, active work orders relevant to their firm.
@@ -113,6 +125,7 @@ Preferred communication style: Simple, everyday language.
 - **Time Tracking**: Contractors register daily hours on work permits; admins have a comprehensive reporting page (`time_overblik.php`) with filtering, statistics, and charts.
 - **SJA Version History**: Automatic versioning for SJA edits, historical snapshots with metadata, version viewing, and side-by-side comparison.
 - **Work Order Image Upload**: Secure image upload system for entrepreneurs to add completion documentation, viewable by all roles.
+- **Email Notifications**: Automated email alerts to administrators when new users register for system access.
 
 ## External Dependencies
 
@@ -123,6 +136,9 @@ Preferred communication style: Simple, everyday language.
 ### Database Dependencies
 - **PostgreSQL**: Primary database for all persistent project data.
 - **Neon PostgreSQL**: Managed PostgreSQL database service via Replit integration.
+
+### Email Services
+- **SendGrid**: Transactional email service via Replit connector for admin notifications.
 
 ### Asset Management
 - **Google Fonts**: Inter font family for typography.
