@@ -19,15 +19,10 @@
 // ---------------------------------------------------------------------------
 
 session_start();
+require_once 'auth_check.php';
 
 // Set Danish timezone
 date_default_timezone_set('Europe/Copenhagen');
-
-// Redirect unauthenticated users to login
-if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit();
-}
 
 // Determine the role of the current user
 $role = $_SESSION['role'] ?? '';

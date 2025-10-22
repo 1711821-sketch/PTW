@@ -4,9 +4,10 @@
 // and test SMS functionality
 
 session_start();
+require_once 'auth_check.php';
 
 // Only allow admin users to access this page
-if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
+if ($_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit();
 }

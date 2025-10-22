@@ -4,9 +4,10 @@
 // Grouped by arbejdstilladelse and user with filtering capabilities
 
 session_start();
+require_once 'auth_check.php';
 
 // Admin-only access control
-if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
+if (($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: view_wo.php');
     exit();
 }

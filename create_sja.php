@@ -7,12 +7,7 @@
 // users (via session) can access this page.
 
 session_start();
-
-// If the user is not logged in redirect them to the login page.
-if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit();
-}
+require_once 'auth_check.php';
 
 // Use database instead of JSON files
 require_once 'database.php';

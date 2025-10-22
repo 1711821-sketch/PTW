@@ -3,10 +3,7 @@
 // authentication and an `id` query parameter referencing the WO entry.
 
 session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit();
-}
+require_once 'auth_check.php';
 
 // Set Danish timezone
 date_default_timezone_set('Europe/Copenhagen');

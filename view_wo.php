@@ -4,6 +4,7 @@
 // authenticated users can access this page.
 
 session_start();
+require_once 'auth_check.php';
 
 // Set Danish timezone
 date_default_timezone_set('Europe/Copenhagen');

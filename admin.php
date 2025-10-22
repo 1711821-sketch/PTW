@@ -26,7 +26,8 @@ function requireCSRFToken() {
 
 // Generate CSRF token for this session
 $csrf_token = generateCSRFToken();
-if (!isset($_SESSION['user']) || ($_SESSION['role'] ?? '') !== 'admin') {
+require_once 'auth_check.php';
+if (($_SESSION['role'] ?? '') !== 'admin') {
     header('Location: view_wo.php');
     exit();
 }

@@ -8,6 +8,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 - **October 22, 2025**:
+  - **Admin User Creation with Forced Password Change**:
+    - Added `must_change_password` boolean column to users table (defaults to FALSE for existing users)
+    - Admin panel now includes form to create new users with temporary passwords
+    - New users must change password on first login before accessing any protected pages
+    - Created `change_password.php` page with CSRF protection for secure password changes
+    - Implemented `auth_check.php` global authentication guard enforcing password change requirement
+    - Security: Fail-closed design - database errors trigger session destruction and redirect to login
+    - Auth guard integrated across all protected pages (view_wo, dashboard, admin, create_wo, view_sja, create_sja, print_wo, map_wo, sms_admin, time_overblik)
+    - Admin-created users are auto-approved and flagged for mandatory password change
+    - Password validation: minimum 4 characters, confirmation required, bcrypt hashing
+  - **Email Configuration Update**:
   - **Email Notifications for New User Registrations**:
     - Implemented SendGrid email integration via Replit connector for automatic admin notifications
     - Created `email_helper.php` with SendGrid API v3 integration using Replit connector pattern

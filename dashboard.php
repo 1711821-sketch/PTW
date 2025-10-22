@@ -1,12 +1,7 @@
 <?php
 session_start();
+require_once 'auth_check.php';
 require_once 'database.php';
-
-// Ensure the user is logged in
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
-}
 
 $username = $_SESSION['user'];
 $role = $_SESSION['role'] ?? 'user';

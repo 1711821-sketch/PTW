@@ -17,13 +17,7 @@
 // ---------------------------------------------------------------------------
 
 session_start();
-
-// Only allow authenticated users to create or edit WOs.  If the session
-// does not contain a 'user' key, redirect to the login page.
-if (!isset($_SESSION['user'])) {
-    header('Location: login.php');
-    exit();
-}
+require_once 'auth_check.php';
 
 // Get user role for permission checks
 $role = $_SESSION['role'] ?? 'user';
