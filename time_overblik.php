@@ -405,11 +405,14 @@ $monthHours = array_reverse(array_column($monthlyData, 'total_hours'));
             <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($username); ?></span>
         </div>
         <div class="navbar-links">
-            <a href="view_sja.php">SJA Oversigt</a>
-            <a href="view_wo.php">WO Oversigt</a>
+            <a href="view_wo.php">PTW-oversigt</a>
+            <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
+                <a href="create_wo.php">Opret ny PTW</a>
+            <?php endif; ?>
+            <a href="map_wo.php">Kort</a>
             <a href="dashboard.php">Dashboard</a>
-            <a href="time_overblik.php" class="active">Timeoverblik</a>
             <?php if ($role === 'admin'): ?>
+                <a href="time_overblik.php" class="active">Timeoverblik</a>
                 <a href="admin.php">Admin</a>
             <?php endif; ?>
             <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
