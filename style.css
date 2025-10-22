@@ -1730,8 +1730,8 @@ p {
         display: none;
         position: fixed;
         top: 0;
-        left: 0;
-        width: 100vw;
+        left: 280px;
+        width: calc(100vw - 280px);
         height: 100vh;
         background: rgba(0, 0, 0, 0.5);
         z-index: 999;
@@ -1743,6 +1743,14 @@ p {
     .navbar-backdrop.active {
         display: block;
         opacity: 1;
+    }
+    
+    /* Adjust backdrop for small screens where menu is narrower */
+    @media (max-width: 330px) {
+        .navbar-backdrop {
+            left: 85%;
+            width: 15%;
+        }
     }
     
     /* Hide navigation links by default on mobile */
