@@ -35,6 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($user['role'] === 'entreprenor') {
                     $_SESSION['entreprenor_firma'] = $user['entreprenor_firma'] ?? null;
                 }
+                
+                // Check if user must change password
+                if (isset($user['must_change_password']) && (bool)$user['must_change_password'] === true) {
+                    // Redirect to password change page
+                    header('Location: change_password.php');
+                    exit();
+                }
+                
                 header('Location: view_wo.php');
                 exit();
             }
