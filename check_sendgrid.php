@@ -94,7 +94,7 @@ if (isset($_POST['send_test']) && $credentials) {
     
     if ($result) {
         echo "<p class='success'>✅ Email sendt succesfuldt!</p>
-              <p>Tjek <code>edin.zubcevic@interterminals.dk</code> (inklusiv spam folder)</p>";
+              <p>Tjek <code>1711821@gmail.com</code> (inklusiv spam folder)</p>";
     } else {
         echo "<p class='error'>❌ Email kunne ikke sendes.</p>
               <p>Check PHP error logs for detaljer om fejlen.</p>";

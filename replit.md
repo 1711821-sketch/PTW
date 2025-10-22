@@ -11,10 +11,10 @@ Preferred communication style: Simple, everyday language.
   - **Email Notifications for New User Registrations**:
     - Implemented SendGrid email integration via Replit connector for automatic admin notifications
     - Created `email_helper.php` with SendGrid API v3 integration using Replit connector pattern
-    - Admin receives professional HTML email at edin.zubcevic@interterminals.dk when new users register
+    - Admin receives professional HTML email at 1711821@gmail.com when new users register
     - Email includes username, role, and firma (for entrepreneurs) with direct link to admin panel
     - Error handling logs failures without blocking user registration flow
-    - Requires SendGrid sender identity verification for edin.zubcevic@interterminals.dk before production use
+    - Requires SendGrid sender identity verification for 1711821@gmail.com before production use
     - Security: Uses Replit connector credentials (REPL_IDENTITY/WEB_REPL_RENEWAL tokens) for API key management
   - **Navigation Menu Fix**: Corrected hamburger menu links in time_overblik.php to match other pages (PTW-oversigt, Opret ny PTW, Kort, Dashboard, Timeoverblik, Admin)
   - **Emergency Admin Creation**: Resolved production database login issue by creating admin user directly in production database (emergency script subsequently deleted for security)

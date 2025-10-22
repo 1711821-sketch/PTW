@@ -140,7 +140,7 @@ function send_email_sendgrid($to_email, $to_name, $subject, $html_content, $text
  * @return bool True on success, false on failure
  */
 function send_new_user_notification($username, $role, $firma = null) {
-    $admin_email = 'edin.zubcevic@interterminals.dk';
+    $admin_email = '1711821@gmail.com';
     $admin_name = 'Administrator';
     
     $subject = '🔔 Ny bruger anmodning - PTW System';
