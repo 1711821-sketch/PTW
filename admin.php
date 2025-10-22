@@ -101,7 +101,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // All POST operations require CSRF token validation
     requireCSRFToken();
     
-    if (isset($_POST['approve_user'])) {
+    if (isset($_POST['create_new_user'])) {
+        // Handle creating new user by admin
+        $new_username = trim($_POST['new_username'] ?? '');
+        $new_password = $_POST['new_password'] ?? '';
+        $new_role = $_POST['new_role'] ?? '';
+        $new_firma = trim($_POST['new_firma'] ?? '');
+        
+        $errors = [];
+        
+        // Validate input
+        if (empty($new_username)) {
+            $errors[] = 'Brugernavn er påkrævet';
+        }
+        if (empty($new_password)) {
+            $errors[] = 'Password er påkrævet';
+        } elseif (strlen($new_password) < 4) {
+            $errors[] = 'Password skal være mindst 4 tegn';
+        }
+        if (!in_array($new_role, ['admin', 'opgaveansvarlig', 'drift', 'entreprenor'])) {
+            $errors[] = 'Ugyldig rolle';
+        }
+        if ($new_role === 'entreprenor' && empty($new_firma)) {
+            $errors[] = 'Firma er påkrævet for entreprenører';
+        }
+        
+        if (empty($errors)) {
+            try {
+                $db = Database::getInstance();
+                
+                // Check if username already exists
+                $existing = $db->fetch("SELECT id FROM users WHERE username = ?", [$new_username]);
+                if ($existing) {
+                    $message = 'Fejl: Brugernavn "' . htmlspecialchars($new_username) . '" eksisterer allerede.';
+                } else {
+                    // Create new user with hashed password and must_change_password flag
+                    $password_hash = password_hash($new_password, PASSWORD_BCRYPT);
+                    $db->execute(
+                        "INSERT INTO users (username, password_hash, role, approved, entreprenor_firma, must_change_password) VALUES (?, ?, ?, ?, ?, ?)",
+                        [
+                            $new_username,
+                            $password_hash,
+                            $new_role,
+                            true, // Auto-approve admin-created users
+                            $new_role === 'entreprenor' ? $new_firma : null,
+                            true // Must change password on first login
+                        ]
+                    );
+                    $message = 'Bruger "' . htmlspecialchars($new_username) . '" er oprettet. Brugeren skal skifte password ved første login.';
+                    
+                    // Reload users from database
+                    $users = $db->fetchAll("SELECT * FROM users ORDER BY id ASC");
+                }
+            } catch (Exception $e) {
+                error_log('Database error creating user: ' . $e->getMessage());
+                $message = 'Der opstod en fejl ved oprettelse af bruger.';
+            }
+        } else {
+            $message = 'Fejl: ' . implode(', ', $errors);
+        }
+    } elseif (isset($_POST['approve_user'])) {
         // Handle user approval in PostgreSQL database
         $approve_user = $_POST['username'] ?? '';
         try {
@@ -423,9 +482,51 @@ if (isset($_GET['edit_message'])) {
         <div class="admin-section">
             <h2>👥 Brugeradministration</h2>
             <?php if ($message): ?>
-                <div class="alert alert-success"><?php echo $message; ?></div>
+                <div class="alert <?php echo (strpos($message, 'Fejl:') === 0) ? 'alert-error' : 'alert-success'; ?>"><?php echo $message; ?></div>
             <?php endif; ?>
             
+            <!-- Create New User Form -->
+            <form method="POST" class="message-form" style="margin-bottom: 2rem;">
+                <h3>➕ Opret Ny Bruger</h3>
+                
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                
+                <div class="form-group">
+                    <label for="new_username">Brugernavn:</label>
+                    <input type="text" id="new_username" name="new_username" required placeholder="Indtast brugernavn">
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_password">Midlertidigt Password:</label>
+                    <input type="password" id="new_password" name="new_password" required minlength="4" placeholder="Brugeren skal skifte dette ved første login">
+                </div>
+                
+                <div class="form-group">
+                    <label for="new_role">Rolle:</label>
+                    <select id="new_role" name="new_role" required onchange="document.getElementById('firma_group').style.display = this.value === 'entreprenor' ? 'block' : 'none';">
+                        <option value="">Vælg rolle</option>
+                        <option value="admin">Administrator</option>
+                        <option value="opgaveansvarlig">Opgaveansvarlig</option>
+                        <option value="drift">Drift</option>
+                        <option value="entreprenor">Entreprenør</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="firma_group" style="display: none;">
+                    <label for="new_firma">Firma (kun for entreprenører):</label>
+                    <input type="text" id="new_firma" name="new_firma" placeholder="Firma navn">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" name="create_new_user" class="button">➕ Opret Bruger</button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 0.75rem; background: #f0f9ff; border-left: 4px solid #3b82f6; border-radius: 4px; font-size: 0.9rem;">
+                    <strong>ℹ️ Bemærk:</strong> Brugeren bliver tvunget til at skifte password ved første login.
+                </div>
+            </form>
+            
+            <h3>📋 Eksisterende Brugere</h3>
             <div class="table-wrapper">
                 <table>
             <tr>
