@@ -473,6 +473,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         @media (max-width: 768px) {
             .card-counter {
+                top: 44px;
                 padding: 3px 0.5rem;
                 font-size: 12px;
                 margin-top: 0;
