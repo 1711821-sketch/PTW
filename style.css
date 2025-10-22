@@ -1563,11 +1563,11 @@ p {
         word-break: break-word !important;
     }
     
-    /* Enhanced filter controls */
+    /* Enhanced filter controls - hidden on mobile */
     .filter-controls {
-        margin: 0 -1rem 0.25rem -1rem;
-        padding: 0.5rem;
-        border-radius: 0;
+        display: none !important;
+        margin: 0;
+        padding: 0;
     }
     
     .filter-group {
@@ -1899,11 +1899,11 @@ p {
         min-height: 36px;
     }
     
-    /* Mobile filter controls */
+    /* Mobile filter controls - hidden on mobile */
     .filter-controls {
-        margin: 0 -0.75rem 0.25rem -0.75rem;
-        border-radius: 0;
-        padding: 0.5rem;
+        display: none !important;
+        margin: 0;
+        padding: 0;
     }
     
     .filter-label {
