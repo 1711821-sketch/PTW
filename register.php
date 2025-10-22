@@ -4,6 +4,7 @@ session_start();
 
 // Database connection for user storage and contractor list
 require_once 'database.php';
+require_once 'email_helper.php';
 
 // Extract unique contractor firm names from the database.  Contractors are
 // specified by the "entreprenor_firma" column in work_orders table.
@@ -78,6 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, ?, false)",
                     [$username, $password_hash, $role]
                 );
+            }
+            
+            // Send email notification to admin about new user registration
+            $firma_for_email = ($role === 'entreprenor') ? $selected_contractor : null;
+            $email_sent = send_new_user_notification($username, $role, $firma_for_email);
+            
+            if (!$email_sent) {
+                error_log("Failed to send email notification for new user: $username");
             }
             
             // Redirect to login page after successful registration.
