@@ -428,19 +428,11 @@ if ($statusVal === 'planning') {
             }
         }
         
-        /* Override approval workflow styling to match other sections in print view */
-        .card-approval-header {
-            background: rgba(59, 130, 246, 0.05) !important;
-            padding: 0.75rem 1rem !important;
-            border-radius: 8px !important;
-        }
-        
-        .card-approval-header:hover {
-            background: rgba(59, 130, 246, 0.1) !important;
-        }
-        
-        .card-approval-workflow h4 {
-            font-size: 1.1rem !important;
+        /* Approval summary styling */
+        .approval-summary {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 600;
         }
         
         @media print {
@@ -530,11 +522,151 @@ if ($statusVal === 'planning') {
         </div>
     </div>
     
+    <!-- Section 2: Godkendelsesproces (using standard collapsible structure) -->
     <?php 
-    // Display visual approval workflow widget (already has its own collapsible wrapper)
     $today = date('d-m-Y');
-    renderApprovalWorkflowWidget($entry, $role, $today, $compact = false); 
+    $approvals = $entry['approvals'] ?? [];
+    // Check if approved (any date stored means approved)
+    $oaApproved = !empty($approvals['opgaveansvarlig']);
+    $driftApproved = !empty($approvals['drift']);
+    $entApproved = !empty($approvals['entreprenor']);
+    // Also check if approved TODAY (for determining button visibility)
+    $oaApprovedToday = isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today;
+    $driftApprovedToday = isset($approvals['drift']) && $approvals['drift'] === $today;
+    $entApprovedToday = isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today;
+    
+    $approvalCount = 0;
+    if ($oaApproved) $approvalCount++;
+    if ($driftApproved) $approvalCount++;
+    if ($entApproved) $approvalCount++;
+    $statusText = "Godkendt {$approvalCount}/3";
     ?>
+    <div class="card-collapsible-section">
+        <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'approval')">
+            <h2>✅ Godkendelsesproces</h2>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="approval-summary"><?php echo $statusText; ?></span>
+                <span class="toggle-icon" id="approval-icon-<?php echo $entry['id']; ?>">▼</span>
+            </div>
+        </div>
+        <div class="collapsible-section-content" id="approval-section-<?php echo $entry['id']; ?>">
+            <?php 
+            // Render approval workflow widget content (without its own wrapper)
+            $approval_history = $entry['approval_history'] ?? [];
+            
+            // Get timestamps from approval history
+            $oaTimestamp = '';
+            $driftTimestamp = '';
+            $entTimestamp = '';
+            
+            if (is_array($approval_history)) {
+                // Get the LAST (most recent) approval for each role
+                foreach (array_reverse($approval_history) as $hist) {
+                    if (!$oaTimestamp && ($hist['role'] ?? '') === 'opgaveansvarlig') {
+                        $oaTimestamp = $hist['timestamp'] ?? '';
+                    }
+                    if (!$driftTimestamp && ($hist['role'] ?? '') === 'drift') {
+                        $driftTimestamp = $hist['timestamp'] ?? '';
+                    }
+                    if (!$entTimestamp && ($hist['role'] ?? '') === 'entreprenor') {
+                        $entTimestamp = $hist['timestamp'] ?? '';
+                    }
+                }
+            }
+            
+            // Determine user's ability to approve (can only approve once, and only if not already approved)
+            $canApproveOA = ($role === 'admin' || $role === 'opgaveansvarlig') && !$oaApproved;
+            $canApproveDrift = ($role === 'admin' || $role === 'drift') && !$driftApproved;
+            $canApproveEnt = ($role === 'admin' || $role === 'entreprenor') && !$entApproved;
+            
+            // Determine step state
+            $oaState = $oaApproved ? 'approved' : ($canApproveOA ? 'current_user' : 'pending');
+            $driftState = $driftApproved ? 'approved' : ($canApproveDrift ? 'current_user' : 'pending');
+            $entState = $entApproved ? 'approved' : ($canApproveEnt ? 'current_user' : 'pending');
+            ?>
+            <div class="approval-workflow-widget">
+                <div class="workflow-steps">
+                    <!-- Step 1: Opgaveansvarlig -->
+                    <div class="workflow-step <?php echo $oaState; ?>">
+                        <div class="step-icon">
+                            <?php if ($oaApproved): ?>✅
+                            <?php elseif ($canApproveOA): ?>👤
+                            <?php else: ?>⏳<?php endif; ?>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Opgaveansvarlig</div>
+                            <?php if ($oaApproved && $oaTimestamp): ?>
+                                <div class="step-timestamp"><?php echo htmlspecialchars($oaTimestamp); ?></div>
+                            <?php elseif (!$oaApproved): ?>
+                                <div class="step-status">Afventer</div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($canApproveOA): ?>
+                            <button class="step-approve-btn ajax-approve-btn" 
+                                    data-id="<?php echo $entry['id']; ?>" 
+                                    data-role="opgaveansvarlig">
+                                Godkend
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Arrow 1 -->
+                    <div class="workflow-arrow <?php echo $oaApproved ? 'active' : ''; ?>">→</div>
+                    
+                    <!-- Step 2: Drift -->
+                    <div class="workflow-step <?php echo $driftState; ?>">
+                        <div class="step-icon">
+                            <?php if ($driftApproved): ?>✅
+                            <?php elseif ($canApproveDrift): ?>👤
+                            <?php else: ?>⏳<?php endif; ?>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Drift</div>
+                            <?php if ($driftApproved && $driftTimestamp): ?>
+                                <div class="step-timestamp"><?php echo htmlspecialchars($driftTimestamp); ?></div>
+                            <?php elseif (!$driftApproved): ?>
+                                <div class="step-status">Afventer</div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($canApproveDrift): ?>
+                            <button class="step-approve-btn ajax-approve-btn" 
+                                    data-id="<?php echo $entry['id']; ?>" 
+                                    data-role="drift">
+                                Godkend
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Arrow 2 -->
+                    <div class="workflow-arrow <?php echo $driftApproved ? 'active' : ''; ?>">→</div>
+                    
+                    <!-- Step 3: Entreprenør -->
+                    <div class="workflow-step <?php echo $entState; ?>">
+                        <div class="step-icon">
+                            <?php if ($entApproved): ?>✅
+                            <?php elseif ($canApproveEnt): ?>👤
+                            <?php else: ?>⏳<?php endif; ?>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Entreprenør</div>
+                            <?php if ($entApproved && $entTimestamp): ?>
+                                <div class="step-timestamp"><?php echo htmlspecialchars($entTimestamp); ?></div>
+                            <?php elseif (!$entApproved): ?>
+                                <div class="step-status">Afventer</div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if ($canApproveEnt): ?>
+                            <button class="step-approve-btn ajax-approve-btn" 
+                                    data-id="<?php echo $entry['id']; ?>" 
+                                    data-role="entreprenor">
+                                Godkend
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <?php if (!empty($entry['approval_history']) && is_array($entry['approval_history'])): ?>
     <div class="card-collapsible-section">
@@ -768,20 +900,6 @@ if ($statusVal === 'planning') {
         function toggleSection(woId, sectionName) {
             const section = document.getElementById(`${sectionName}-section-${woId}`);
             const icon = document.getElementById(`${sectionName}-icon-${woId}`);
-            
-            if (section.classList.contains('expanded')) {
-                section.classList.remove('expanded');
-                icon.classList.remove('expanded');
-            } else {
-                section.classList.add('expanded');
-                icon.classList.add('expanded');
-            }
-        }
-        
-        // Toggle approval workflow section (for approval_workflow_widget.php)
-        function toggleApprovalWorkflow(woId) {
-            const section = document.getElementById(`approval-section-${woId}`);
-            const icon = document.getElementById(`approval-icon-${woId}`);
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
