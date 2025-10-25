@@ -9,6 +9,27 @@ require_once 'auth_check.php';
 // Set Danish timezone
 date_default_timezone_set('Europe/Copenhagen');
 
+// CSRF Token Functions
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function requireCSRFToken() {
+    if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+        die('CSRF token validation failed. Refresh the page and try again.');
+    }
+}
+
+// Generate CSRF token for this session
+$csrf_token = generateCSRFToken();
+
 // Include approval workflow widget
 require_once 'approval_workflow_widget.php';
 
@@ -231,6 +252,129 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
     }
     
     exit();
+}
+
+// Handle image upload from card view
+$upload_success = '';
+$upload_error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_image']) && isset($_POST['wo_id'])) {
+    // SECURITY: Validate CSRF token first
+    requireCSRFToken();
+    
+    $woId = $_POST['wo_id'];
+    $currentUser = $_SESSION['user'] ?? '';
+    $currentRole = $_SESSION['role'] ?? '';
+    $userFirma = $_SESSION['entreprenor_firma'] ?? '';
+    
+    require_once 'database.php';
+    $db = Database::getInstance();
+    
+    // Get work order to verify ownership
+    $workOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$woId]);
+    
+    if (!$workOrder) {
+        $upload_error = 'PTW ikke fundet.';
+    }
+    // Security check: Only entrepreneurs can upload
+    elseif ($currentRole !== 'entreprenor') {
+        $upload_error = 'Kun entreprenører kan uploade billeder.';
+    }
+    // Security check: Entrepreneur can only upload to their own firm's work orders
+    elseif ($workOrder['entreprenor_firma'] !== $userFirma) {
+        $upload_error = 'Du kan kun uploade billeder til dit eget firmas PTW\'er.';
+        error_log("SECURITY VIOLATION: Entrepreneur $currentUser attempted to upload image to another firm's work order. User Firma: $userFirma, WO Firma: " . $workOrder['entreprenor_firma']);
+    }
+    // SECURITY CHECK: Verify PTW is still active
+    elseif ($workOrder['status'] !== 'active') {
+        $upload_error = 'Upload af billeder er kun muligt for aktive PTW\'er.';
+        error_log("Upload rejected - PTW not active - User: $currentUser, WO ID: $woId, Status: " . $workOrder['status']);
+    }
+    // Check if file was uploaded
+    elseif (!isset($_FILES['completion_image']) || $_FILES['completion_image']['error'] === UPLOAD_ERR_NO_FILE) {
+        $upload_error = 'Ingen fil valgt.';
+    }
+    elseif ($_FILES['completion_image']['error'] !== UPLOAD_ERR_OK) {
+        $upload_error = 'Fejl ved upload af fil.';
+    }
+    else {
+        $file = $_FILES['completion_image'];
+        
+        // Validate MIME type (browser-friendly images only)
+        $allowed_mime_types = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+            'image/avif' => 'avif'
+        ];
+        
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime_type = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+        $mime_to_extension = $allowed_mime_types;
+        
+        if (!isset($mime_to_extension[$mime_type])) {
+            $upload_error = 'Kun billedfiler der kan vises i browsere er tilladt (JPEG, PNG, GIF, WebP, AVIF). iPhone-brugere: Indstil kameraet til at gemme som JPEG i Indstillinger → Kamera → Formater → Mest kompatibel.';
+        }
+        // Validate file size (max 50MB for high-resolution smartphone images)
+        elseif ($file['size'] > 52428800) {
+            $upload_error = 'Billedet må ikke være større end 50MB.';
+        }
+        else {
+            // SECURITY: Use extension based on MIME type, NOT user-supplied filename
+            $safe_extension = $mime_to_extension[$mime_type];
+            
+            // Generate secure random filename with fallback error handling
+            try {
+                $random_suffix = bin2hex(random_bytes(8));
+            } catch (Exception $e) {
+                $upload_error = 'Systemfejl ved generering af sikkert filnavn. Prøv igen.';
+                error_log("Failed to generate random bytes for filename - User: $currentUser, WO ID: " . $workOrder['id'] . ", Error: " . $e->getMessage());
+                $random_suffix = null;
+            }
+            
+            if ($random_suffix === null) {
+                // Error already set above, skip upload
+            } else {
+                $filename = 'wo_' . $workOrder['id'] . '_' . time() . '_' . $random_suffix . '.' . $safe_extension;
+                $upload_path = __DIR__ . '/uploads/work_order_images/' . $filename;
+            
+            // Ensure upload directory exists
+            $upload_dir = __DIR__ . '/uploads/work_order_images';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+            
+            // Move uploaded file
+            if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+                // Add filename to completion_images array in database
+                $current_images = $workOrder['completion_images'] ?? [];
+                if (is_string($current_images)) {
+                    $current_images = json_decode($current_images, true) ?? [];
+                }
+                $current_images[] = $filename;
+                
+                try {
+                    $db->execute("
+                        UPDATE work_orders 
+                        SET completion_images = ?, updated_at = NOW()
+                        WHERE id = ?
+                    ", [json_encode($current_images), $workOrder['id']]);
+                    
+                    $upload_success = 'Billedet er uploadet med succes!';
+                    error_log("Image uploaded successfully - User: $currentUser, WO ID: " . $workOrder['id'] . ", Filename: $filename");
+                } catch (Exception $e) {
+                    $upload_error = 'Fejl ved gemning af billedet i databasen.';
+                    error_log("Error saving uploaded image to database: " . $e->getMessage());
+                    @unlink($upload_path);
+                }
+            } else {
+                $upload_error = 'Fejl ved gemning af filen.';
+                error_log("Failed to move uploaded file - User: $currentUser, WO ID: " . $workOrder['id']);
+            }
+            }
+        }
+    }
 }
 
 if (!isset($_SESSION['user'])) {
@@ -1486,6 +1630,85 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 display: none;
             }
         }
+        
+        /* ========== IMAGE UPLOAD FORM STYLING ========== */
+        .image-upload-section {
+            padding: 0.75rem;
+        }
+        
+        .upload-form-card {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .upload-input-group {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+        
+        .file-label:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .file-label:active {
+            transform: translateY(0);
+        }
+        
+        .upload-restricted-notice {
+            color: #666;
+            font-size: 0.9rem;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .upload-form-card {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .upload-input-group {
+                width: 100%;
+                min-width: 0;
+            }
+            
+            .upload-form-card .button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1529,6 +1752,19 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     
     <!-- Notification system for AJAX feedback -->
     <div id="notificationContainer" class="notification-container"></div>
+    
+    <!-- Upload success/error messages -->
+    <?php if ($upload_success): ?>
+        <div class="alert alert-success" style="margin-bottom: 1rem;">
+            ✅ <?php echo htmlspecialchars($upload_success); ?>
+        </div>
+    <?php endif; ?>
+    <?php if ($upload_error): ?>
+        <div class="alert alert-danger" style="margin-bottom: 1rem;">
+            ❌ <?php echo htmlspecialchars($upload_error); ?>
+        </div>
+    <?php endif; ?>
+    
     <?php if ($msg): ?>
         <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
@@ -1983,23 +2219,43 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                             </div>
                         </div>
                         <div class="section-content" id="images-<?php echo $entry['id']; ?>">
-                            <?php if (count($completionImages) > 0): ?>
-                                <div class="images-grid">
-                                    <?php foreach ($completionImages as $image): ?>
-                                        <div class="image-item">
-                                            <a href="uploads/work_order_images/<?php echo htmlspecialchars($image); ?>" target="_blank">
-                                                <img src="uploads/work_order_images/<?php echo htmlspecialchars($image); ?>" alt="Dokumentationsbillede" loading="lazy">
-                                            </a>
+                            <?php if ($role === 'entreprenor' && $status === 'active'): ?>
+                                <!-- Upload form for entrepreneurs -->
+                                <div class="image-upload-section">
+                                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.75rem;">
+                                        📤 Upload dokumentationsbilleder til denne PTW
+                                    </p>
+                                    <form method="POST" enctype="multipart/form-data" class="upload-form-card">
+                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                                        <input type="hidden" name="wo_id" value="<?php echo $entry['id']; ?>">
+                                        <div class="upload-input-group">
+                                            <input type="file" 
+                                                   name="completion_image" 
+                                                   id="upload-file-<?php echo $entry['id']; ?>"
+                                                   accept="image/*" 
+                                                   required 
+                                                   class="file-input">
+                                            <label for="upload-file-<?php echo $entry['id']; ?>" class="file-label">
+                                                📁 Vælg billede
+                                            </label>
                                         </div>
-                                    <?php endforeach; ?>
+                                        <button type="submit" name="upload_image" value="1" class="button button-success button-sm">
+                                            📤 Upload billede
+                                        </button>
+                                    </form>
+                                    <p style="color: #999; font-size: 0.75rem; margin-top: 0.5rem;">
+                                        💡 Accepterede formater: JPEG, PNG, GIF, WebP, AVIF (max 50MB)
+                                    </p>
                                 </div>
                             <?php else: ?>
-                                <p class="no-images-text">Ingen dokumentationsbilleder uploadet endnu.</p>
-                            <?php endif; ?>
-                            <?php if ($role === 'entreprenor' && $status === 'active'): ?>
-                                <div class="upload-hint">
-                                    <p>💡 Du kan uploade dokumentationsbilleder når du ser PTW'en i detaljevisning.</p>
-                                </div>
+                                <!-- View-only message for non-entrepreneurs -->
+                                <p class="upload-restricted-notice">
+                                    <?php if ($status !== 'active'): ?>
+                                        ℹ️ Upload af billeder er kun muligt for aktive PTW'er.
+                                    <?php else: ?>
+                                        ℹ️ Kun entreprenører kan uploade dokumentationsbilleder.
+                                    <?php endif; ?>
+                                </p>
                             <?php endif; ?>
                         </div>
                     </div>
