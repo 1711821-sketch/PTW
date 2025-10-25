@@ -10,6 +10,8 @@ A web-based PTW (Permit To Work) system for coordinating work among administrato
 - Added documentation images section with image grid display
 - Implemented smooth animations and responsive design for both desktop and mobile
 - All existing buttons and functionality preserved
+- Unified all dropdown sections to use consistent styling (same height, font, spacing, background color, and toggle animations)
+- Refactored Godkendelsesproces section to match visual design of other dropdowns while preserving approval status display
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
