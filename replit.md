@@ -3,6 +3,14 @@
 ## Overview
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
+## Recent Changes
+**2025-10-25**: Redesigned the card view (boksvisning) in `view_wo.php` with modern collapsible dropdown sections:
+- New modern card header with blue gradient and status badges
+- Organized content into four collapsible sections: Basisinformation, Godkendelsesproces, Tidsregistrering, and Dokumentationsbilleder
+- Added documentation images section with image grid display
+- Implemented smooth animations and responsive design for both desktop and mobile
+- All existing buttons and functionality preserved
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

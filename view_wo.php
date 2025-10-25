@@ -600,19 +600,213 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             width: 100%;
             min-width: 100%;
             background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            padding: 14px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0;
             margin: 10px 0;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             transition: transform 0.4s ease, opacity 0.3s ease, box-shadow 0.2s ease;
+            overflow: hidden;
         }
 
         .work-permit-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Modern Card Header */
+        .card-header-modern {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            padding: 1.25rem;
+            color: white;
+        }
+        
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .card-main-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .card-status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .work-status-badge {
+            font-size: 1.3em;
+            margin-left: auto;
+        }
+        
+        /* Card Content Container */
+        .card-content-modern {
+            padding: 1rem;
+        }
+        
+        /* Card Section (Collapsible Sections) */
+        .card-section {
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(25, 118, 210, 0.05);
+            border-left: 4px solid #1976d2;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .section-header:hover {
+            background: rgba(25, 118, 210, 0.1);
+        }
+        
+        .section-header h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1976d2;
+        }
+        
+        .toggle-icon {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+            color: #1976d2;
+            font-weight: bold;
+        }
+        
+        .section-content {
+            display: none;
+            padding: 1rem;
+            background: white;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .section-content.expanded {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Info Grid for Basic Information */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .info-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Images Grid for Documentation Images */
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .image-item {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .image-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .no-images-text {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 2rem 0;
+            margin: 0;
+        }
+        
+        .upload-hint {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(25, 118, 210, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid #1976d2;
+        }
+        
+        .upload-hint p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .images-count {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Time Summary Badge */
+        .time-summary {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 500;
         }
 
         /* Desktop: centered card with max-width */
@@ -1197,8 +1391,59 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             transform: scale(0.98);
         }
 
-        /* Mobile Optimizations for New Buttons */
+        /* Mobile Responsive Styles for New Card Design */
         @media (max-width: 768px) {
+            .card-header-modern {
+                padding: 1rem;
+            }
+            
+            .card-main-title {
+                font-size: 1.25rem;
+            }
+            
+            .card-content-modern {
+                padding: 0.75rem;
+            }
+            
+            .section-header {
+                padding: 0.6rem 0.8rem;
+            }
+            
+            .section-header h4 {
+                font-size: 0.9rem;
+            }
+            
+            .section-content {
+                padding: 0.75rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .info-label {
+                font-size: 0.75rem;
+            }
+            
+            .info-value {
+                font-size: 0.9rem;
+            }
+            
+            .images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 0.75rem;
+            }
+            
+            .image-item img {
+                height: 120px;
+            }
+            
+            .card-actions {
+                padding: 0.75rem;
+                gap: 0.5rem;
+            }
+            
             .action-buttons-group {
                 gap: 0.4rem;
             }
@@ -1577,64 +1822,80 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $kontakt = $entry['entreprenor_kontakt'] ?? '';
             ?>
             <div class="work-permit-card" data-status="<?php echo htmlspecialchars($status); ?>">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="card-title-text">
-                            <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
-                            <p style="margin: 0.25rem 0 0.5rem 0; font-size: 0.9em; color: #666; font-weight: 500;">Indkøbsordre: <?php echo htmlspecialchars($entry['p_number']); ?></p>
-                            <p class="card-header-description" id="desc-<?php echo $entry['id']; ?>"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
-                            <?php if (strlen($entry['description'] ?? '') > 100): ?>
-                                <span class="description-toggle" onclick="toggleDescription(<?php echo $entry['id']; ?>)" id="desc-toggle-<?php echo $entry['id']; ?>">Vis mere</span>
-                            <?php endif; ?>
-                        </div>
-                        <span class="card-status <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
+                <!-- Card Header with Status Badge -->
+                <div class="card-header-modern">
+                    <div class="card-title-row">
+                        <h3 class="card-main-title">PTW <?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
+                        <span class="card-status-badge <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span>
                         <?php if ($workStatusIcon): ?>
-                            <span id="card-work-status-icon-<?php echo $entry['id']; ?>" title="<?php echo htmlspecialchars($workStatusText); ?>" style="margin-left: 0.5rem; font-size: 1.3em;"><?php echo $workStatusIcon; ?></span>
+                            <span id="card-work-status-icon-<?php echo $entry['id']; ?>" title="<?php echo htmlspecialchars($workStatusText); ?>" class="work-status-badge"><?php echo $workStatusIcon; ?></span>
                         <?php else: ?>
                             <span id="card-work-status-icon-<?php echo $entry['id']; ?>"></span>
                         <?php endif; ?>
                     </div>
-                    <?php if (!empty($entry['p_description'])): ?>
-                        <div class="card-p-description">
-                            <strong>Indkøbsordre beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
-                        </div>
-                    <?php endif; ?>
                 </div>
                 
-                <hr class="card-divider">
-                
-                <div class="card-content">
-                    <div class="card-details">
-                        <div class="detail-item">
-                            <span class="detail-label">👤 Jobansvarlig:</span>
-                            <span class="detail-value"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></span>
+                <div class="card-content-modern">
+                    <!-- Section 1: Basisinformation (Collapsible) -->
+                    <div class="card-section">
+                        <div class="section-header" onclick="toggleSection('basic-<?php echo $entry['id']; ?>')">
+                            <h4>📋 Basisinformation</h4>
+                            <span class="toggle-icon" id="toggle-basic-<?php echo $entry['id']; ?>">▼</span>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">🏢 Entreprenør:</span>
-                            <span class="detail-value">
-                                <?php echo htmlspecialchars($firma); ?>
-                                <?php if ($kontakt): ?>
-                                    <br><small><?php echo htmlspecialchars($kontakt); ?></small>
+                        <div class="section-content expanded" id="basic-<?php echo $entry['id']; ?>">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">PTW Nr.</span>
+                                    <span class="info-value"><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Indkøbsordre Nr.</span>
+                                    <span class="info-value"><?php echo htmlspecialchars($entry['p_number'] ?? ''); ?></span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <span class="info-label">Beskrivelse</span>
+                                    <span class="info-value"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></span>
+                                </div>
+                                <?php if (!empty($entry['p_description'])): ?>
+                                <div class="info-item full-width">
+                                    <span class="info-label">Indkøbsordre beskrivelse</span>
+                                    <span class="info-value"><?php echo htmlspecialchars($entry['p_description']); ?></span>
+                                </div>
                                 <?php endif; ?>
-                            </span>
+                                <div class="info-item">
+                                    <span class="info-label">👤 Jobansvarlig</span>
+                                    <span class="info-value"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">🏢 Entreprenør</span>
+                                    <span class="info-value">
+                                        <?php echo htmlspecialchars($firma); ?>
+                                        <?php if ($kontakt): ?>
+                                            <br><small style="color: #666;"><?php echo htmlspecialchars($kontakt); ?></small>
+                                        <?php endif; ?>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
+                    <!-- Section 2: Godkendelsesproces (Collapsible) -->
                     <?php 
                     // Display visual approval workflow widget
                     renderApprovalWorkflowWidget($entry, $role, $today, $compact = true); 
                     ?>
                     
+                    <!-- Section 3: Tidsregistrering (Collapsible) -->
                     <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
-                    <div class="card-time-tracking">
-                        <div class="card-time-header" onclick="toggleTimeTracking(<?php echo $entry['id']; ?>)">
+                    <div class="card-section">
+                        <div class="section-header" onclick="toggleTimeTracking(<?php echo $entry['id']; ?>)">
                             <h4>⏱️ Tidsregistrering</h4>
                             <div style="display: flex; align-items: center; gap: 0.5rem;">
                                 <span class="time-summary" id="time-summary-<?php echo $entry['id']; ?>"></span>
                                 <span class="toggle-icon" id="time-icon-<?php echo $entry['id']; ?>">▼</span>
                             </div>
                         </div>
-                        <div class="time-entry-section" id="time-section-<?php echo $entry['id']; ?>">
+                        <div class="section-content time-entry-section" id="time-section-<?php echo $entry['id']; ?>">
                             
                             <?php if (in_array($role, ['admin', 'entreprenor'])): ?>
                             <!-- Time entry form - only for admin and entreprenor -->
@@ -1702,8 +1963,49 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         </div>
                     </div>
                     <?php endif; ?>
+                    
+                    <!-- Section 4: Dokumentationsbilleder (Collapsible) -->
+                    <div class="card-section">
+                        <div class="section-header" onclick="toggleSection('images-<?php echo $entry['id']; ?>')">
+                            <h4>📷 Dokumentationsbilleder</h4>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="images-count">
+                                    <?php 
+                                    $completionImages = $entry['completion_images'] ?? [];
+                                    if (is_string($completionImages)) {
+                                        $completionImages = json_decode($completionImages, true) ?? [];
+                                    }
+                                    $imageCount = count($completionImages);
+                                    echo $imageCount > 0 ? $imageCount . ' billede' . ($imageCount > 1 ? 'r' : '') : 'Ingen billeder';
+                                    ?>
+                                </span>
+                                <span class="toggle-icon" id="toggle-images-<?php echo $entry['id']; ?>">▼</span>
+                            </div>
+                        </div>
+                        <div class="section-content" id="images-<?php echo $entry['id']; ?>">
+                            <?php if (count($completionImages) > 0): ?>
+                                <div class="images-grid">
+                                    <?php foreach ($completionImages as $image): ?>
+                                        <div class="image-item">
+                                            <a href="uploads/work_order_images/<?php echo htmlspecialchars($image); ?>" target="_blank">
+                                                <img src="uploads/work_order_images/<?php echo htmlspecialchars($image); ?>" alt="Dokumentationsbillede" loading="lazy">
+                                            </a>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <p class="no-images-text">Ingen dokumentationsbilleder uploadet endnu.</p>
+                            <?php endif; ?>
+                            <?php if ($role === 'entreprenor' && $status === 'active'): ?>
+                                <div class="upload-hint">
+                                    <p>💡 Du kan uploade dokumentationsbilleder når du ser PTW'en i detaljevisning.</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
                 
+                <!-- Card Actions (Bottom Buttons) -->
                 <div class="card-actions">
                     <a class="button button-secondary button-sm handlinger-btn" href="print_wo.php?id=<?php echo urlencode($entry['id']); ?>">Vis</a>
                     <?php if ($role !== 'entreprenor'): ?>
@@ -1755,6 +2057,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }, 100);
         }
         
+        // Toggle section expansion (Generic function for all sections)
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            const toggleIcon = document.getElementById('toggle-' + sectionId);
+            
+            if (section.classList.contains('expanded')) {
+                section.classList.remove('expanded');
+                if (toggleIcon) toggleIcon.textContent = '▼';
+            } else {
+                section.classList.add('expanded');
+                if (toggleIcon) toggleIcon.textContent = '▲';
+            }
+        }
+        
         // Toggle description expansion
         function toggleDescription(woId) {
             const desc = document.getElementById(`desc-${woId}`);
@@ -1790,10 +2106,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
-                icon.classList.remove('expanded');
+                if (icon) icon.textContent = '▼';
             } else {
                 section.classList.add('expanded');
-                icon.classList.add('expanded');
+                if (icon) icon.textContent = '▲';
             }
         }
         
@@ -1804,10 +2120,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');
-                icon.classList.remove('expanded');
+                if (icon) icon.textContent = '▼';
             } else {
                 section.classList.add('expanded');
-                icon.classList.add('expanded');
+                if (icon) icon.textContent = '▲';
             }
         }
         
