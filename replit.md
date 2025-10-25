@@ -4,6 +4,22 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
+**2025-10-25**: Image serving infrastructure:
+- **Router Implementation**: Created `router.php` to properly serve uploaded images from PHP's built-in server
+  - Handles static file serving for `/uploads/work_order_images/` directory
+  - Implements security measures: directory traversal prevention, realpath validation
+  - Sets appropriate MIME types for image formats (JPEG, PNG, GIF, WebP, AVIF)
+  - Includes caching headers for optimal performance
+  - Updated workflow to use `php -S 0.0.0.0:5000 router.php` instead of direct file serving
+  - Resolves 404 errors when entrepreneurs upload images and other users view them
+
+**2025-10-25**: Mobile swipe improvements:
+- **Enhanced Card Snapping**: Improved swipe functionality in card view (boksvisning) on mobile
+  - Added CSS `scroll-snap-stop: always` to prevent partial card views
+  - Implemented JavaScript backup snap function for precise card alignment
+  - Cards now always snap to show one complete PTW at a time when swiping
+  - Smooth animations with 150ms delay for better user experience
+
 **2025-10-25**: Status-based approval restrictions:
 - **Approval Workflow Security Enhancement**: Godkendelser (approvals) are now strictly limited to work orders with status "AKTIV" (active)
   - Frontend: `approval_workflow_widget.php` hides approval buttons when status is not 'active'

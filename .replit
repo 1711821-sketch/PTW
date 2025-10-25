@@ -15,12 +15,12 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 41193
-externalPort = 3000
-
-[[ports]]
 localPort = 43257
 externalPort = 4200
+
+[[ports]]
+localPort = 43669
+externalPort = 3000
 
 [agent]
 expertMode = true
@@ -47,5 +47,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:5000 -t ."
+args = "php -S 0.0.0.0:5000 router.php"
 waitForPort = 5000
