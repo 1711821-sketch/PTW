@@ -4,14 +4,27 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
-**2025-10-25**: Redesigned the card view (boksvisning) in `view_wo.php` with modern collapsible dropdown sections:
+**2025-10-25**: Major updates to card view (boksvisning) in `view_wo.php`:
+
+**Design Updates:**
+- Redesigned card view with modern collapsible dropdown sections
 - New modern card header with blue gradient and status badges
 - Organized content into four collapsible sections: Basisinformation, Godkendelsesproces, Tidsregistrering, and Dokumentationsbilleder
-- Added documentation images section with image grid display
 - Implemented smooth animations and responsive design for both desktop and mobile
-- All existing buttons and functionality preserved
-- Unified all dropdown sections to use consistent styling (same height, font, spacing, background color, and toggle animations)
+- Unified all dropdown sections with consistent styling (same height, font, spacing, background color, and toggle animations)
 - Refactored Godkendelsesproces section to match visual design of other dropdowns while preserving approval status display
+
+**Upload Functionality:**
+- Changed Dokumentationsbilleder section from image display to image upload interface in card view
+- Implemented secure upload functionality with comprehensive security measures:
+  - CSRF token protection against cross-site request forgery
+  - MIME type validation (JPEG, PNG, GIF, WebP, AVIF only)
+  - File size limit (max 50MB)
+  - Secure filename generation with error handling
+  - Entrepreneur-only access to their own firm's work orders
+  - Active PTW status validation - uploads only allowed for active work orders
+- Added success/error messaging for upload operations
+- Modern, responsive upload form with custom file input styling
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
