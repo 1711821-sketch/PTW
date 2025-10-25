@@ -1485,6 +1485,148 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
+        
+        /* NEW: Vertical Approval List for Card View */
+        .approval-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+        
+        .approval-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .approval-step.approved {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+        }
+        
+        .approval-step.pending {
+            background: #f9fafb;
+            border-color: #e5e7eb;
+        }
+        
+        .approval-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        
+        .approval-step.approved .approval-icon {
+            background: #10b981;
+        }
+        
+        .approval-step.pending .approval-icon {
+            background: #e5e7eb;
+        }
+        
+        .check-icon {
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .pending-icon {
+            color: #9ca3af;
+            font-size: 1.5rem;
+        }
+        
+        .approval-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .approval-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1f2937;
+            margin-bottom: 0.15rem;
+        }
+        
+        .approval-date {
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+        
+        .approval-status-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .approval-btn {
+            flex-shrink: 0;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .approval-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .approval-btn:active {
+            transform: translateY(0);
+        }
+        
+        .approval-count {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        /* Mobile responsive for approval list */
+        @media (max-width: 640px) {
+            .approval-step {
+                padding: 0.6rem;
+                gap: 0.6rem;
+            }
+            
+            .approval-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            
+            .approval-name {
+                font-size: 0.9rem;
+            }
+            
+            .approval-date,
+            .approval-status-text {
+                font-size: 0.75rem;
+            }
+            
+            .approval-btn {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
 
         /* Approve Buttons (List View) */
         .btn-approve {
@@ -2117,9 +2259,117 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     
                     <!-- Section 2: Godkendelsesproces (Collapsible) -->
                     <?php 
-                    // Display visual approval workflow widget
-                    renderApprovalWorkflowWidget($entry, $role, $today, $compact = true); 
+                    // Calculate approval count for status summary
+                    $approvalCount = 0;
+                    if ($oaApproved) $approvalCount++;
+                    if ($driftApproved) $approvalCount++;
+                    if ($entApproved) $approvalCount++;
+                    
+                    // Get approval history for timestamps
+                    // Note: approval_history may already be an array from Postgres JSONB
+                    $approval_history_raw = $entry['approval_history'] ?? '[]';
+                    $approval_history = is_array($approval_history_raw) ? $approval_history_raw : (json_decode($approval_history_raw, true) ?? []);
+                    $oaTimestamp = '';
+                    $driftTimestamp = '';
+                    $entTimestamp = '';
+                    
+                    if (is_array($approval_history)) {
+                        foreach ($approval_history as $hist) {
+                            if (($hist['role'] ?? '') === 'opgaveansvarlig' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                                $oaTimestamp = $hist['timestamp'] ?? '';
+                            }
+                            if (($hist['role'] ?? '') === 'drift' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                                $driftTimestamp = $hist['timestamp'] ?? '';
+                            }
+                            if (($hist['role'] ?? '') === 'entreprenor' && strpos($hist['timestamp'] ?? '', $today) === 0) {
+                                $entTimestamp = $hist['timestamp'] ?? '';
+                            }
+                        }
+                    }
+                    
+                    // Determine user's ability to approve
+                    $canApproveOA = ($role === 'admin' || $role === 'opgaveansvarlig') && !$oaApproved;
+                    $canApproveDrift = ($role === 'admin' || $role === 'drift') && !$driftApproved;
+                    $canApproveEnt = ($role === 'admin' || $role === 'entreprenor') && !$entApproved;
                     ?>
+                    <div class="card-section">
+                        <div class="section-header" onclick="toggleSection('approval-<?php echo $entry['id']; ?>')">
+                            <h4>✅ Godkendelsesproces</h4>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="approval-count" id="approval-count-<?php echo $entry['id']; ?>">Godkendt <?php echo $approvalCount; ?>/3</span>
+                                <span class="toggle-icon" id="toggle-approval-<?php echo $entry['id']; ?>">▼</span>
+                            </div>
+                        </div>
+                        <div class="section-content" id="approval-<?php echo $entry['id']; ?>">
+                            <div class="approval-list">
+                                <!-- Step 1: Opgaveansvarlig -->
+                                <div class="approval-step <?php echo $oaApproved ? 'approved' : 'pending'; ?>">
+                                    <div class="approval-icon">
+                                        <?php echo $oaApproved ? '<span class="check-icon">✓</span>' : '<span class="pending-icon">○</span>'; ?>
+                                    </div>
+                                    <div class="approval-info">
+                                        <div class="approval-name">Opgaveansvarlig</div>
+                                        <?php if ($oaApproved && $oaTimestamp): ?>
+                                            <div class="approval-date"><?php echo htmlspecialchars($oaTimestamp); ?></div>
+                                        <?php else: ?>
+                                            <div class="approval-status-text">Afventer godkendelse</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($canApproveOA): ?>
+                                        <button class="approval-btn ajax-approve-btn" 
+                                                data-id="<?php echo $entry['id']; ?>" 
+                                                data-role="opgaveansvarlig">
+                                            Godkend
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <!-- Step 2: Drift -->
+                                <div class="approval-step <?php echo $driftApproved ? 'approved' : 'pending'; ?>">
+                                    <div class="approval-icon">
+                                        <?php echo $driftApproved ? '<span class="check-icon">✓</span>' : '<span class="pending-icon">○</span>'; ?>
+                                    </div>
+                                    <div class="approval-info">
+                                        <div class="approval-name">Drift</div>
+                                        <?php if ($driftApproved && $driftTimestamp): ?>
+                                            <div class="approval-date"><?php echo htmlspecialchars($driftTimestamp); ?></div>
+                                        <?php else: ?>
+                                            <div class="approval-status-text">Afventer godkendelse</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($canApproveDrift): ?>
+                                        <button class="approval-btn ajax-approve-btn" 
+                                                data-id="<?php echo $entry['id']; ?>" 
+                                                data-role="drift">
+                                            Godkend
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <!-- Step 3: Entreprenør -->
+                                <div class="approval-step <?php echo $entApproved ? 'approved' : 'pending'; ?>">
+                                    <div class="approval-icon">
+                                        <?php echo $entApproved ? '<span class="check-icon">✓</span>' : '<span class="pending-icon">○</span>'; ?>
+                                    </div>
+                                    <div class="approval-info">
+                                        <div class="approval-name">Entreprenør</div>
+                                        <?php if ($entApproved && $entTimestamp): ?>
+                                            <div class="approval-date"><?php echo htmlspecialchars($entTimestamp); ?></div>
+                                        <?php else: ?>
+                                            <div class="approval-status-text">Afventer godkendelse</div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php if ($canApproveEnt): ?>
+                                        <button class="approval-btn ajax-approve-btn" 
+                                                data-id="<?php echo $entry['id']; ?>" 
+                                                data-role="entreprenor">
+                                            Godkend
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Section 3: Tidsregistrering (Collapsible) -->
                     <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
@@ -2819,18 +3069,63 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         listViewElement.className = 'approval-status approved';
                     }
                     
-                    // Card View element
+                    // Card View element (old widget style)
                     const cardViewElement = document.querySelector(`#cardView #${rolePrefix}-status-${id}`);
                     if (cardViewElement) {
                         cardViewElement.textContent = '✅ Godkendt';
                         cardViewElement.className = 'approval-status approved';
                     }
                     
-                    // Hide the button that was clicked
-                    buttonElement.style.display = 'none';
+                    // NEW: Update vertical approval list in card view
+                    // Find the approval step containing the clicked button
+                    const approvalStep = buttonElement.closest('.approval-step');
+                    if (approvalStep) {
+                        // Change step class from pending to approved
+                        approvalStep.classList.remove('pending');
+                        approvalStep.classList.add('approved');
+                        
+                        // Update icon from gray circle to green checkmark
+                        const iconElement = approvalStep.querySelector('.approval-icon');
+                        if (iconElement) {
+                            iconElement.innerHTML = '<span class="check-icon">✓</span>';
+                        }
+                        
+                        // Update status text to show timestamp
+                        const infoElement = approvalStep.querySelector('.approval-info');
+                        if (infoElement) {
+                            const statusElement = infoElement.querySelector('.approval-status-text');
+                            if (statusElement) {
+                                // Get current timestamp in format matching PHP
+                                const now = new Date();
+                                const day = String(now.getDate()).padStart(2, '0');
+                                const month = String(now.getMonth() + 1).padStart(2, '0');
+                                const year = now.getFullYear();
+                                const hours = String(now.getHours()).padStart(2, '0');
+                                const minutes = String(now.getMinutes()).padStart(2, '0');
+                                const timestamp = `${day}-${month}-${year} ${hours}:${minutes}`;
+                                
+                                statusElement.className = 'approval-date';
+                                statusElement.textContent = timestamp;
+                            }
+                        }
+                        
+                        // Remove the button
+                        buttonElement.remove();
+                    }
                     
-                    // Also hide corresponding button in the other view if it exists
-                    // List View buttons have 'list-' prefix, Card View buttons don't
+                    // Update approval count in header
+                    const countElement = document.getElementById(`approval-count-${id}`);
+                    if (countElement) {
+                        const currentText = countElement.textContent;
+                        const match = currentText.match(/Godkendt (\d+)\/3/);
+                        if (match) {
+                            const currentCount = parseInt(match[1]);
+                            const newCount = currentCount + 1;
+                            countElement.textContent = `Godkendt ${newCount}/3`;
+                        }
+                    }
+                    
+                    // Hide corresponding buttons in other views if they exist
                     const listViewButton = document.getElementById(`list-${rolePrefix}-btn-${id}`);
                     const cardViewButton = document.getElementById(`${rolePrefix}-btn-${id}`);
                     

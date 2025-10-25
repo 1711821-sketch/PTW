@@ -14,6 +14,23 @@ A web-based PTW (Permit To Work) system for coordinating work among administrato
 - Unified all dropdown sections with consistent styling (same height, font, spacing, background color, and toggle animations)
 - Refactored Godkendelsesproces section in both `view_wo.php` and `print_wo.php` to match visual design of other dropdowns while preserving approval status display
 
+**Card View Approval Redesign (`view_wo.php`):**
+- Replaced horizontal flow-diagram with modern vertical approval list
+- Each approval step displayed as individual card with:
+  - Green checkmark icon (✓) for approved steps, gray circle (○) for pending
+  - Role name (Opgaveansvarlig, Drift, Entreprenør)
+  - Timestamp display for approved steps
+  - "Afventer godkendelse" status text for pending steps
+  - "Godkend" button for users with appropriate permissions
+- Real-time AJAX approval updates without page reload:
+  - Visual state change from pending to approved
+  - Icon update from gray circle to green checkmark
+  - Timestamp display with current date/time
+  - Button removal after approval
+  - Approval count update in section header ("Godkendt X/3")
+- Responsive design with mobile-optimized sizing and spacing
+- Preserved daily reapproval business logic (approvals reset at midnight)
+
 **Print View Standardization (`print_wo.php`):**
 - Replaced `renderApprovalWorkflowWidget()` with inline standard collapsible structure
 - All dropdown sections now use shared `toggleSection()` function with consistent section IDs
