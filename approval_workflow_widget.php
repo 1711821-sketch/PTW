@@ -10,6 +10,7 @@
 function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact = false) {
     $approvals = $entry['approvals'] ?? [];
     $approval_history = $entry['approval_history'] ?? [];
+    $status = $entry['status'] ?? 'planning';
     
     // Get approval statuses for today
     $oaApproved = isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today;
@@ -35,10 +36,11 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
         }
     }
     
-    // Determine user's ability to approve
-    $canApproveOA = ($currentUserRole === 'admin' || $currentUserRole === 'opgaveansvarlig') && !$oaApproved;
-    $canApproveDrift = ($currentUserRole === 'admin' || $currentUserRole === 'drift') && !$driftApproved;
-    $canApproveEnt = ($currentUserRole === 'admin' || $currentUserRole === 'entreprenor') && !$entApproved;
+    // Determine user's ability to approve - ONLY if status is 'active'
+    $isActive = ($status === 'active');
+    $canApproveOA = $isActive && ($currentUserRole === 'admin' || $currentUserRole === 'opgaveansvarlig') && !$oaApproved;
+    $canApproveDrift = $isActive && ($currentUserRole === 'admin' || $currentUserRole === 'drift') && !$driftApproved;
+    $canApproveEnt = $isActive && ($currentUserRole === 'admin' || $currentUserRole === 'entreprenor') && !$entApproved;
     
     // Determine step state (approved, current_user, pending)
     $oaState = $oaApproved ? 'approved' : ($canApproveOA ? 'current_user' : 'pending');

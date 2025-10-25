@@ -85,6 +85,18 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
             }
         }
         
+        // CRITICAL: Only allow approvals for ACTIVE work orders
+        $woStatus = $workOrder['status'] ?? 'planning';
+        if ($woStatus !== 'active') {
+            error_log("AJAX approval denied - Work order not active - User: $currentUser, WO ID: $approveId, Status: $woStatus");
+            $statusText = $woStatus === 'planning' ? 'Planlagt' : ($woStatus === 'completed' ? 'Afsluttet' : $woStatus);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Godkendelse er kun muligt for aktive PTW\'er. Denne PTW har status: ' . $statusText . '.'
+            ]);
+            exit();
+        }
+        
         $today = date('d-m-Y');
         $now = date('d-m-Y H:i');
         

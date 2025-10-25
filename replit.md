@@ -4,6 +4,14 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
+**2025-10-25**: Status-based approval restrictions:
+- **Approval Workflow Security Enhancement**: Godkendelser (approvals) are now strictly limited to work orders with status "AKTIV" (active)
+  - Frontend: `approval_workflow_widget.php` hides approval buttons when status is not 'active'
+  - Backend: `view_wo.php` AJAX handler validates status and rejects approval attempts for non-active PTWs
+  - Status validation prevents approvals for "PLANLAGT" (planning) and "AFSLUTTET" (completed) work orders
+  - User-friendly error messages display current status when approval is attempted on non-active PTW
+  - This ensures approvals only occur during the active work phase, improving workflow safety and compliance
+
 **2025-10-25**: Major updates to card view (boksvisning) in `view_wo.php` and print view in `print_wo.php`:
 
 **Design Updates:**
