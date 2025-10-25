@@ -2030,7 +2030,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <span id="oa-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $oaApproved ? 'approved' : 'pending'; ?>">
                             <?php echo $oaApproved ? '✅' : '❌'; ?>
                         </span>
-                        <?php if (!$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
+                        <?php if ($status === 'active' && !$oaApproved && ($role === 'admin' || $role === 'opgaveansvarlig')): ?>
                             <button type="button" class="btn-approve" 
                                     id="list-oa-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'opgaveansvarlig', this);"
@@ -2044,7 +2044,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <span id="drift-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $driftApproved ? 'approved' : 'pending'; ?>">
                             <?php echo $driftApproved ? '✅' : '❌'; ?>
                         </span>
-                        <?php if (!$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
+                        <?php if ($status === 'active' && !$driftApproved && ($role === 'admin' || $role === 'drift')): ?>
                             <button type="button" class="btn-approve" 
                                     id="list-drift-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'drift', this);"
@@ -2058,7 +2058,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         <span id="ent-status-<?php echo $entry['id']; ?>" class="approval-badge <?php echo $entApproved ? 'approved' : 'pending'; ?>">
                             <?php echo $entApproved ? '✅' : '❌'; ?>
                         </span>
-                        <?php if (!$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
+                        <?php if ($status === 'active' && !$entApproved && ($role === 'admin' || $role === 'entreprenor')): ?>
                             <button type="button" class="btn-approve" 
                                     id="list-ent-btn-<?php echo $entry['id']; ?>"
                                     onclick="approveWorkPermit(<?php echo $entry['id']; ?>, 'entreprenor', this);"
@@ -2313,10 +2313,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         }
                     }
                     
-                    // Determine user's ability to approve
-                    $canApproveOA = ($role === 'admin' || $role === 'opgaveansvarlig') && !$oaApproved;
-                    $canApproveDrift = ($role === 'admin' || $role === 'drift') && !$driftApproved;
-                    $canApproveEnt = ($role === 'admin' || $role === 'entreprenor') && !$entApproved;
+                    // Determine user's ability to approve - ONLY if status is 'active'
+                    $canApproveOA = ($status === 'active') && ($role === 'admin' || $role === 'opgaveansvarlig') && !$oaApproved;
+                    $canApproveDrift = ($status === 'active') && ($role === 'admin' || $role === 'drift') && !$driftApproved;
+                    $canApproveEnt = ($status === 'active') && ($role === 'admin' || $role === 'entreprenor') && !$entApproved;
                     ?>
                     <div class="card-section">
                         <div class="section-header" onclick="toggleSection('approval-<?php echo $entry['id']; ?>')">
