@@ -472,7 +472,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             gap: 0.75rem;
         }
         
-        /* Mobile: bottom sticky footer with enhanced design */
+        /* Mobile: bottom sticky footer with compact design */
         @media (max-width: 768px) {
             .card-counter {
                 position: fixed;
@@ -481,14 +481,14 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 right: 0;
                 top: auto;
                 margin: 0;
-                padding: 16px 1rem;
-                padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+                padding: 8px 0.75rem;
+                padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
                 background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
                 color: white;
-                font-size: 16px;
-                font-weight: 600;
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
-                gap: 1.5rem;
+                font-size: 13px;
+                font-weight: 500;
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+                gap: 0.75rem;
                 border-radius: 0;
             }
         }
@@ -519,15 +519,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             flex-shrink: 0;
         }
         
-        /* Mobile: larger buttons with white styling */
+        /* Mobile: compact buttons with white styling */
         @media (max-width: 768px) {
             .counter-nav-btn {
                 background: rgba(255, 255, 255, 0.95);
                 color: #1976d2;
-                width: 48px;
-                height: 48px;
-                font-size: 1.3rem;
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
             }
             
             .counter-nav-btn:active {
@@ -566,7 +566,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         @media (max-width: 768px) {
             .card-view-wrapper {
                 padding: 0;
-                padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+                padding-bottom: calc(52px + env(safe-area-inset-bottom, 0px));
             }
         }
 
