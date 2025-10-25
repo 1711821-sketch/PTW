@@ -744,6 +744,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             width: 100%;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            scroll-padding: 0;
         }
 
         .card-slider::-webkit-scrollbar {
@@ -761,6 +762,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             padding: 0;
             margin: 10px 0;
             scroll-snap-align: start;
+            scroll-snap-stop: always;
             display: flex;
             flex-direction: column;
             transition: transform 0.4s ease, opacity 0.3s ease, box-shadow 0.2s ease;
@@ -3448,6 +3450,32 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 
                 // Listen to scroll events
                 cardSlider.addEventListener('scroll', updateCardNavigation);
+                
+                // Snap to nearest card after manual scroll ends (backup for scroll-snap)
+                let scrollTimeout;
+                cardSlider.addEventListener('scroll', function() {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(function() {
+                        snapToNearestCard();
+                    }, 150);
+                });
+                
+                function snapToNearestCard() {
+                    const cardWidth = cardSlider.querySelector('.work-permit-card')?.offsetWidth;
+                    if (!cardWidth) return;
+                    
+                    const scrollLeft = cardSlider.scrollLeft;
+                    const nearestCardIndex = Math.round(scrollLeft / cardWidth);
+                    const targetScroll = nearestCardIndex * cardWidth;
+                    
+                    // Only snap if we're not already aligned
+                    if (Math.abs(scrollLeft - targetScroll) > 5) {
+                        cardSlider.scrollTo({
+                            left: targetScroll,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
                 
                 // Touch swipe functionality for mobile
                 let touchStartX = 0;
