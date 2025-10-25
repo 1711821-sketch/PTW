@@ -526,14 +526,10 @@ if ($statusVal === 'planning') {
     <?php 
     $today = date('d-m-Y');
     $approvals = $entry['approvals'] ?? [];
-    // Check if approved (any date stored means approved)
-    $oaApproved = !empty($approvals['opgaveansvarlig']);
-    $driftApproved = !empty($approvals['drift']);
-    $entApproved = !empty($approvals['entreprenor']);
-    // Also check if approved TODAY (for determining button visibility)
-    $oaApprovedToday = isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today;
-    $driftApprovedToday = isset($approvals['drift']) && $approvals['drift'] === $today;
-    $entApprovedToday = isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today;
+    // Get approval statuses for today (PTW requires daily reapproval for safety)
+    $oaApproved = isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today;
+    $driftApproved = isset($approvals['drift']) && $approvals['drift'] === $today;
+    $entApproved = isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today;
     
     $approvalCount = 0;
     if ($oaApproved) $approvalCount++;
@@ -560,15 +556,15 @@ if ($statusVal === 'planning') {
             $entTimestamp = '';
             
             if (is_array($approval_history)) {
-                // Get the LAST (most recent) approval for each role
-                foreach (array_reverse($approval_history) as $hist) {
-                    if (!$oaTimestamp && ($hist['role'] ?? '') === 'opgaveansvarlig') {
+                // Get timestamps for today's approvals only (matching original widget logic)
+                foreach ($approval_history as $hist) {
+                    if (($hist['role'] ?? '') === 'opgaveansvarlig' && strpos($hist['timestamp'] ?? '', $today) === 0) {
                         $oaTimestamp = $hist['timestamp'] ?? '';
                     }
-                    if (!$driftTimestamp && ($hist['role'] ?? '') === 'drift') {
+                    if (($hist['role'] ?? '') === 'drift' && strpos($hist['timestamp'] ?? '', $today) === 0) {
                         $driftTimestamp = $hist['timestamp'] ?? '';
                     }
-                    if (!$entTimestamp && ($hist['role'] ?? '') === 'entreprenor') {
+                    if (($hist['role'] ?? '') === 'entreprenor' && strpos($hist['timestamp'] ?? '', $today) === 0) {
                         $entTimestamp = $hist['timestamp'] ?? '';
                     }
                 }
@@ -900,6 +896,12 @@ if ($statusVal === 'planning') {
         function toggleSection(woId, sectionName) {
             const section = document.getElementById(`${sectionName}-section-${woId}`);
             const icon = document.getElementById(`${sectionName}-icon-${woId}`);
+            
+            // Ensure elements exist before trying to access their properties
+            if (!section || !icon) {
+                console.error(`Toggle section elements not found: ${sectionName}-section-${woId} or ${sectionName}-icon-${woId}`);
+                return;
+            }
             
             if (section.classList.contains('expanded')) {
                 section.classList.remove('expanded');

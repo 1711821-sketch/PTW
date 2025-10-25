@@ -4,7 +4,7 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
-**2025-10-25**: Major updates to card view (boksvisning) in `view_wo.php`:
+**2025-10-25**: Major updates to card view (boksvisning) in `view_wo.php` and print view in `print_wo.php`:
 
 **Design Updates:**
 - Redesigned card view with modern collapsible dropdown sections
@@ -12,7 +12,16 @@ A web-based PTW (Permit To Work) system for coordinating work among administrato
 - Organized content into four collapsible sections: Basisinformation, Godkendelsesproces, Tidsregistrering, and Dokumentationsbilleder
 - Implemented smooth animations and responsive design for both desktop and mobile
 - Unified all dropdown sections with consistent styling (same height, font, spacing, background color, and toggle animations)
-- Refactored Godkendelsesproces section to match visual design of other dropdowns while preserving approval status display
+- Refactored Godkendelsesproces section in both `view_wo.php` and `print_wo.php` to match visual design of other dropdowns while preserving approval status display
+
+**Print View Standardization (`print_wo.php`):**
+- Replaced `renderApprovalWorkflowWidget()` with inline standard collapsible structure
+- All dropdown sections now use shared `toggleSection()` function with consistent section IDs
+- Removed deprecated `toggleApprovalWorkflow()` function
+- Removed CSS overrides; approval section now inherits same styling as other sections
+- Preserved original business logic: PTW approvals require daily reapproval for safety (approvals reset at midnight)
+- Approval count and button visibility based on current day's approvals only
+- Added null-checks in `toggleSection()` JavaScript function to prevent errors when elements don't exist
 
 **Upload Functionality:**
 - Changed Dokumentationsbilleder section from image display to image upload interface in card view
