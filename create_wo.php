@@ -100,32 +100,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_wo'])) {
 
     // When editing an existing entry, update it in the database
     if ($edit_id) {
-        $db->query(
-            "UPDATE work_orders SET 
-                work_order_no = ?, p_number = ?, mps_nr = ?, description = ?, p_description = ?, 
-                jobansvarlig = ?, telefon = ?, oprettet_af = ?, oprettet_dato = ?, components = ?, 
-                entreprenor_firma = ?, entreprenor_kontakt = ?, status = ?, 
-                latitude = ?, longitude = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?",
-            [
-                $current['work_order_no'], $current['p_number'], $current['mps_nr'],
-                $current['description'], $current['p_description'], $current['jobansvarlig'],
-                $current['telefon'], $current['oprettet_af'], 
-                !empty($current['oprettet_dato']) ? $current['oprettet_dato'] : null,
-                $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
-                $current['status'], 
-                !empty($current['latitude']) ? floatval($current['latitude']) : null,
-                !empty($current['longitude']) ? floatval($current['longitude']) : null,
-                $current['notes'], $edit_id
-            ]
-        );
-    } else {
-        // Check if work order number already exists to prevent duplicates
-        $existingWO = $db->fetch("SELECT id FROM work_orders WHERE work_order_no = ?", [$current['work_order_no']]);
+        // Check if the new p_number is already used by another work order
+        $existingPNum = $db->fetch("SELECT id FROM work_orders WHERE p_number = ? AND id != ?", [$current['p_number'], $edit_id]);
         
-        if ($existingWO) {
-            // Work order number already exists, add error message and don't insert
-            $error_message = "Fejl: PTW nr. '" . htmlspecialchars($current['work_order_no']) . "' findes allerede. Vælg venligst et andet nummer.";
+        if ($existingPNum) {
+            // Indkøbsordre nummer already exists for another work order
+            $error_message = "Fejl: Indkøbsordre nummer '" . htmlspecialchars($current['p_number']) . "' findes allerede. Vælg venligst et andet nummer.";
+        } else {
+            $db->query(
+                "UPDATE work_orders SET 
+                    work_order_no = ?, p_number = ?, mps_nr = ?, description = ?, p_description = ?, 
+                    jobansvarlig = ?, telefon = ?, oprettet_af = ?, oprettet_dato = ?, components = ?, 
+                    entreprenor_firma = ?, entreprenor_kontakt = ?, status = ?, 
+                    latitude = ?, longitude = ?, notes = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?",
+                [
+                    $current['work_order_no'], $current['p_number'], $current['mps_nr'],
+                    $current['description'], $current['p_description'], $current['jobansvarlig'],
+                    $current['telefon'], $current['oprettet_af'], 
+                    !empty($current['oprettet_dato']) ? $current['oprettet_dato'] : null,
+                    $current['components'], $current['entreprenor_firma'], $current['entreprenor_kontakt'],
+                    $current['status'], 
+                    !empty($current['latitude']) ? floatval($current['latitude']) : null,
+                    !empty($current['longitude']) ? floatval($current['longitude']) : null,
+                    $current['notes'], $edit_id
+                ]
+            );
+        }
+    } else {
+        // Check if Indkøbsordre nummer already exists to prevent duplicates
+        $existingPNum = $db->fetch("SELECT id FROM work_orders WHERE p_number = ?", [$current['p_number']]);
+        
+        if ($existingPNum) {
+            // Indkøbsordre nummer already exists, add error message and don't insert
+            $error_message = "Fejl: Indkøbsordre nummer '" . htmlspecialchars($current['p_number']) . "' findes allerede. Vælg venligst et andet nummer.";
         } else {
             // Insert new work order into database
             $db->query(

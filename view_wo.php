@@ -1581,9 +1581,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <div class="card-title">
                         <div class="card-title-text">
                             <h3><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></h3>
-                            <?php if (!empty($entry['p_number'])): ?>
-                                <p style="margin: 0.25rem 0 0.5rem 0; font-size: 0.9em; color: #666; font-weight: 500;">Indkøbsordre: <?php echo htmlspecialchars($entry['p_number']); ?></p>
-                            <?php endif; ?>
+                            <p style="margin: 0.25rem 0 0.5rem 0; font-size: 0.9em; color: #666; font-weight: 500;">Indkøbsordre: <?php echo htmlspecialchars($entry['p_number']); ?></p>
                             <p class="card-header-description" id="desc-<?php echo $entry['id']; ?>"><?php echo htmlspecialchars($entry['description'] ?? ''); ?></p>
                             <?php if (strlen($entry['description'] ?? '') > 100): ?>
                                 <span class="description-toggle" onclick="toggleDescription(<?php echo $entry['id']; ?>)" id="desc-toggle-<?php echo $entry['id']; ?>">Vis mere</span>
