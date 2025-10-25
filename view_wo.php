@@ -2244,9 +2244,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <div class="card-section">
                         <div class="section-header" onclick="toggleSection('basic-<?php echo $entry['id']; ?>')">
                             <h4>📋 Basisinformation</h4>
-                            <span class="toggle-icon" id="toggle-basic-<?php echo $entry['id']; ?>">▼</span>
+                            <span class="toggle-icon" id="toggle-basic-<?php echo $entry['id']; ?>">►</span>
                         </div>
-                        <div class="section-content expanded" id="basic-<?php echo $entry['id']; ?>">
+                        <div class="section-content" id="basic-<?php echo $entry['id']; ?>">
                             <div class="info-grid">
                                 <div class="info-item">
                                     <span class="info-label">PTW Nr.</span>
