@@ -453,7 +453,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             padding: 1.5rem;
         }
 
-        /* Card Counter Bar */
+        /* Card Counter Bar - Desktop (top position) */
         .card-counter {
             position: sticky;
             top: 0;
@@ -464,21 +464,32 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             font-size: 13px;
             font-weight: 500;
             color: #555;
-            padding: 4px 0.5rem;
+            padding: 8px 1rem;
             margin-bottom: 0.25rem;
             display: none;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
         }
         
+        /* Mobile: bottom sticky footer with enhanced design */
         @media (max-width: 768px) {
             .card-counter {
-                top: calc(56px + env(safe-area-inset-top, 0px));
-                padding: 3px 0.5rem;
-                font-size: 12px;
-                margin-top: 0;
-                margin-bottom: 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                margin: 0;
+                padding: 16px 1rem;
+                padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+                background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+                color: white;
+                font-size: 16px;
+                font-weight: 600;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+                gap: 1.5rem;
+                border-radius: 0;
             }
         }
 
@@ -488,23 +499,40 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         .counter-text {
             text-align: center;
+            user-select: none;
         }
         
         .counter-nav-btn {
             background: #e0e0e0;
             border: none;
             color: #555;
-            width: 24px;
-            height: 24px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             flex-shrink: 0;
+        }
+        
+        /* Mobile: larger buttons with white styling */
+        @media (max-width: 768px) {
+            .counter-nav-btn {
+                background: rgba(255, 255, 255, 0.95);
+                color: #1976d2;
+                width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .counter-nav-btn:active {
+                background: rgba(255, 255, 255, 0.85);
+            }
         }
         
         .counter-nav-btn:hover {
@@ -517,9 +545,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         }
         
         .counter-nav-btn:disabled {
-            opacity: 0.4;
+            opacity: 0.3;
             cursor: not-allowed;
             background: #e0e0e0;
+        }
+        
+        @media (max-width: 768px) {
+            .counter-nav-btn:disabled {
+                background: rgba(255, 255, 255, 0.4);
+            }
         }
 
         /* Modern Card Slider Styles */
@@ -532,6 +566,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         @media (max-width: 768px) {
             .card-view-wrapper {
                 padding: 0;
+                padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
             }
         }
 
@@ -2533,6 +2568,56 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 
                 // Listen to scroll events
                 cardSlider.addEventListener('scroll', updateCardNavigation);
+                
+                // Touch swipe functionality for mobile
+                let touchStartX = 0;
+                let touchEndX = 0;
+                let touchStartY = 0;
+                let touchEndY = 0;
+                let isSwiping = false;
+                
+                cardSlider.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                    touchStartY = e.changedTouches[0].screenY;
+                    isSwiping = false;
+                }, { passive: true });
+                
+                cardSlider.addEventListener('touchmove', function(e) {
+                    const touchCurrentX = e.changedTouches[0].screenX;
+                    const touchCurrentY = e.changedTouches[0].screenY;
+                    const diffX = Math.abs(touchCurrentX - touchStartX);
+                    const diffY = Math.abs(touchCurrentY - touchStartY);
+                    
+                    // If horizontal swipe is dominant, mark as swiping
+                    if (diffX > diffY && diffX > 10) {
+                        isSwiping = true;
+                    }
+                }, { passive: true });
+                
+                cardSlider.addEventListener('touchend', function(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    touchEndY = e.changedTouches[0].screenY;
+                    handleSwipe();
+                }, { passive: true });
+                
+                function handleSwipe() {
+                    if (!isSwiping) return;
+                    
+                    const swipeDistance = touchEndX - touchStartX;
+                    const swipeThreshold = 50; // Minimum swipe distance in pixels
+                    
+                    if (Math.abs(swipeDistance) > swipeThreshold) {
+                        const cardWidth = cardSlider.querySelector('.work-permit-card').offsetWidth;
+                        
+                        if (swipeDistance > 0) {
+                            // Swipe right - go to previous card
+                            cardSlider.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                        } else {
+                            // Swipe left - go to next card
+                            cardSlider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                        }
+                    }
+                }
             }
             
             // Load saved view preference and ensure proper initialization
@@ -2544,6 +2629,33 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             document.getElementById('cardView').style.display = 'none';
             // Then set the correct view
             switchView(savedView);
+            
+            // On mobile, collapse all time tracking and approval sections by default
+            if (isMobile) {
+                // Collapse all time tracking sections
+                document.querySelectorAll('.time-entry-section').forEach(function(section) {
+                    section.classList.remove('expanded');
+                });
+                
+                document.querySelectorAll('.time-entry-section + * .toggle-icon').forEach(function(icon) {
+                    icon.classList.remove('expanded');
+                });
+                
+                // Find all toggle icons for time sections
+                document.querySelectorAll('[id^="time-icon-"]').forEach(function(icon) {
+                    icon.classList.remove('expanded');
+                });
+                
+                // Collapse all approval workflow sections
+                document.querySelectorAll('.approval-section').forEach(function(section) {
+                    section.classList.remove('expanded');
+                });
+                
+                // Find all toggle icons for approval sections
+                document.querySelectorAll('[id^="approval-icon-"]').forEach(function(icon) {
+                    icon.classList.remove('expanded');
+                });
+            }
         });
         </script>
     <?php else: ?>
