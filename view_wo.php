@@ -843,14 +843,17 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             display: none;
             padding: 1rem;
             background: white;
-            animation: slideDown 0.3s ease;
+            animation: fadeSlideDown 0.3s ease;
+            opacity: 0;
         }
         
         .section-content.expanded {
             display: block;
+            animation: fadeSlideDown 0.3s ease forwards;
+            opacity: 1;
         }
         
-        @keyframes slideDown {
+        @keyframes fadeSlideDown {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
@@ -1490,36 +1493,36 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .approval-list {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 1rem;
             padding: 0.5rem 0;
         }
         
         .approval-step {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
+            gap: 1rem;
+            padding: 1rem;
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 2px solid #e5e7eb;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
         }
         
         .approval-step.approved {
             background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-color: #10b981;
+            border-color: #059669;
         }
         
         .approval-step.pending {
             background: #f9fafb;
-            border-color: #e5e7eb;
+            border-color: #d1d5db;
         }
         
         .approval-icon {
             flex-shrink: 0;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1549,35 +1552,39 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .approval-info {
             flex: 1;
             min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .approval-name {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #1f2937;
-            margin-bottom: 0.15rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
         }
         
         .approval-date {
             font-size: 0.8rem;
-            color: #10b981;
-            font-weight: 500;
+            color: #6b7280;
+            font-weight: 400;
         }
         
         .approval-status-text {
             font-size: 0.8rem;
-            color: #6b7280;
+            color: #9ca3af;
             font-style: italic;
         }
         
         .approval-btn {
             flex-shrink: 0;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.25rem;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 0.85rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -1587,7 +1594,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         .approval-btn:hover {
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
         .approval-btn:active {
@@ -1602,19 +1609,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         
         /* Mobile responsive for approval list */
         @media (max-width: 640px) {
+            .approval-list {
+                gap: 1.25rem;
+            }
+            
             .approval-step {
-                padding: 0.6rem;
-                gap: 0.6rem;
+                padding: 1rem;
+                gap: 0.75rem;
+                flex-wrap: wrap;
             }
             
             .approval-icon {
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
                 font-size: 1.1rem;
             }
             
             .approval-name {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
             
             .approval-date,
@@ -1623,8 +1635,10 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
             
             .approval-btn {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
+                width: 100%;
+                padding: 0.75rem;
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
             }
         }
 
