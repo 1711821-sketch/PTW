@@ -318,7 +318,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     <div class="card-body">
       <div class="form-row">
         <div class="form-group">
-          <label for="p_number">P-nummer</label>
+          <label for="p_number">Indkøbsordre nummer</label>
           <input type="text" id="p_number" name="p_number" value="<?php echo htmlspecialchars($current['p_number']); ?>">
         </div>
         <div class="form-group">
@@ -327,7 +327,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
         </div>
       </div>
       <div class="form-group">
-        <label for="p_description">Beskrivelse (P-nummer)</label>
+        <label for="p_description">Indkøbsordre beskrivelse</label>
         <textarea id="p_description" name="p_description"><?php echo htmlspecialchars($current['p_description']); ?></textarea>
       </div>
       <div class="form-group">
@@ -633,20 +633,20 @@ document.getElementById('parseBtn').addEventListener('click', async function () 
     d2 = d2.replace(/\s+/g, ' ').trim();
     
     markField('p_description', true, d2);
-    logLines.push('<span class="found">✔ P‑nr. beskrivelse fundet</span>');
+    logLines.push('<span class="found">✔ Indkøbsordre beskrivelse fundet</span>');
   } else {
     markField('p_description', false);
-    logLines.push('<span class="missing">✘ P‑nr. beskrivelse IKKE fundet</span>');
+    logLines.push('<span class="missing">✘ Indkøbsordre beskrivelse IKKE fundet</span>');
   }
-  // 3) P-nummer
+  // 3) Indkøbsordre nummer
   let pMatch = flat.match(/\bP\s*([0-9]{5,})\b/i);
   if (pMatch) {
     const pNum = 'P' + pMatch[1];
     markField('p_number', true, pNum);
-    logLines.push('<span class="found">✔ P-nummer: ' + pNum + '</span>');
+    logLines.push('<span class="found">✔ Indkøbsordre nummer: ' + pNum + '</span>');
   } else {
     markField('p_number', false);
-    logLines.push('<span class="missing">✘ P-nummer IKKE fundet</span>');
+    logLines.push('<span class="missing">✘ Indkøbsordre nummer IKKE fundet</span>');
   }
   // 4) MPS-nummer with validation
   let mpsMatch = flat.match(/MPS[\s-]*nr\.?\s*:??\s*([A-Za-z0-9.\-\/]+)/i);

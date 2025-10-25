@@ -507,7 +507,7 @@ if ($statusVal === 'planning') {
             <table>
                 <tr><th>PTW Nr.</th><td data-label="PTW Nr."><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td></tr>
                 <tr><th>Beskrivelse</th><td data-label="Beskrivelse"><?php echo nl2br(htmlspecialchars($entry['description'] ?? '')); ?></td></tr>
-                <tr><th>P-nr beskrivelse</th><td data-label="P-nr beskrivelse"><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
+                <tr><th>Indkøbsordre beskrivelse</th><td data-label="Indkøbsordre beskrivelse"><?php echo nl2br(htmlspecialchars($entry['p_description'] ?? '')); ?></td></tr>
                 <tr><th>Jobansvarlig</th><td data-label="Jobansvarlig"><?php echo htmlspecialchars($entry['jobansvarlig'] ?? ''); ?></td></tr>
                 <tr><th>Telefon</th><td data-label="Telefon"><?php echo htmlspecialchars($entry['telefon'] ?? ''); ?></td></tr>
                 <tr><th>PTW oprettet af</th><td data-label="PTW oprettet af"><?php echo htmlspecialchars($entry['oprettet_af'] ?? ''); ?></td></tr>

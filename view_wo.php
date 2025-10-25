@@ -1595,7 +1595,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     </div>
                     <?php if (!empty($entry['p_description'])): ?>
                         <div class="card-p-description">
-                            <strong>P-beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
+                            <strong>Indkøbsordre beskrivelse:</strong> <?php echo htmlspecialchars($entry['p_description']); ?>
                         </div>
                     <?php endif; ?>
                 </div>
