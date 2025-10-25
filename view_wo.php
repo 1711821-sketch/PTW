@@ -1311,7 +1311,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <tr>
                         <th title="PTW NR.">PTW nr.</th>
                         <th>Beskrivelse</th>
-                        <th>P-beskrivelse</th>
+                        <th>Indkøbsordre beskrivelse</th>
                         <th>Jobansvarlig</th>
                         <th>Entreprenør</th>
                         <th>Status</th>
