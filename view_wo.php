@@ -2113,20 +2113,6 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
         }
         
-        // Toggle approval workflow section
-        function toggleApprovalWorkflow(woId) {
-            const section = document.getElementById(`approval-section-${woId}`);
-            const icon = document.getElementById(`approval-icon-${woId}`);
-            
-            if (section.classList.contains('expanded')) {
-                section.classList.remove('expanded');
-                if (icon) icon.textContent = '▼';
-            } else {
-                section.classList.add('expanded');
-                if (icon) icon.textContent = '▲';
-            }
-        }
-        
         // Modal Functions
         function openTimeModal(workOrderId) {
             const modal = document.getElementById(`timeModal${workOrderId}`);

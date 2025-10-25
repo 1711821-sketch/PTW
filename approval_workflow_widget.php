@@ -56,15 +56,15 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
     $statusText = "Godkendt {$approvalCount}/3";
     
     ?>
-    <div class="card-approval-workflow">
-        <div class="card-approval-header" onclick="toggleApprovalWorkflow(<?php echo $entry['id']; ?>)">
+    <div class="card-section">
+        <div class="section-header" onclick="toggleSection('approval-<?php echo $entry['id']; ?>')">
             <h4>✅ Godkendelsesproces</h4>
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <span class="approval-summary"><?php echo $statusText; ?></span>
-                <span class="toggle-icon" id="approval-icon-<?php echo $entry['id']; ?>">▼</span>
+                <span class="toggle-icon" id="toggle-approval-<?php echo $entry['id']; ?>">▼</span>
             </div>
         </div>
-        <div class="approval-workflow-section" id="approval-section-<?php echo $entry['id']; ?>">
+        <div class="section-content" id="approval-<?php echo $entry['id']; ?>">
             <div class="approval-workflow-widget <?php echo $compact ? 'compact' : ''; ?>" id="<?php echo $widgetId; ?>">
                 <div class="workflow-steps">
             <!-- Step 1: Opgaveansvarlig -->
@@ -166,49 +166,14 @@ function renderApprovalWorkflowWidget($entry, $currentUserRole, $today, $compact
     </div>
     
     <style>
-        /* Accordion container for approval workflow */
-        .card-approval-workflow {
-            padding: 0;
-            margin-bottom: 0.75rem;
-        }
-
-        .card-approval-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            background: rgba(16, 185, 129, 0.03);
-            border-radius: 6px;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .card-approval-header:hover {
-            background: rgba(16, 185, 129, 0.06);
-        }
-
-        .card-approval-workflow h4 {
-            margin: 0;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-        
+        /* Approval summary text styling */
         .approval-summary {
             font-size: 0.85rem;
             color: var(--text-secondary);
             font-weight: 600;
         }
         
-        .approval-workflow-section {
-            display: none;
-            padding: 0.5rem 0;
-            margin-top: 0.5rem;
-        }
-        
-        .approval-workflow-section.expanded {
-            display: block;
-        }
-        
+        /* Approval workflow widget styling */
         .approval-workflow-widget {
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border-radius: 12px;
