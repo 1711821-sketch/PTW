@@ -11,7 +11,12 @@ A web-based PTW (Permit To Work) system for coordinating work among administrato
   - Added prominent link on `login.php` below registration: "📹 Instruktionsvideo for brugen af PTW system"
   - Includes recommendation text: "Anbefales at se video inden man starter at bruge appen"
   - Video accessible without login for easy onboarding of new entrepreneurs
-  - Responsive video player with 16:9 aspect ratio and modern styling
+  - Fully responsive design optimized for iPhones and mobile devices:
+    - Video container with max-width 600px, auto-scaling for smaller screens
+    - `playsinline` attribute prevents forced fullscreen on iOS
+    - Rounded corners (12px border-radius) and subtle shadow for modern look
+    - Centered card layout with adaptive padding (2rem desktop, 1rem mobile)
+    - Responsive typography scaling for different screen sizes
   - Back-to-login navigation link for easy return
 
 **2025-10-25**: Image serving infrastructure:

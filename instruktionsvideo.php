@@ -2,121 +2,108 @@
 <html lang="da">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instruktionsvideo - PTW System</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="style.css">
     <style>
-        .video-container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        body {
+            background: var(--background-secondary, #f5f7fa);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
         
-        .video-card {
-            background: var(--background-primary);
+        .card {
+            background: var(--background-primary, #ffffff);
             padding: 2rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            border: 1px solid var(--border-light);
-            position: relative;
-            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
         }
         
-        .video-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-        }
-        
-        .video-header {
-            margin-bottom: 1.5rem;
-        }
-        
-        .video-header h1 {
+        .card h2 {
             margin: 0 0 0.5rem 0;
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text-primary, #1a1a1a);
         }
         
-        .video-description {
-            color: var(--text-secondary);
-            font-size: 1rem;
+        .card p {
+            color: var(--text-secondary, #666);
+            font-size: 1.125rem;
             line-height: 1.6;
             margin-bottom: 1.5rem;
         }
         
-        .video-wrapper {
+        .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            height: 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto;
+            border-radius: 12px;
             overflow: hidden;
-            border-radius: var(--radius-md);
-            background: #000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
         
-        .video-wrapper video {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .video-container video {
             width: 100%;
-            height: 100%;
-            border-radius: var(--radius-md);
+            height: auto;
+            display: block;
+            border-radius: 12px;
         }
         
         .back-link {
             display: inline-block;
-            margin-top: 1.5rem;
-            color: var(--primary-color);
+            margin-top: 1rem;
+            color: var(--primary-color, #2563eb);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
         }
         
         .back-link:hover {
-            color: var(--primary-dark);
+            color: var(--primary-dark, #1e40af);
             text-decoration: underline;
         }
         
-        @media (max-width: 768px) {
+        /* Mobiloptimering */
+        @media (max-width: 600px) {
+            .card {
+                padding: 1rem;
+            }
+            
             .video-container {
-                margin: 1rem auto;
+                max-width: 100%;
             }
             
-            .video-card {
-                padding: 1.5rem;
+            .card h2 {
+                font-size: 1.25rem;
             }
             
-            .video-header h1 {
-                font-size: 1.5rem;
+            .card p {
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <div class="video-card">
-            <div class="video-header">
-                <h1>📹 Instruktionsvideo for PTW System</h1>
-            </div>
-            
-            <div class="video-description">
-                <p>Denne video viser dig hvordan du bruger PTW systemet som entreprenør. Vi anbefaler at du ser videoen inden du starter med at bruge appen.</p>
-            </div>
-            
-            <div class="video-wrapper">
-                <video controls preload="metadata">
-                    <source src="assets/videos/ptw_instruktionsvideo.mp4" type="video/mp4">
-                    Din browser understøtter ikke videoafspilning. Du kan downloade videoen direkte ved at højreklikke på siden.
-                </video>
-            </div>
-            
-            <a href="login.php" class="back-link">← Tilbage til login</a>
+    <div class="card">
+        <h2>📹 Instruktionsvideo for PTW System</h2>
+        <p>Denne video viser dig hvordan du bruger PTW systemet som entreprenør. Vi anbefaler at du ser videoen inden du starter med at bruge appen.</p>
+        
+        <div class="video-container">
+            <video controls playsinline preload="metadata">
+                <source src="/assets/videos/ptw_instruktionsvideo.mp4" type="video/mp4" />
+                Din browser understøtter ikke videoafspilning.
+            </video>
         </div>
+        
+        <a href="login.php" class="back-link">← Tilbage til login</a>
     </div>
 </body>
 </html>
