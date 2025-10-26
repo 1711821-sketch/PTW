@@ -60,15 +60,22 @@
         .back-link {
             display: inline-block;
             margin-top: 1rem;
-            color: var(--primary-color, #2563eb);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
+            padding: 0.75rem 1.5rem;
+            color: #ffffff !important;
+            background: var(--primary-color, #2563eb);
+            text-decoration: none !important;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            z-index: 100;
+            position: relative;
         }
         
         .back-link:hover {
-            color: var(--primary-dark, #1e40af);
-            text-decoration: underline;
+            background: var(--primary-dark, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
         
         /* Mobiloptimering */
@@ -87,6 +94,13 @@
             
             .card p {
                 font-size: 1rem;
+            }
+            
+            .back-link {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 1rem;
             }
         }
     </style>
