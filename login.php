@@ -154,6 +154,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: var(--primary-dark);
             text-decoration: underline;
         }
+        
+        .video-info {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-light);
+            margin-top: 1.5rem;
+        }
+        
+        .video-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .video-info a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .video-info p {
+            margin: 0.5rem 0 0 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -182,6 +212,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <div class="register-link">
                 <a href="register.php">Opret ny bruger</a>
+            </div>
+            
+            <div class="video-info">
+                <a href="instruktionsvideo.php">
+                    📹 Instruktionsvideo for brugen af PTW system
+                </a>
+                <p>Anbefales at se video inden man starter at bruge appen</p>
             </div>
         </div>
     </div>
