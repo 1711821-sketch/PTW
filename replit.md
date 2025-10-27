@@ -4,6 +4,16 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
+**2025-10-27**: Navigation refactoring and standardization:
+- **Centralized Navigation**: Created a single central navigation file (`includes/navigation.php`) that all pages now use
+  - Eliminated duplicated navigation code across 11 different PHP files
+  - Removed all emoji icons from navigation links (previously had 🔍, 🗺️, 📊, ➕, 📱)
+  - All pages now have consistent navigation based on user role
+  - Implemented automatic active link highlighting based on current page
+  - Role-based link visibility (admin, opgaveansvarlig, drift, entreprenør)
+  - Updated files: view_wo.php, dashboard.php, admin.php, sms_admin.php, create_wo.php, map_wo.php, time_overblik.php, view_sja.php, sja_history.php, sja_compare.php, print_wo.php
+  - Easier maintenance: future navigation changes only require updating one file
+
 **2025-10-26**: Instructional video integration:
 - **Login Page Enhancement**: Added instructional video link for entrepreneurs on login page
   - Created `instruktionsvideo.php` page with HTML5 video player for viewing training content
