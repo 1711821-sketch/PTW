@@ -230,30 +230,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 <!-- Remove page-specific inline styles; all base styling lives in style.css -->
 </head>
 <body>
-    <!-- Top navigation bar with hamburger menu -->
-    <nav class="navbar">
-        <div class="navbar-mobile">
-            <button class="navbar-toggle" aria-label="Toggle navigation">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?></span>
-        </div>
-        <div class="navbar-links">
-            <a href="view_wo.php">PTW-oversigt</a>
-            <?php if (in_array($role ?? '', ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php">Opret ny PTW</a>
-            <?php endif; ?>
-            <a href="map_wo.php">Kort</a>
-            <a href="dashboard.php">Dashboard</a>
-            <?php if ($role === 'admin'): ?>
-                <a href="admin.php">Admin</a>
-            <?php endif; ?>
-            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?> (<?php echo htmlspecialchars($_SESSION['role'] ?? ''); ?>)</span>
-            <a class="logout-link" href="logout.php">Log ud</a>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <?php include 'includes/navigation.php'; ?>
     <div class="container">
 <h1><?php echo $edit_id ? 'Rediger PTW' : 'Opret ny PTW'; ?></h1>
 <p>Udfyld formularen manuelt, eller upload en PDF for at få felterne udfyldt automatisk. Kortet kan bruges til at vælge positionen for arbejdet.</p>
