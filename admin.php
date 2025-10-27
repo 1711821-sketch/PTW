@@ -454,27 +454,8 @@ if (isset($_GET['edit_message'])) {
     </style>
 </head>
 <body>
-    <!-- Navigation bar with hamburger menu -->
-    <nav class="navbar">
-        <div class="navbar-mobile">
-            <button class="navbar-toggle" aria-label="Toggle navigation">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            <span class="nav-user nav-user-mobile"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
-        </div>
-        <div class="navbar-links">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="view_wo.php">WO Oversigt</a>
-            <a href="view_sja.php">SJA Oversigt</a>
-            <a href="time_overblik.php">Timeoverblik</a>
-            <a href="admin.php">Admin</a>
-            <a href="sms_admin.php">📱 SMS Notifikationer</a>
-            <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($_SESSION['user']); ?> (admin)</span>
-            <a class="logout-link" href="logout.php">Log ud</a>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <?php include 'includes/navigation.php'; ?>
 
     <div class="container">
         <h1>⚙️ Administration</h1>
