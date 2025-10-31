@@ -4,6 +4,17 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
+**2025-10-31**: Performance optimization - Lazy loading for time entries:
+- **Time Entry Loading Optimization**: Improved page load performance by implementing lazy loading with caching
+  - Removed automatic time entry loading when `view_wo.php` page loads
+  - Previously loaded time entries for all visible work orders simultaneously (14-24 requests at once)
+  - Time entries now lazy-load when user opens time section (list view) or time modal (card view)
+  - Implemented client-side cache (`loadedTimeEntries` Set) to prevent duplicate requests
+  - Each work order's time data loads once on first access, then cached for session
+  - Eliminates browser console errors ("Error loading time entry") and simultaneous request storms
+  - Significantly faster page load times, especially on mobile devices
+  - Users see time entry data immediately when they open the section, without impacting initial page performance
+
 **2025-10-27**: Navigation refactoring and standardization:
 - **Centralized Navigation**: Created a single central navigation file (`includes/navigation.php`) that all pages now use
   - Eliminated duplicated navigation code across 11 different PHP files

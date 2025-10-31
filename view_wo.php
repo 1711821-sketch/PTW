@@ -2610,6 +2610,9 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             }
         }
         
+        // Track which work orders have loaded time entries (lazy loading cache)
+        const loadedTimeEntries = new Set();
+        
         // Toggle time tracking section
         function toggleTimeTracking(woId) {
             const section = document.getElementById(`time-section-${woId}`);
@@ -2621,6 +2624,15 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             } else {
                 section.classList.add('expanded');
                 if (icon) icon.textContent = '▲';
+                
+                // Lazy load time entry for current date when section is first opened
+                if (!loadedTimeEntries.has(woId)) {
+                    const dateInput = document.getElementById(`time-date-${woId}`);
+                    if (dateInput) {
+                        loadTimeEntry(woId, dateInput.value);
+                        loadedTimeEntries.add(woId);
+                    }
+                }
             }
         }
         
@@ -3026,14 +3038,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             });
         }
         
-        // Initialize time entries for today's date when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateInputs = document.querySelectorAll('.time-date-input');
-            dateInputs.forEach(input => {
-                const workOrderId = input.id.replace('time-date-', '');
-                loadTimeEntry(workOrderId, input.value);
-            });
-        });
+        // Note: Time entries are loaded lazily (on-demand) when user interacts with date field
+        // This improves page load performance by avoiding multiple simultaneous requests
 
         // AJAX approval function
         function approveWorkPermit(id, role, buttonElement) {
