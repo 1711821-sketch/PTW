@@ -4,6 +4,23 @@
 A web-based PTW (Permit To Work) system for coordinating work among administrators, entrepreneurs (contractors), task managers, and operations personnel. It features PTW creation, multi-stage approval workflows, comprehensive Safety Job Analysis (SJA) with version history, time tracking, and role-based access control. The system aims to streamline work order management and enhance safety compliance.
 
 ## Recent Changes
+**2025-10-31**: Major performance optimizations - Pagination and lazy loading:
+- **Pagination System**: Implemented server-side pagination for work order list to drastically improve load times
+  - Work orders now load in pages of 20 items instead of all at once
+  - Added COUNT queries to calculate total pages
+  - Pagination controls with Previous/Next buttons in both list and card view
+  - Shows "Side X af Y (Z PTW'er i alt)" to keep users informed
+  - SQL queries use LIMIT and OFFSET for efficient database access
+  - Card counter updated to show current page number
+  - Works for all user roles (admin, opgaveansvarlig, drift, entreprenør)
+  - Dramatically reduces initial page load time when there are many work orders
+  
+- **Image Lazy Loading**: Added native browser lazy loading to work order images
+  - Images in `print_wo.php` now use `loading="lazy"` attribute
+  - Images only load when they're about to enter the viewport
+  - Reduces initial bandwidth usage and speeds up page load
+  - Especially beneficial on mobile devices with limited bandwidth
+
 **2025-10-31**: Performance optimization - Lazy loading for time entries:
 - **Time Entry Loading Optimization**: Improved page load performance by implementing lazy loading with caching
   - Removed automatic time entry loading when `view_wo.php` page loads

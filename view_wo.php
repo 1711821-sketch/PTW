@@ -403,6 +403,13 @@ $entries = [];
 $currentUser = $_SESSION['user'] ?? '';
 $currentRole = $_SESSION['role'] ?? '';
 
+// Pagination settings
+$itemsPerPage = 20;
+$currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($currentPage - 1) * $itemsPerPage;
+$totalItems = 0;
+$totalPages = 0;
+
 try {
     $db = Database::getInstance();
     
@@ -411,6 +418,18 @@ try {
         $firma = $_SESSION['entreprenor_firma'] ?? '';
         if ($firma !== '') {
             $today = date('d-m-Y');
+            
+            // Get total count for pagination
+            $countResult = $db->fetch("
+                SELECT COUNT(*) as total FROM work_orders 
+                WHERE entreprenor_firma = ? 
+                AND status = 'active'
+                AND approvals::jsonb->>'opgaveansvarlig' = ?
+                AND approvals::jsonb->>'drift' = ?
+            ", [$firma, $today, $today]);
+            $totalItems = $countResult['total'] ?? 0;
+            $totalPages = ceil($totalItems / $itemsPerPage);
+            
             // Only load work orders for this entrepreneur's firm that are:
             // 1. In 'active' status
             // 2. Approved by both opgaveansvarlig and drift TODAY
@@ -421,22 +440,29 @@ try {
                 AND approvals::jsonb->>'opgaveansvarlig' = ?
                 AND approvals::jsonb->>'drift' = ?
                 ORDER BY created_at DESC
-            ", [$firma, $today, $today]);
+                LIMIT ? OFFSET ?
+            ", [$firma, $today, $today, $itemsPerPage, $offset]);
             
-            error_log("Work order access - Entrepreneur: $currentUser, Firma: $firma, Count: " . count($entries));
+            error_log("Work order access - Entrepreneur: $currentUser, Firma: $firma, Page: $currentPage, Count: " . count($entries) . ", Total: $totalItems");
         } else {
             // If no firm is defined, show no entries
             $entries = [];
             error_log("Work order access denied - Entrepreneur: $currentUser, No firma defined");
         }
     } elseif (in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
+        // Get total count for pagination
+        $countResult = $db->fetch("SELECT COUNT(*) as total FROM work_orders");
+        $totalItems = $countResult['total'] ?? 0;
+        $totalPages = ceil($totalItems / $itemsPerPage);
+        
         // Admin, opgaveansvarlig and drift can see all work orders
         $entries = $db->fetchAll("
             SELECT * FROM work_orders 
             ORDER BY created_at DESC
-        ");
+            LIMIT ? OFFSET ?
+        ", [$itemsPerPage, $offset]);
         
-        error_log("Work order access - User: $currentUser, Role: $currentRole, Count: " . count($entries));
+        error_log("Work order access - User: $currentUser, Role: $currentRole, Page: $currentPage, Count: " . count($entries) . ", Total: $totalItems");
     } else {
         // Unknown or unauthorized role
         $entries = [];
@@ -1879,6 +1905,65 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 width: 100%;
             }
         }
+        
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--background-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .card-pagination {
+            margin-top: 1rem;
+        }
+        
+        .pagination-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .pagination-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .pagination-btn:active {
+            transform: translateY(0);
+        }
+        
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .pagination {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .pagination-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2086,6 +2171,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <?php endforeach; ?>
                 </tbody>
             </table>
+            
+            <!-- Pagination Controls -->
+            <?php if ($totalPages > 1): ?>
+            <div class="pagination">
+                <?php if ($currentPage > 1): ?>
+                    <a href="?page=<?php echo $currentPage - 1; ?>" class="pagination-btn">← Forrige</a>
+                <?php endif; ?>
+                
+                <span class="pagination-info">
+                    Side <?php echo $currentPage; ?> af <?php echo $totalPages; ?> 
+                    (<?php echo $totalItems; ?> PTW'er i alt)
+                </span>
+                
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="?page=<?php echo $currentPage + 1; ?>" class="pagination-btn">Næste →</a>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
         </div>
         
         <!-- Time Registration Modals for List View -->
@@ -2161,7 +2264,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <!-- Card Counter Bar with Navigation -->
             <div id="cardCounter" class="card-counter">
                 <button id="prevCardBtn" class="counter-nav-btn" aria-label="Forrige PTW">◀</button>
-                <span class="counter-text">PTW 1 af <?php echo count($entries); ?></span>
+                <span class="counter-text">PTW 1 af <?php echo count($entries); ?> (Side <?php echo $currentPage; ?>)</span>
                 <button id="nextCardBtn" class="counter-nav-btn" aria-label="Næste PTW">▶</button>
             </div>
             
@@ -2537,6 +2640,24 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             <?php endforeach; ?>
                 </div>
             </div>
+            
+            <!-- Pagination Controls for Card View -->
+            <?php if ($totalPages > 1): ?>
+            <div class="pagination card-pagination">
+                <?php if ($currentPage > 1): ?>
+                    <a href="?page=<?php echo $currentPage - 1; ?>" class="pagination-btn">← Forrige</a>
+                <?php endif; ?>
+                
+                <span class="pagination-info">
+                    Side <?php echo $currentPage; ?> af <?php echo $totalPages; ?> 
+                    (<?php echo $totalItems; ?> PTW'er i alt)
+                </span>
+                
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="?page=<?php echo $currentPage + 1; ?>" class="pagination-btn">Næste →</a>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
         </div>
         
         <script>

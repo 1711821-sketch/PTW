@@ -847,6 +847,7 @@ if ($statusVal === 'planning') {
                     <a href="uploads/work_order_images/<?php echo urlencode($image_filename); ?>" target="_blank">
                         <img src="uploads/work_order_images/<?php echo urlencode($image_filename); ?>" 
                              alt="Dokumentationsbillede" 
+                             loading="lazy"
                              style="width: 100%; height: 200px; object-fit: cover; display: block;">
                     </a>
                     <div style="padding: 0.5rem; background-color: #f8f9fa; font-size: 0.85em; color: #666;">
