@@ -236,13 +236,21 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
             'firma' => $userFirma
         ];
         
+        // Determine status_dag and ikon based on new status
+        $status_dag = $newStatus === 'stopped' ? 'pause_dag' : 'aktiv_dag';
+        $ikon = $newStatus === 'stopped' ? 'yellow' : 'green_pulse';
+        $sluttid = $newStatus === 'stopped' ? $now : null;
+        
         // Update database
         $updated = $db->execute("
             UPDATE work_orders 
-            SET daily_work_status = ?, updated_at = NOW()
+            SET daily_work_status = ?, status_dag = ?, ikon = ?, sluttid = ?, updated_at = NOW()
             WHERE id = ?
         ", [
             json_encode($workStatus),
+            $status_dag,
+            $ikon,
+            $sluttid,
             $woId
         ]);
         
