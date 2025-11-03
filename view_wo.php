@@ -155,9 +155,23 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         if ($updated) {
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
+            
+            // Fetch the updated work order for returning updated card HTML
+            $updatedWorkOrder = $db->fetch("SELECT * FROM work_orders WHERE id = ?", [$approveId]);
+            
+            // Generate updated card HTML for live replacement
+            $cardHtml = '';
+            if ($updatedWorkOrder) {
+                ob_start();
+                include 'generate_card_html.php';
+                $cardHtml = ob_get_clean();
+            }
+            
             echo json_encode([
                 'success' => true,
-                'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.'
+                'message' => 'PTW\'en er blevet godkendt som ' . ucfirst($approveRole) . '.',
+                'card_html' => $cardHtml,
+                'wo_id' => $approveId
             ]);
         } else {
             error_log("AJAX approval failed - Database update failed - User: $currentUser, WO ID: $approveId");
@@ -3199,6 +3213,34 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // NEW: If server provided updated card HTML, replace the entire card
+                    if (data.card_html && data.wo_id) {
+                        const oldCard = document.querySelector(`.work-permit-card[data-wo-id="${data.wo_id}"]`);
+                        if (oldCard) {
+                            // Create a temporary container to parse the new HTML
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = data.card_html;
+                            const newCard = tempDiv.firstElementChild;
+                            
+                            // Replace the old card with the new one
+                            oldCard.replaceWith(newCard);
+                            
+                            // Reattach event listeners to the new approval buttons in the replaced card
+                            newCard.querySelectorAll('.ajax-approve-btn').forEach(function(btn) {
+                                btn.addEventListener('click', function(event) {
+                                    const btnId = this.getAttribute('data-id');
+                                    const btnRole = this.getAttribute('data-role');
+                                    approveWorkPermit(btnId, btnRole, event.currentTarget);
+                                });
+                            });
+                            
+                            // Show success notification
+                            showNotification(data.message, 'success');
+                            return; // Exit early since we replaced the entire card
+                        }
+                    }
+                    
+                    // FALLBACK: Manual DOM updates if card HTML replacement failed or wasn't provided
                     // Update status display - map role names to ID prefixes
                     let rolePrefix = role;
                     if (role === 'opgaveansvarlig') rolePrefix = 'oa';
