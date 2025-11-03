@@ -713,56 +713,36 @@ try {
                 // Check if this work order has SJA
                 var hasSJA = workOrdersWithSJA.includes(e.id);
                 
-                // Parse work status for today
-                var workStatus = null;
-                var workStatusIcon = '';
-                // Format date as dd-mm-yyyy to match PHP format
-                var now = new Date();
-                var today = ('0' + now.getDate()).slice(-2) + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + now.getFullYear();
+                // Get status_dag to determine marker appearance
+                var statusDag = e.status_dag || null;
+                var ikon = e.ikon || null;
                 
-                try {
-                    if (e.daily_work_status) {
-                        var dailyStatus = typeof e.daily_work_status === 'string' 
-                            ? JSON.parse(e.daily_work_status) 
-                            : e.daily_work_status;
-                        
-                        if (dailyStatus.date === today) {
-                            workStatus = dailyStatus.status;
-                            workStatusIcon = dailyStatus.status === 'working' ? '🔨' : '⏹️';
-                        }
-                    }
-                } catch (e) {
-                    // Ignore JSON parse errors
-                }
-                
-                // Choose icon based on status, SJA presence, and work status
+                // Choose icon based on status, SJA presence, and status_dag
                 var icon;
                 
-                // If work status exists, use custom divIcon with work status
-                if (workStatus) {
-                    var className = 'custom-marker-black marker-work-status';
-                    if (status === 'planning') {
-                        className += ' marker-blue-black';
-                    } else if (status === 'active') {
-                        className += ' marker-green-black';
-                    } else {
-                        className += ' marker-gray-black';
-                    }
-                    
-                    // Add pulsing effect when work is active (working status)
-                    if (workStatus === 'working') {
-                        className += ' marker-working-pulse';
-                    }
-                    
+                // Determine icon based on status_dag (new system)
+                if (statusDag === 'aktiv_dag' && ikon === 'green_pulse') {
+                    // Active work: green pulsing marker
+                    var className = 'custom-marker-black marker-green-black marker-working-pulse';
                     icon = L.divIcon({
                         className: className,
-                        html: '<style>.marker-work-status::after{content:"' + workStatusIcon + '";}</style>',
                         iconSize: [25, 41],
                         iconAnchor: [12, 41],
                         popupAnchor: [1, -34]
                     });
+                } else if (statusDag === 'pause_dag' && ikon === 'yellow') {
+                    // Paused work: yellow marker (using orange as closest to yellow)
+                    var yellowIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+                        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+                    icon = yellowIcon;
                 } else {
-                    // No work status, use normal icons
+                    // Default behavior: use status-based icons
                     if (status === 'planning') {
                         icon = hasSJA ? blueIconBlack : blueIcon;
                     } else if (status === 'active') {
