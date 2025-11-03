@@ -2495,7 +2495,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     </div>
                     
                     <!-- Section 3: Tidsregistrering (Collapsible) -->
-                    <?php if (in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
+                    <?php if ($modules['tidsregistrering'] && in_array($role, ['entreprenor', 'admin', 'opgaveansvarlig', 'drift'])): ?>
                     <div class="card-section">
                         <div class="section-header" onclick="toggleTimeTracking(<?php echo $entry['id']; ?>)">
                             <h4>⏱️ Tidsregistrering</h4>

@@ -620,7 +620,9 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                                 <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
                                     <div class="ptw-card-header">
                                         <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
-                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                        <?php if ($modules['tidsregistrering']): ?>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'] ?? 0, 1) ?> timer</div>
+                                        <?php endif; ?>
                                     </div>
                                     <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
                                     <div class="ptw-meta">
@@ -662,7 +664,9 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                                 <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
                                     <div class="ptw-card-header">
                                         <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
-                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                        <?php if ($modules['tidsregistrering']): ?>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'] ?? 0, 1) ?> timer</div>
+                                        <?php endif; ?>
                                     </div>
                                     <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
                                     <div class="ptw-meta">
@@ -704,7 +708,9 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                                 <a href="view_wo.php?id=<?= $ptw['id'] ?>" class="ptw-card">
                                     <div class="ptw-card-header">
                                         <h3 class="ptw-number">PTW <?= htmlspecialchars($ptw['work_order_no']) ?></h3>
-                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'], 1) ?> timer</div>
+                                        <?php if ($modules['tidsregistrering']): ?>
+                                        <div class="ptw-hours">⏱️ <?= number_format($ptw['total_hours'] ?? 0, 1) ?> timer</div>
+                                        <?php endif; ?>
                                     </div>
                                     <p class="ptw-description"><?= htmlspecialchars($ptw['description'] ?? 'Ingen beskrivelse') ?></p>
                                     <div class="ptw-meta">
