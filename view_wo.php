@@ -3427,24 +3427,22 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 var status = row.getAttribute('data-status');
                 var statusDag = row.getAttribute('data-status-dag');
                 
-                // If "Igangværende" filter is active, only show items with status_dag = 'aktiv_dag'
-                if (showOngoing) {
-                    if (statusDag === 'aktiv_dag') {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                    return;
+                // Determine if row should be shown (OR logic)
+                var shouldShow = false;
+                
+                // Show if matches any selected status filter
+                if ((status === 'planning' && showPlanning) ||
+                    (status === 'active' && showActive) ||
+                    (status === 'completed' && showCompleted)) {
+                    shouldShow = true;
                 }
                 
-                // Otherwise apply standard status filters
-                if ((status === 'planning' && !showPlanning) ||
-                    (status === 'active' && !showActive) ||
-                    (status === 'completed' && !showCompleted)) {
-                    row.style.display = 'none';
-                } else {
-                    row.style.display = '';
+                // Also show if "Igangværende" is checked and status_dag is 'aktiv_dag'
+                if (showOngoing && statusDag === 'aktiv_dag') {
+                    shouldShow = true;
                 }
+                
+                row.style.display = shouldShow ? '' : 'none';
             });
             
             // Filter cards
@@ -3453,24 +3451,22 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 var status = card.getAttribute('data-status');
                 var statusDag = card.getAttribute('data-status-dag');
                 
-                // If "Igangværende" filter is active, only show items with status_dag = 'aktiv_dag'
-                if (showOngoing) {
-                    if (statusDag === 'aktiv_dag') {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                    return;
+                // Determine if card should be shown (OR logic)
+                var shouldShow = false;
+                
+                // Show if matches any selected status filter
+                if ((status === 'planning' && showPlanning) ||
+                    (status === 'active' && showActive) ||
+                    (status === 'completed' && showCompleted)) {
+                    shouldShow = true;
                 }
                 
-                // Otherwise apply standard status filters
-                if ((status === 'planning' && !showPlanning) ||
-                    (status === 'active' && !showActive) ||
-                    (status === 'completed' && !showCompleted)) {
-                    card.style.display = 'none';
-                } else {
-                    card.style.display = 'block';
+                // Also show if "Igangværende" is checked and status_dag is 'aktiv_dag'
+                if (showOngoing && statusDag === 'aktiv_dag') {
+                    shouldShow = true;
                 }
+                
+                card.style.display = shouldShow ? 'block' : 'none';
             });
         }
         
