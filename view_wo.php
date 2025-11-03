@@ -2159,18 +2159,11 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <span class="icon">⏱️</span>
                             </button>
                         <?php endif; ?>
-                        <?php if ($role === 'entreprenor' && $status === 'active'): ?>
-                            <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
-                                <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-start" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')" title="Start arbejde">
-                                    <span class="icon">🔨</span>
-                                    <span class="text">Start</span>
-                                </button>
-                            <?php else: ?>
-                                <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-stop" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')" title="Stop arbejde">
-                                    <span class="icon">⏹️</span>
-                                    <span class="text">Stop</span>
-                                </button>
-                            <?php endif; ?>
+                        <?php if ($role === 'entreprenor' && $status === 'active' && $workStatusToday && $workStatus['status'] === 'working'): ?>
+                            <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-stop" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')" title="Stop arbejde for i dag">
+                                <span class="icon">⏹️</span>
+                                <span class="text">Stop</span>
+                            </button>
                         <?php endif; ?>
                     </div>
                 </td>
@@ -2635,12 +2628,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
                     <?php endif; ?>
-                    <?php if ($role === 'entreprenor' && $status === 'active'): ?>
-                        <?php if (!$workStatusToday || $workStatus['status'] === 'stopped'): ?>
-                            <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-primary button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'working')">🔨 Start arbejde</button>
-                        <?php else: ?>
-                            <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-warning button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop arbejde</button>
-                        <?php endif; ?>
+                    <?php if ($role === 'entreprenor' && $status === 'active' && $workStatusToday && $workStatus['status'] === 'working'): ?>
+                        <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-warning button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop arbejde for i dag</button>
                     <?php endif; ?>
                 </div>
             </div>
