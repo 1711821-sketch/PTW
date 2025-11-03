@@ -14,23 +14,41 @@ try {
     if ($isEntrepreneur) {
         $firma = $_SESSION['entreprenor_firma'] ?? '';
         
-        $entrepreneurPTWs = $db->fetchAll("
-            SELECT 
-                wo.*,
-                COALESCE(SUM(te.hours), 0) as total_hours
-            FROM work_orders wo
-            LEFT JOIN time_entries te ON wo.id = te.work_order_id
-            WHERE wo.entreprenor_firma = ?
-            GROUP BY wo.id
-            ORDER BY 
-                CASE 
-                    WHEN wo.status = 'active' THEN 1
-                    WHEN wo.status = 'planning' THEN 2
-                    WHEN wo.status = 'completed' THEN 3
-                    ELSE 4
-                END,
-                wo.created_at DESC
-        ", [$firma]);
+        // Only load time entries if tidsregistrering module is active
+        if ($modules['tidsregistrering']) {
+            $entrepreneurPTWs = $db->fetchAll("
+                SELECT 
+                    wo.*,
+                    COALESCE(SUM(te.hours), 0) as total_hours
+                FROM work_orders wo
+                LEFT JOIN time_entries te ON wo.id = te.work_order_id
+                WHERE wo.entreprenor_firma = ?
+                GROUP BY wo.id
+                ORDER BY 
+                    CASE 
+                        WHEN wo.status = 'active' THEN 1
+                        WHEN wo.status = 'planning' THEN 2
+                        WHEN wo.status = 'completed' THEN 3
+                        ELSE 4
+                    END,
+                    wo.created_at DESC
+            ", [$firma]);
+        } else {
+            // Load without time entries when module is disabled
+            $entrepreneurPTWs = $db->fetchAll("
+                SELECT wo.*
+                FROM work_orders wo
+                WHERE wo.entreprenor_firma = ?
+                ORDER BY 
+                    CASE 
+                        WHEN wo.status = 'active' THEN 1
+                        WHEN wo.status = 'planning' THEN 2
+                        WHEN wo.status = 'completed' THEN 3
+                        ELSE 4
+                    END,
+                    wo.created_at DESC
+            ", [$firma]);
+        }
         
         $planningPTWs = array_filter($entrepreneurPTWs, fn($ptw) => $ptw['status'] === 'planning');
         $activePTWs = array_filter($entrepreneurPTWs, fn($ptw) => $ptw['status'] === 'active');

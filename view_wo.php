@@ -2170,7 +2170,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <span class="icon">🗑️</span>
                             </a>
                         <?php endif; ?>
-                        <?php if ($status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
+                        <?php if ($modules['tidsregistrering'] && $status === 'active' && in_array($role, ['admin', 'entreprenor'])): ?>
                             <button class="btn-icon btn-time" onclick="openTimeModal(<?php echo $entry['id']; ?>)" title="Tidsregistrering">
                                 <span class="icon">⏱️</span>
                             </button>
@@ -2208,6 +2208,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         
         <!-- Time Registration Modals for List View -->
+        <?php if ($modules['tidsregistrering']): ?>
         <?php foreach ($entries as $entry): 
             if ($entry['status'] === 'active' && in_array($role, ['admin', 'entreprenor'])):
         ?>
@@ -2272,7 +2273,8 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         </div>
         <?php 
             endif;
-        endforeach; 
+        endforeach;
+        endif;
         ?>
         
         <!-- Card View -->

@@ -21,7 +21,13 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Features
 - **Role-Based Access Control**: Granular access levels for Admin, Entrepreneur, Task Manager, and Operations roles. Entrepreneurs access only approved, active work orders relevant to their firm.
-- **Module Management (2025-11-03)**: Centralized configuration system in `/config/modules.php` allowing administrators to enable/disable modules (PTW, SJA, tidsregistrering) without deleting code or data. Module status is loaded globally via auth_check.php and controls navigation menu visibility and page access. When disabled, modules show a user-friendly message instead of functionality. Admin interface at `/admin/modules.php` provides a GUI for toggling modules with logging. Default settings: PTW=active, SJA=inactive, tidsregistrering=inactive.
+- **Module Management (2025-11-03)**: Centralized configuration system in `/config/modules.php` allowing administrators to enable/disable modules (PTW, SJA, tidsregistrering) without deleting code or data. Module status is loaded globally via auth_check.php and controls:
+  - **Navigation Menu**: Module menu items appear/disappear based on status
+  - **Page Access**: Direct URL access to disabled modules shows user-friendly message
+  - **Dashboard**: Statistics and KPI cards for disabled modules are hidden and their database queries are skipped
+  - **Work Order Views**: Time registration UI (buttons, modals, "Timeforbrug" section) hidden when tidsregistrering is disabled
+  - **Database Queries**: Queries skip loading time_entries and sja_entries data when respective modules are disabled
+  - Admin interface at `/admin/modules.php` provides a GUI for toggling modules with logging. Default settings: PTW=active, SJA=inactive, tidsregistrering=inactive. **Important**: Toggling modules off does not delete any data; it only hides functionality and prevents data loading.
 - **Approval Workflow**: A multi-stage sequential approval process (Task Manager → Operations → Entrepreneur) with visual tracking, timestamps, and status indicators. Approvals are restricted to 'AKTIV' status work orders and require daily re-approval. **Automatic Work Start (2025-11-03)**: When ALL three parties approve their PTW for today (opgaveansvarlig, drift, entreprenør), work starts automatically (status_dag='aktiv_dag', ikon='green_pulse', starttid is set). The manual "Start arbejde/hammer" button has been removed. Entrepreneurs can pause work using the "Stop arbejde for i dag" button (sets status_dag='pause_dag', ikon='yellow', sluttid). The daily reset only affects PTWs that don't have current approvals from all three parties.
 - **PTW Management**: Creation, viewing, and editing of PTWs, uniquely identified by "Indkøbsordre nummer," allowing "PTW Nr." duplicates.
 - **Safety Job Analysis (SJA)**: Comprehensive SJA forms with automatic versioning, historical snapshots, and side-by-side comparison.

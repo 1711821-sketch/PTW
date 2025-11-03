@@ -728,6 +728,7 @@ if ($statusVal === 'planning') {
     </div>
 
     <!-- Section for displaying time consumption for this work order -->
+    <?php if ($modules['tidsregistrering']): ?>
     <div class="card-collapsible-section">
         <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'time')">
             <h2>⏱️ Timeforbrug</h2>
@@ -781,6 +782,7 @@ if ($statusVal === 'planning') {
     <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
     
     <!-- Image upload section for entrepreneurs -->
     <?php 
