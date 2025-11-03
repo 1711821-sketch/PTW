@@ -23,28 +23,28 @@ if (!isset($modules)) {
     </div>
     <div class="navbar-links">
         <?php if ($modules['ptw']): ?>
-            <a href="view_wo.php" <?php echo ($current_page === 'view_wo.php') ? 'class="active"' : ''; ?>>PTW-oversigt</a>
+            <a href="/view_wo.php" <?php echo ($current_page === 'view_wo.php') ? 'class="active"' : ''; ?>>PTW-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_wo.php" <?php echo ($current_page === 'create_wo.php') ? 'class="active"' : ''; ?>>Opret ny PTW</a>
+                <a href="/create_wo.php" <?php echo ($current_page === 'create_wo.php') ? 'class="active"' : ''; ?>>Opret ny PTW</a>
             <?php endif; ?>
-            <a href="map_wo.php" <?php echo ($current_page === 'map_wo.php') ? 'class="active"' : ''; ?>>Kort</a>
+            <a href="/map_wo.php" <?php echo ($current_page === 'map_wo.php') ? 'class="active"' : ''; ?>>Kort</a>
         <?php endif; ?>
-        <a href="dashboard.php" <?php echo ($current_page === 'dashboard.php') ? 'class="active"' : ''; ?>>Dashboard</a>
+        <a href="/dashboard.php" <?php echo ($current_page === 'dashboard.php') ? 'class="active"' : ''; ?>>Dashboard</a>
         <?php if ($modules['sja']): ?>
-            <a href="view_sja.php" <?php echo ($current_page === 'view_sja.php') ? 'class="active"' : ''; ?>>SJA-oversigt</a>
+            <a href="/view_sja.php" <?php echo ($current_page === 'view_sja.php') ? 'class="active"' : ''; ?>>SJA-oversigt</a>
             <?php if (in_array($role, ['admin','opgaveansvarlig','drift'])): ?>
-                <a href="create_sja.php" <?php echo ($current_page === 'create_sja.php') ? 'class="active"' : ''; ?>>Opret ny SJA</a>
+                <a href="/create_sja.php" <?php echo ($current_page === 'create_sja.php') ? 'class="active"' : ''; ?>>Opret ny SJA</a>
             <?php endif; ?>
         <?php endif; ?>
         <?php if ($role === 'admin'): ?>
             <?php if ($modules['tidsregistrering']): ?>
-                <a href="time_overblik.php" <?php echo ($current_page === 'time_overblik.php') ? 'class="active"' : ''; ?>>Timeoverblik</a>
+                <a href="/time_overblik.php" <?php echo ($current_page === 'time_overblik.php') ? 'class="active"' : ''; ?>>Timeoverblik</a>
             <?php endif; ?>
-            <a href="admin.php" <?php echo ($current_page === 'admin.php') ? 'class="active"' : ''; ?>>Admin</a>
-            <a href="sms_admin.php" <?php echo ($current_page === 'sms_admin.php') ? 'class="active"' : ''; ?>>SMS Notifikationer</a>
-            <a href="admin/modules.php" <?php echo ($current_page === 'modules.php') ? 'class="active"' : ''; ?>>Modulstyring</a>
+            <a href="/admin.php" <?php echo ($current_page === 'admin.php') ? 'class="active"' : ''; ?>>Admin</a>
+            <a href="/sms_admin.php" <?php echo ($current_page === 'sms_admin.php') ? 'class="active"' : ''; ?>>SMS Notifikationer</a>
+            <a href="/admin/modules.php" <?php echo ($current_page === 'modules.php') ? 'class="active"' : ''; ?>>Modulstyring</a>
         <?php endif; ?>
         <span class="nav-user nav-user-desktop">Logget ind som <?php echo htmlspecialchars($username); ?> (<?php echo htmlspecialchars($role); ?>)</span>
-        <a class="logout-link" href="logout.php">Log ud</a>
+        <a class="logout-link" href="/logout.php">Log ud</a>
     </div>
 </nav>
