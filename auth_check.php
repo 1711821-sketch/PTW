@@ -33,6 +33,28 @@ if ($current_script !== 'change_password.php' && $current_script !== 'logout.php
             header('Location: change_password.php');
             exit();
         }
+        
+        // Daily status reset: Check if we need to reset work status
+        // This runs once per day when the first user logs in after midnight
+        $lastResetDate = $_SESSION['last_status_reset'] ?? '';
+        $today = date('Y-m-d');
+        
+        if ($lastResetDate !== $today) {
+            // Reset daily work status for all PTWs
+            $db->execute("
+                UPDATE work_orders 
+                SET status_dag = 'kræver_dagsgodkendelse', 
+                    ikon = 'green_static',
+                    sluttid = NULL
+                WHERE status_dag IN ('aktiv_dag', 'pause_dag')
+                AND status = 'active'
+            ");
+            
+            // Mark that we've reset for today
+            $_SESSION['last_status_reset'] = $today;
+            error_log("Daily status reset completed on login at " . date('Y-m-d H:i:s'));
+        }
+        
     } catch (Exception $e) {
         // FAIL CLOSED: On database error, destroy session and redirect to login
         error_log('Auth check error: ' . $e->getMessage());
