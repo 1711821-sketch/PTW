@@ -2026,19 +2026,19 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         <div class="filter-controls">
             <div class="filter-group">
                 <label class="filter-label">
-                    <input type="checkbox" id="filterPlanning" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
+                    <input type="checkbox" id="filterPlanning" checked> 
                     <span class="status-planlagt">📋 Vis planlagte</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterActive" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
+                    <input type="checkbox" id="filterActive" checked> 
                     <span class="status-aktiv">🔥 Vis aktive</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterCompleted" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
+                    <input type="checkbox" id="filterCompleted" checked> 
                     <span class="status-afsluttet">✅ Vis afsluttede</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterOngoing" <?php echo ($role === 'drift') ? 'checked' : ''; ?>> 
+                    <input type="checkbox" id="filterOngoing" checked> 
                     <span class="status-aktiv">🔨 Igangværende</span>
                 </label>
             </div>

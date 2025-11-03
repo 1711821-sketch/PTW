@@ -560,16 +560,20 @@ try {
             
             <div class="filter-controls">
                 <label class="filter-option" for="showPlanning">
-                    <input type="checkbox" id="showPlanning" checked>
+                    <input type="checkbox" id="showPlanning" <?php echo ($role !== 'drift') ? 'checked' : ''; ?>>
                     <span class="status-indicator planning">📋 Planlagte</span>
                 </label>
                 <label class="filter-option" for="showActive">
-                    <input type="checkbox" id="showActive" checked>
+                    <input type="checkbox" id="showActive" <?php echo ($role !== 'drift') ? 'checked' : ''; ?>>
                     <span class="status-indicator active">🔥 Aktive</span>
                 </label>
                 <label class="filter-option" for="showCompleted">
-                    <input type="checkbox" id="showCompleted" checked>
+                    <input type="checkbox" id="showCompleted" <?php echo ($role !== 'drift') ? 'checked' : ''; ?>>
                     <span class="status-indicator completed">✅ Afsluttede</span>
+                </label>
+                <label class="filter-option" for="showOngoing">
+                    <input type="checkbox" id="showOngoing" checked>
+                    <span class="status-indicator active">🔨 Igangværende</span>
                 </label>
             </div>
         </div>
@@ -676,6 +680,7 @@ try {
     var planningMarkers = [];
     var activeMarkers = [];
     var completedMarkers = [];
+    var ongoingMarkers = [];
 
     // Build markers for a list of entries.  Removes any existing markers from the
     // map and then adds new markers based on the entries provided.
@@ -686,6 +691,7 @@ try {
         planningMarkers = [];
         activeMarkers = [];
         completedMarkers = [];
+        ongoingMarkers = [];
         list.forEach(function(e) {
             var lat = e.latitude;
             var lng = e.longitude;
@@ -796,6 +802,11 @@ try {
                     maxWidth: 350,
                     className: 'modern-popup'
                 });
+                
+                // Store status and status_dag on the marker for filtering
+                marker.ptwStatus = status;
+                marker.ptwStatusDag = statusDag;
+                
                 allMarkers.push(marker);
                 if (status === 'planning') {
                     planningMarkers.push(marker);
@@ -804,26 +815,43 @@ try {
                 } else {
                     completedMarkers.push(marker);
                 }
+                
+                // Also add to ongoingMarkers if status_dag is aktiv_dag
+                if (statusDag === 'aktiv_dag') {
+                    ongoingMarkers.push(marker);
+                }
             }
         });
     }
 
-    // Update which markers are shown on the map based on the active/completed
-    // checkboxes.  Called after buildMarkers and whenever the checkboxes change.
+    // Update which markers are shown on the map based on filter checkboxes
+    // Uses OR logic: show marker if it matches ANY selected filter
     function updateMapMarkers() {
         allMarkers.forEach(function(m) { map.removeLayer(m); });
         var showPlanning = document.getElementById('showPlanning').checked;
         var showActive = document.getElementById('showActive').checked;
         var showCompleted = document.getElementById('showCompleted').checked;
-        if (showPlanning) {
-            planningMarkers.forEach(function(m) { m.addTo(map); });
-        }
-        if (showActive) {
-            activeMarkers.forEach(function(m) { m.addTo(map); });
-        }
-        if (showCompleted) {
-            completedMarkers.forEach(function(m) { m.addTo(map); });
-        }
+        var showOngoing = document.getElementById('showOngoing').checked;
+        
+        allMarkers.forEach(function(marker) {
+            var shouldShow = false;
+            
+            // Show if matches any selected status filter
+            if ((marker.ptwStatus === 'planning' && showPlanning) ||
+                (marker.ptwStatus === 'active' && showActive) ||
+                (marker.ptwStatus === 'completed' && showCompleted)) {
+                shouldShow = true;
+            }
+            
+            // Also show if "Igangværende" is checked and status_dag is 'aktiv_dag'
+            if (showOngoing && marker.ptwStatusDag === 'aktiv_dag') {
+                shouldShow = true;
+            }
+            
+            if (shouldShow) {
+                marker.addTo(map);
+            }
+        });
     }
 
     // Build the initial set of markers and add them to the map
@@ -912,6 +940,10 @@ try {
         updateMarkerCount();
     });
     document.getElementById('showCompleted').addEventListener('change', function() {
+        updateMapMarkers();
+        updateMarkerCount();
+    });
+    document.getElementById('showOngoing').addEventListener('change', function() {
         updateMapMarkers();
         updateMarkerCount();
     });
