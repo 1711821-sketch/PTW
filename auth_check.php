@@ -40,7 +40,9 @@ if ($current_script !== 'change_password.php' && $current_script !== 'logout.php
         $today = date('Y-m-d');
         
         if ($lastResetDate !== $today) {
-            // Reset daily work status for all PTWs
+            // Reset daily work status for PTWs where approvals are NOT all for today
+            // Only reset if they don't have all three current approvals
+            $todayDanish = date('d-m-Y');
             $db->execute("
                 UPDATE work_orders 
                 SET status_dag = 'kræver_dagsgodkendelse', 
@@ -48,7 +50,12 @@ if ($current_script !== 'change_password.php' && $current_script !== 'logout.php
                     sluttid = NULL
                 WHERE status_dag IN ('aktiv_dag', 'pause_dag')
                 AND status = 'active'
-            ");
+                AND NOT (
+                    approvals::jsonb->>'opgaveansvarlig' = ?
+                    AND approvals::jsonb->>'drift' = ?
+                    AND approvals::jsonb->>'entreprenor' = ?
+                )
+            ", [$todayDanish, $todayDanish, $todayDanish]);
             
             // Mark that we've reset for today
             $_SESSION['last_status_reset'] = $today;

@@ -2074,19 +2074,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
                 $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
                 
-                // Parse daily work status
-                $workStatus = json_decode($entry['daily_work_status'] ?? '{}', true) ?? [];
-                $workStatusToday = (isset($workStatus['date']) && $workStatus['date'] === $today);
+                // Get status_dag for work status display
+                $status_dag = $entry['status_dag'] ?? '';
                 $workStatusIcon = '';
                 $workStatusText = '';
-                if ($workStatusToday) {
-                    if ($workStatus['status'] === 'working') {
-                        $workStatusIcon = '🔨';
-                        $workStatusText = 'Arbejder';
-                    } elseif ($workStatus['status'] === 'stopped') {
-                        $workStatusIcon = '⏹️';
-                        $workStatusText = 'Stoppet';
-                    }
+                if ($status_dag === 'aktiv_dag') {
+                    $workStatusIcon = '🔨';
+                    $workStatusText = 'Arbejder';
+                } elseif ($status_dag === 'pause_dag') {
+                    $workStatusIcon = '⏹️';
+                    $workStatusText = 'Stoppet';
                 }
             ?>
             <tr data-status="<?php echo htmlspecialchars($status); ?>">
@@ -2174,7 +2171,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                                 <span class="icon">⏱️</span>
                             </button>
                         <?php endif; ?>
-                        <?php if ($role === 'entreprenor' && $status === 'active' && $workStatusToday && $workStatus['status'] === 'working'): ?>
+                        <?php if ($role === 'entreprenor' && $status === 'active' && $status_dag === 'aktiv_dag'): ?>
                             <button id="work-btn-<?php echo $entry['id']; ?>" class="btn-work btn-stop" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')" title="Stop arbejde for i dag">
                                 <span class="icon">⏹️</span>
                                 <span class="text">Stop</span>
@@ -2304,19 +2301,16 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
                 $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
                 
-                // Parse daily work status
-                $workStatus = json_decode($entry['daily_work_status'] ?? '{}', true) ?? [];
-                $workStatusToday = (isset($workStatus['date']) && $workStatus['date'] === $today);
+                // Get status_dag for work status display
+                $status_dag = $entry['status_dag'] ?? '';
                 $workStatusIcon = '';
                 $workStatusText = '';
-                if ($workStatusToday) {
-                    if ($workStatus['status'] === 'working') {
-                        $workStatusIcon = '🔨';
-                        $workStatusText = 'Arbejder';
-                    } elseif ($workStatus['status'] === 'stopped') {
-                        $workStatusIcon = '⏹️';
-                        $workStatusText = 'Stoppet';
-                    }
+                if ($status_dag === 'aktiv_dag') {
+                    $workStatusIcon = '🔨';
+                    $workStatusText = 'Arbejder';
+                } elseif ($status_dag === 'pause_dag') {
+                    $workStatusIcon = '⏹️';
+                    $workStatusText = 'Stoppet';
                 }
                 
                 $firma = $entry['entreprenor_firma'] ?? '';
@@ -2643,7 +2637,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     <?php if ($role === 'admin'): ?>
                         <a class="button button-danger button-sm handlinger-btn" href="view_wo.php?delete_id=<?php echo urlencode($entry['id']); ?>" onclick="return confirm('Er du sikker på, at du vil slette denne PTW??');">Slet</a>
                     <?php endif; ?>
-                    <?php if ($role === 'entreprenor' && $status === 'active' && $workStatusToday && $workStatus['status'] === 'working'): ?>
+                    <?php if ($role === 'entreprenor' && $status === 'active' && $status_dag === 'aktiv_dag'): ?>
                         <button id="card-work-btn-<?php echo $entry['id']; ?>" class="button button-warning button-sm" onclick="updateWorkStatus(<?php echo $entry['id']; ?>, 'stopped')">⏹️ Stop arbejde for i dag</button>
                     <?php endif; ?>
                 </div>
