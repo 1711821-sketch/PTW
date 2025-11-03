@@ -1,0 +1,76 @@
+Automatisk start af opgave ved PTW-godkendelse (erstatning for “Start opgave / hammer”)
+
+Opgave:
+Opdater EdinLink-systemet, så entreprenørens PTW-godkendelse automatisk starter opgaven, og fjern den gamle “Start opgave / hammer”-funktion helt.
+
+Krav og ændringer:
+
+Fjern den eksisterende “Start opgave” funktion:
+
+Fjern knappen (typisk hammer-ikonet) fra HTML på PTW-siden og kortet.
+
+Fjern al tilhørende JavaScript, PHP eller event-handlers, der aktiverer denne funktion.
+
+Ryd også CSS-klasser og ikoner relateret til den funktion.
+
+Tilføj automatisk start ved entreprenørens PTW-godkendelse:
+
+Når entreprenør klikker “Godkend PTW”, skal systemet automatisk registrere, at arbejdet er i gang.
+
+I databasen (fx tabel ptw_table) tilføj eller brug felterne:
+
+status_dag (varchar)
+
+ikon (varchar)
+
+starttid (datetime)
+
+sluttid (datetime)
+
+Når entreprenør godkender PTW:
+
+if ($role == 'entreprenor') {
+    $status_dag = 'aktiv_dag';
+    $ikon = 'green_pulse';
+    $starttid = date('Y-m-d H:i:s');
+    mysqli_query($conn, "UPDATE ptw_table SET status_dag='$status_dag', ikon='$ikon', starttid='$starttid' WHERE id='$ptw_id'");
+}
+
+
+Opdater funktion for “Stop opgave for i dag”:
+
+Behold denne knap, men ændr funktionen så den opdaterer dagsstatus:
+
+if ($role == 'entreprenor' && isset($_POST['stop_dag'])) {
+    $status_dag = 'pause_dag';
+    $ikon = 'yellow';
+    $sluttid = date('Y-m-d H:i:s');
+    mysqli_query($conn, "UPDATE ptw_table SET status_dag='$status_dag', ikon='$ikon', sluttid='$sluttid' WHERE id='$ptw_id'");
+}
+
+
+Automatisk nulstilling af dagsstatus ved midnat:
+
+Tilføj et cron-job eller login-check, der hver nat (eller ved næste login) nulstiller status:
+
+mysqli_query($conn, "UPDATE ptw_table SET status_dag='kræver_dagsgodkendelse', ikon='green_static' WHERE status_dag IN ('aktiv_dag','pause_dag')");
+
+
+Visning på kortet:
+
+I JavaScript-funktionen der viser PTW-ikoner, skal ikonet skifte ud fra status_dag:
+
+if (status_dag === "aktiv_dag") return "icon-green-pulse";
+if (status_dag === "pause_dag") return "icon-yellow";
+if (status_dag === "kræver_dagsgodkendelse") return "icon-green-static";
+
+
+Resultat:
+
+Når entreprenør godkender PTW → ikonet på kortet bliver grønt og pulserende
+
+Når entreprenør stopper for dagen → ikonet bliver gult
+
+Når dagsgodkendelser udløber → ikonet bliver grønt (ikke pulserende)
+
+Den gamle “Start opgave / hammer”-funktion skal være helt fjernet fra systemet.
