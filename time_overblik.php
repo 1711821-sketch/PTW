@@ -12,6 +12,18 @@ if (($_SESSION['role'] ?? '') !== 'admin') {
     exit();
 }
 
+// Check if time registration module is enabled
+if (!$modules['tidsregistrering']) {
+    echo '<!DOCTYPE html><html lang="da"><head><meta charset="UTF-8"><title>Tidsregistrering - Deaktiveret</title>';
+    echo '<link rel="stylesheet" href="style.css"></head><body>';
+    echo '<div class="container" style="padding:40px 20px; text-align:center;">';
+    echo '<h2>Tidsregistrering er midlertidigt deaktiveret</h2>';
+    echo '<p style="color:#555; margin: 20px 0;">Denne funktion vil blive aktiveret igen, når PTW er fuldt implementeret.</p>';
+    echo '<p><a href="view_wo.php" style="color:#1e40af;">← Gå til PTW-oversigt</a></p>';
+    echo '</div></body></html>';
+    exit;
+}
+
 require_once 'database.php';
 
 $username = $_SESSION['user'];

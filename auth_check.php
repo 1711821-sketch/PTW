@@ -70,4 +70,8 @@ if ($current_script !== 'change_password.php' && $current_script !== 'logout.php
         exit();
     }
 }
+
+// Load module configuration
+// This makes the $modules array available globally to all pages
+$modules = include __DIR__ . '/config/modules.php';
 ?>
