@@ -128,10 +128,17 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         $approvalHistory[] = $historyEntry;
         
-        // For entrepreneurs, automatically start work when they approve
+        // Check if all three approvals are now in place (for today)
+        $allApproved = (
+            isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today &&
+            isset($approvals['drift']) && $approvals['drift'] === $today &&
+            isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today
+        );
+        
+        // If all three have approved, automatically start work
         $autoStartFields = '';
         $autoStartParams = [];
-        if ($sessionRoleLc === 'entreprenor') {
+        if ($allApproved) {
             $autoStartFields = ", status_dag = ?, ikon = ?, starttid = ?";
             $autoStartParams = ['aktiv_dag', 'green_pulse', date('Y-m-d H:i:s')];
         }
