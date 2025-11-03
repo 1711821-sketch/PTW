@@ -74,52 +74,68 @@ try {
         ORDER BY total_work_orders DESC
     ");
     
-    // 5. Time Entry Statistics
-    $totalHours = $db->fetch("SELECT COALESCE(SUM(hours), 0) as total FROM time_entries")['total'];
-    $totalEntriesThisMonth = $db->fetch("
-        SELECT COUNT(*) as count 
-        FROM time_entries 
-        WHERE entry_date >= DATE_TRUNC('month', CURRENT_DATE)
-    ")['count'];
-    
-    // 6. Top Time Contributors
-    $topContributors = $db->fetchAll("
-        SELECT 
-            u.username,
-            u.entreprenor_firma,
-            SUM(te.hours) as total_hours,
-            COUNT(te.id) as total_entries
-        FROM time_entries te 
-        JOIN users u ON te.user_id = u.id 
-        GROUP BY u.id, u.username, u.entreprenor_firma
-        ORDER BY total_hours DESC 
-        LIMIT 5
-    ");
+    // 5. Time Entry Statistics (only if module is enabled)
+    if ($modules['tidsregistrering']) {
+        $totalHours = $db->fetch("SELECT COALESCE(SUM(hours), 0) as total FROM time_entries")['total'];
+        $totalEntriesThisMonth = $db->fetch("
+            SELECT COUNT(*) as count 
+            FROM time_entries 
+            WHERE entry_date >= DATE_TRUNC('month', CURRENT_DATE)
+        ")['count'];
+        
+        // 6. Top Time Contributors
+        $topContributors = $db->fetchAll("
+            SELECT 
+                u.username,
+                u.entreprenor_firma,
+                SUM(te.hours) as total_hours,
+                COUNT(te.id) as total_entries
+            FROM time_entries te 
+            JOIN users u ON te.user_id = u.id 
+            GROUP BY u.id, u.username, u.entreprenor_firma
+            ORDER BY total_hours DESC 
+            LIMIT 5
+        ");
+    } else {
+        $totalHours = 0;
+        $totalEntriesThisMonth = 0;
+        $topContributors = [];
+    }
     
     // 7. User Statistics
     $totalUsers = $db->fetch("SELECT COUNT(*) as count FROM users")['count'];
-    $activeUsersThisMonth = $db->fetch("
-        SELECT COUNT(DISTINCT te.user_id) as count 
-        FROM time_entries te 
-        WHERE te.entry_date >= DATE_TRUNC('month', CURRENT_DATE)
-    ")['count'];
+    if ($modules['tidsregistrering']) {
+        $activeUsersThisMonth = $db->fetch("
+            SELECT COUNT(DISTINCT te.user_id) as count 
+            FROM time_entries te 
+            WHERE te.entry_date >= DATE_TRUNC('month', CURRENT_DATE)
+        ")['count'];
+    } else {
+        $activeUsersThisMonth = 0;
+    }
     
-    // 8. SJA Statistics (from PostgreSQL database)
-    $sjaStats = $db->fetch("
-        SELECT 
-            COUNT(DISTINCT wo.id) as total_work_orders,
-            COUNT(DISTINCT sja.work_order_id) as work_orders_with_sja,
-            COUNT(sja.id) as total_sjas
-        FROM work_orders wo
-        LEFT JOIN sja_entries sja ON wo.id = sja.work_order_id
-    ");
-    
-    $totalSJAs = $sjaStats ? $sjaStats['total_sjas'] : 0;
-    $workOrdersWithSJA = $sjaStats ? $sjaStats['work_orders_with_sja'] : 0;
-    
-    // Ensure SJA compliance rate cannot exceed 100% by using distinct work order count
-    $sjaComplianceRate = $totalWorkOrders > 0 ? round(($workOrdersWithSJA / $totalWorkOrders) * 100, 1) : 0;
-    $sjaComplianceRate = min($sjaComplianceRate, 100); // Cap at 100%
+    // 8. SJA Statistics (only if module is enabled)
+    if ($modules['sja']) {
+        $sjaStats = $db->fetch("
+            SELECT 
+                COUNT(DISTINCT wo.id) as total_work_orders,
+                COUNT(DISTINCT sja.work_order_id) as work_orders_with_sja,
+                COUNT(sja.id) as total_sjas
+            FROM work_orders wo
+            LEFT JOIN sja_entries sja ON wo.id = sja.work_order_id
+        ");
+        
+        $totalSJAs = $sjaStats ? $sjaStats['total_sjas'] : 0;
+        $workOrdersWithSJA = $sjaStats ? $sjaStats['work_orders_with_sja'] : 0;
+        
+        // Ensure SJA compliance rate cannot exceed 100% by using distinct work order count
+        $sjaComplianceRate = $totalWorkOrders > 0 ? round(($workOrdersWithSJA / $totalWorkOrders) * 100, 1) : 0;
+        $sjaComplianceRate = min($sjaComplianceRate, 100); // Cap at 100%
+    } else {
+        $totalSJAs = 0;
+        $workOrdersWithSJA = 0;
+        $sjaComplianceRate = 0;
+    }
     
     // 9. Safety Statistics - Days since last accident
     $accidentData = $db->fetch("SELECT *, CURRENT_DATE - last_accident_date as days_since_accident FROM accident_counter LIMIT 1");
@@ -734,13 +750,16 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                 <div class="kpi-subtitle">Afsluttede opgaver</div>
             </div>
             
+            <?php if ($modules['sja']): ?>
             <div class="kpi-card <?= $sjaComplianceRate >= 80 ? 'success' : ($sjaComplianceRate >= 50 ? 'warning' : 'danger') ?>">
                 <div class="kpi-icon">🛡️</div>
                 <div class="kpi-number"><?= $sjaComplianceRate ?>%</div>
                 <div class="kpi-label">SJA Compliance</div>
                 <div class="kpi-subtitle"><?= $workOrdersWithSJA ?> af <?= $totalWorkOrders ?> har SJA</div>
             </div>
+            <?php endif; ?>
             
+            <?php if ($modules['tidsregistrering']): ?>
             <div class="kpi-card info">
                 <div class="kpi-icon">⏱️</div>
                 <div class="kpi-number"><?= number_format($totalHours, 1) ?></div>
@@ -754,6 +773,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                 <div class="kpi-label">Aktive Brugere</div>
                 <div class="kpi-subtitle">Denne måned</div>
             </div>
+            <?php endif; ?>
         </div>
 
         <!-- Charts and Analytics -->
@@ -824,6 +844,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                 <?php endif; ?>
             </div>
             
+            <?php if ($modules['tidsregistrering']): ?>
             <div class="recent-activity">
                 <div class="chart-header">
                     <h3 class="chart-title">🏆 Top Timeregistrering</h3>
@@ -854,6 +875,7 @@ $entrepreneurCounts = array_column($entrepreneurStats, 'total_work_orders');
                     </div>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
         <?php endif; ?>
     </div>
