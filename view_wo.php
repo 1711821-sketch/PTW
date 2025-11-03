@@ -2026,16 +2026,20 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
         <div class="filter-controls">
             <div class="filter-group">
                 <label class="filter-label">
-                    <input type="checkbox" id="filterPlanning" checked> 
+                    <input type="checkbox" id="filterPlanning" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
                     <span class="status-planlagt">📋 Vis planlagte</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterActive" checked> 
+                    <input type="checkbox" id="filterActive" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
                     <span class="status-aktiv">🔥 Vis aktive</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterCompleted" checked> 
+                    <input type="checkbox" id="filterCompleted" <?php echo ($role === 'drift') ? '' : 'checked'; ?>> 
                     <span class="status-afsluttet">✅ Vis afsluttede</span>
+                </label>
+                <label class="filter-label">
+                    <input type="checkbox" id="filterOngoing" <?php echo ($role === 'drift') ? 'checked' : ''; ?>> 
+                    <span class="status-aktiv">🔨 Igangværende</span>
                 </label>
             </div>
         </div>
@@ -2086,7 +2090,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     $workStatusText = 'Stoppet';
                 }
             ?>
-            <tr data-status="<?php echo htmlspecialchars($status); ?>">
+            <tr data-status="<?php echo htmlspecialchars($status); ?>" data-status-dag="<?php echo htmlspecialchars($status_dag); ?>">
                 <td><?php echo htmlspecialchars($entry['work_order_no'] ?? ''); ?></td>
                 <td><?php echo htmlspecialchars($entry['description'] ?? ''); ?></td>
                 <td><?php echo htmlspecialchars($entry['p_description'] ?? ''); ?></td>
@@ -2316,7 +2320,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                 $firma = $entry['entreprenor_firma'] ?? '';
                 $kontakt = $entry['entreprenor_kontakt'] ?? '';
             ?>
-            <div class="work-permit-card" data-status="<?php echo htmlspecialchars($status); ?>">
+            <div class="work-permit-card" data-status="<?php echo htmlspecialchars($status); ?>" data-status-dag="<?php echo htmlspecialchars($status_dag); ?>">
                 <!-- Card Header with Status Badge -->
                 <div class="card-header-modern">
                     <div class="card-title-row">
@@ -3415,11 +3419,25 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             var showPlanning = document.getElementById('filterPlanning').checked;
             var showActive = document.getElementById('filterActive').checked;
             var showCompleted = document.getElementById('filterCompleted').checked;
+            var showOngoing = document.getElementById('filterOngoing').checked;
             
             // Filter table rows
             var rows = document.querySelectorAll('#ptwTable tr[data-status]');
             rows.forEach(function(row) {
                 var status = row.getAttribute('data-status');
+                var statusDag = row.getAttribute('data-status-dag');
+                
+                // If "Igangværende" filter is active, only show items with status_dag = 'aktiv_dag'
+                if (showOngoing) {
+                    if (statusDag === 'aktiv_dag') {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Otherwise apply standard status filters
                 if ((status === 'planning' && !showPlanning) ||
                     (status === 'active' && !showActive) ||
                     (status === 'completed' && !showCompleted)) {
@@ -3433,6 +3451,19 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             var cards = document.querySelectorAll('.work-permit-card[data-status]');
             cards.forEach(function(card) {
                 var status = card.getAttribute('data-status');
+                var statusDag = card.getAttribute('data-status-dag');
+                
+                // If "Igangværende" filter is active, only show items with status_dag = 'aktiv_dag'
+                if (showOngoing) {
+                    if (statusDag === 'aktiv_dag') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Otherwise apply standard status filters
                 if ((status === 'planning' && !showPlanning) ||
                     (status === 'active' && !showActive) ||
                     (status === 'completed' && !showCompleted)) {
@@ -3458,6 +3489,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             document.getElementById('filterPlanning').addEventListener('change', filterItems);
             document.getElementById('filterActive').addEventListener('change', filterItems);
             document.getElementById('filterCompleted').addEventListener('change', filterItems);
+            document.getElementById('filterOngoing').addEventListener('change', filterItems);
             
             // Set up AJAX approval button listeners
             document.querySelectorAll('.ajax-approve-btn').forEach(function(button) {
