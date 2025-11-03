@@ -222,11 +222,11 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
             exit();
         }
         
-        // Validate status
-        if (!in_array($newStatus, ['working', 'stopped'])) {
+        // Only allow 'stopped' - work starts automatically via approval workflow
+        if ($newStatus !== 'stopped') {
             echo json_encode([
                 'success' => false,
-                'message' => 'Ugyldig status.'
+                'message' => 'Ugyldig status. Arbejde starter automatisk ved godkendelse.'
             ]);
             exit();
         }
@@ -243,10 +243,10 @@ if (isset($_POST['ajax_work_status']) && isset($_POST['wo_id']) && isset($_POST[
             'firma' => $userFirma
         ];
         
-        // Determine status_dag and ikon based on new status
-        $status_dag = $newStatus === 'stopped' ? 'pause_dag' : 'aktiv_dag';
-        $ikon = $newStatus === 'stopped' ? 'yellow' : 'green_pulse';
-        $sluttid = $newStatus === 'stopped' ? $now : null;
+        // Set to paused status
+        $status_dag = 'pause_dag';
+        $ikon = 'yellow';
+        $sluttid = $now;
         
         // Update database
         $updated = $db->execute("
@@ -3337,34 +3337,13 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                         cardIcon.style.fontSize = '1.3em';
                     }
                     
-                    // Update buttons based on new status
-                    if (data.status === 'working') {
-                        if (listButton) {
-                            listButton.textContent = '⏹️ Stop';
-                            listButton.className = 'button button-warning';
-                            listButton.onclick = function() { updateWorkStatus(woId, 'stopped'); };
-                        }
-                        if (cardButton) {
-                            cardButton.textContent = '⏹️ Stop arbejde';
-                            cardButton.className = 'button button-warning button-sm';
-                            cardButton.onclick = function() { updateWorkStatus(woId, 'stopped'); };
-                        }
-                    } else {
-                        if (listButton) {
-                            listButton.textContent = '🔨 Start';
-                            listButton.className = 'button button-primary';
-                            listButton.onclick = function() { updateWorkStatus(woId, 'working'); };
-                        }
-                        if (cardButton) {
-                            cardButton.textContent = '🔨 Start arbejde';
-                            cardButton.className = 'button button-primary button-sm';
-                            cardButton.onclick = function() { updateWorkStatus(woId, 'working'); };
-                        }
+                    // Hide buttons after stopping (work starts automatically via approval)
+                    if (listButton) {
+                        listButton.style.display = 'none';
                     }
-                    
-                    // Re-enable buttons
-                    if (listButton) listButton.disabled = false;
-                    if (cardButton) cardButton.disabled = false;
+                    if (cardButton) {
+                        cardButton.style.display = 'none';
+                    }
                     
                     // Show success notification
                     showNotification(data.message, 'success');
@@ -3372,30 +3351,18 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
                     // Show error notification
                     showNotification(data.message, 'error');
                     
-                    // Reset buttons
-                    if (listButton) {
-                        listButton.disabled = false;
-                        listButton.textContent = newStatus === 'working' ? '🔨 Start' : '⏹️ Stop';
-                    }
-                    if (cardButton) {
-                        cardButton.disabled = false;
-                        cardButton.textContent = newStatus === 'working' ? '🔨 Start arbejde' : '⏹️ Stop arbejde';
-                    }
+                    // Re-enable buttons on error
+                    if (listButton) listButton.disabled = false;
+                    if (cardButton) cardButton.disabled = false;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 showNotification('Der opstod en fejl. Prøv igen.', 'error');
                 
-                // Reset buttons
-                if (listButton) {
-                    listButton.disabled = false;
-                    listButton.textContent = newStatus === 'working' ? '🔨 Start' : '⏹️ Stop';
-                }
-                if (cardButton) {
-                    cardButton.disabled = false;
-                    cardButton.textContent = newStatus === 'working' ? '🔨 Start arbejde' : '⏹️ Stop arbejde';
-                }
+                // Re-enable buttons on error
+                if (listButton) listButton.disabled = false;
+                if (cardButton) cardButton.disabled = false;
             });
         }
         
