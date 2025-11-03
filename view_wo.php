@@ -128,16 +128,23 @@ if (isset($_POST['ajax_approve']) && isset($_POST['approve_id']) && isset($_POST
         
         $approvalHistory[] = $historyEntry;
         
+        // For entrepreneurs, automatically start work when they approve
+        $autoStartFields = '';
+        $autoStartParams = [];
+        if ($sessionRoleLc === 'entreprenor') {
+            $autoStartFields = ", status_dag = ?, ikon = ?, starttid = ?";
+            $autoStartParams = ['aktiv_dag', 'green_pulse', date('Y-m-d H:i:s')];
+        }
+        
         // Update database
         $updated = $db->execute("
             UPDATE work_orders 
-            SET approvals = ?, approval_history = ?, updated_at = NOW()
+            SET approvals = ?, approval_history = ?, updated_at = NOW()" . $autoStartFields . "
             WHERE id = ?
-        ", [
+        ", array_merge([
             json_encode($approvals),
-            json_encode($approvalHistory),
-            $approveId
-        ]);
+            json_encode($approvalHistory)
+        ], $autoStartParams, [$approveId]));
         
         if ($updated) {
             error_log("AJAX approval successful - User: $currentUser ($sessionRoleLc), WO ID: $approveId, Role: $approveRoleLc");
