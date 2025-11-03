@@ -1,0 +1,105 @@
+Tilføj modulstyring for PTW, SJA og tidsregistrering
+
+Opgave:
+Opdater EdinLink, så systemet kan styre aktivering/deaktivering af moduler (PTW, SJA, tidsregistrering) via en central konfiguration.
+Formålet er at kunne deaktivere SJA og tidsregistrering midlertidigt, mens PTW fortsat er aktivt.
+
+Modulerne skal kunne slås til/fra uden at slette kode eller data.
+Når et modul er slået fra, skal det ikke vises i menuer eller dashboards, og brugere, der prøver at åbne modulerne via link, skal få en pæn besked.
+
+Krav og ændringer:
+
+Opret modul-konfiguration:
+
+Tilføj en ny fil i projektroden: /config/modules.php
+
+<?php
+return [
+  'ptw' => true,
+  'sja' => false,
+  'tidsregistrering' => false
+];
+
+
+Indlæs modul-status globalt:
+
+I header.php eller dit globale init-script, tilføj:
+
+$modules = include __DIR__ . '/../config/modules.php';
+
+
+Skjul moduler i menu og dashboard:
+
+Find navigationsmenuen (typisk navbar.php eller sidebar.php).
+
+Omslut menupunkter med betingelser:
+
+<?php if ($modules['ptw']): ?>
+  <li><a href="/ptw/index.php">PTW</a></li>
+<?php endif; ?>
+
+<?php if ($modules['sja']): ?>
+  <li><a href="/sja/index.php">SJA</a></li>
+<?php endif; ?>
+
+<?php if ($modules['tidsregistrering']): ?>
+  <li><a href="/time/index.php">Tidsregistrering</a></li>
+<?php endif; ?>
+
+
+Vis besked ved direkte adgang:
+
+I starten af sja/index.php og time/index.php, tilføj:
+
+$modules = include __DIR__ . '/../config/modules.php';
+if (!$modules['sja']) {
+    echo "<div style='padding:20px; text-align:center; color:#555'>
+          Denne funktion er midlertidigt deaktiveret og vil blive aktiveret igen, når PTW er fuldt implementeret.
+          </div>";
+    exit;
+}
+
+
+(Samme logik i time/index.php, blot med $modules['tidsregistrering'])
+
+Tilføj admin-side for modulstyring:
+
+Opret /admin/modules.php med simpelt interface:
+
+<?php
+$modules = include __DIR__ . '/../config/modules.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $modules['ptw'] = isset($_POST['ptw']);
+    $modules['sja'] = isset($_POST['sja']);
+    $modules['tidsregistrering'] = isset($_POST['tidsregistrering']);
+    file_put_contents(__DIR__ . '/../config/modules.php', '<?php return ' . var_export($modules, true) . ';');
+}
+?>
+<h2>Modulstyring</h2>
+<form method="POST">
+  <label><input type="checkbox" name="ptw" <?= $modules['ptw'] ? 'checked' : '' ?>> PTW</label><br>
+  <label><input type="checkbox" name="sja" <?= $modules['sja'] ? 'checked' : '' ?>> SJA</label><br>
+  <label><input type="checkbox" name="tidsregistrering" <?= $modules['tidsregistrering'] ? 'checked' : '' ?>> Tidsregistrering</label><br><br>
+  <button type="submit">Gem ændringer</button>
+</form>
+
+
+Giv kun adgang til admin-brugere (brug din eksisterende rollecheck).
+
+Standardstatus:
+
+PTW = aktiv
+
+SJA = inaktiv
+
+Tidsregistrering = inaktiv
+
+Resultat:
+
+Moduler vises kun, hvis de er aktiverede i /config/modules.php.
+
+Brugere ser en informativ besked, hvis de prøver at åbne et deaktiveret modul.
+
+Admin kan senere genaktivere SJA og tidsregistrering med ét klik.
+
+Ingen data eller funktionalitet slettes – blot skjult indtil videre.
