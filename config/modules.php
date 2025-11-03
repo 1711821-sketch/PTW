@@ -11,8 +11,8 @@
  * - tidsregistrering: Time Registration (Tidsregistrering)
  */
 
-return [
-    'ptw' => true,
-    'sja' => false,
-    'tidsregistrering' => false
-];
+return array (
+  'ptw' => true,
+  'sja' => false,
+  'tidsregistrering' => false,
+);
