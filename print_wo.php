@@ -679,6 +679,7 @@ if ($statusVal === 'planning') {
     <?php endif; ?>
 
     <!-- Section for displaying SJA entries linked to this WO -->
+    <?php if ($modules['sja']): ?>
     <div class="card-collapsible-section">
         <div class="card-section-header" onclick="toggleSection(<?php echo $entry['id']; ?>, 'sja')">
             <h2>📝 Tilknyttede SJA'er</h2>
@@ -726,6 +727,7 @@ if ($statusVal === 'planning') {
     </div>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- Section for displaying time consumption for this work order -->
     <?php if ($modules['tidsregistrering']): ?>
