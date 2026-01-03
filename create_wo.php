@@ -192,7 +192,7 @@ $defaultLng = $current['longitude'] !== '' ? $current['longitude'] : '11.264111'
 <title><?php echo $edit_id ? 'Rediger PTW' : 'Opret ny PTW'; ?></title>
 <?php include 'pwa-head.php'; ?>
 <!-- Include global stylesheet for modern responsive design -->
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2.1">
 <!-- Include pdf.js and its worker for client‑side PDF parsing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
 <script>

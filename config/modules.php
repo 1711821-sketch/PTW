@@ -15,4 +15,5 @@ return array (
   'ptw' => true,
   'sja' => false,
   'tidsregistrering' => false,
+  'voice_assistant' => true,
 );

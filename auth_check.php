@@ -2,7 +2,7 @@
 /**
  * Authentication Check - Enforces mandatory password change
  * Include this file at the top of every protected page
- * 
+ *
  * This prevents users from bypassing the password change requirement
  * by directly navigating to other pages after login.
  */
@@ -23,29 +23,43 @@ if (!isset($_SESSION['user'])) {
 $current_script = basename($_SERVER['PHP_SELF']);
 if ($current_script !== 'change_password.php' && $current_script !== 'logout.php') {
     require_once __DIR__ . '/database.php';
-    
+
     try {
         $db = Database::getInstance();
-        $user = $db->fetch("SELECT must_change_password FROM users WHERE username = ?", [$_SESSION['user']]);
-        
-        if ($user && isset($user['must_change_password']) && (bool)$user['must_change_password'] === true) {
-            // User must change password, redirect to change_password.php
+
+        // Cache user data in session to avoid repeated database lookups
+        // Only query database if session data is missing
+        if (!isset($_SESSION['user_id']) || !isset($_SESSION['must_change_password_checked'])) {
+            $userRecord = $db->fetch("SELECT id, must_change_password FROM users WHERE username = ?", [$_SESSION['user']]);
+            if ($userRecord) {
+                $_SESSION['user_id'] = $userRecord['id'];
+                $_SESSION['must_change_password'] = (bool)$userRecord['must_change_password'];
+                $_SESSION['must_change_password_checked'] = true;
+            } else {
+                // User not found in database, force logout
+                session_destroy();
+                header('Location: login.php?error=user_not_found');
+                exit();
+            }
+        }
+
+        // Check cached must_change_password value
+        if ($_SESSION['must_change_password'] ?? false) {
             header('Location: change_password.php');
             exit();
         }
-        
+
         // Daily status reset: Check if we need to reset work status
-        // This runs once per day when the first user logs in after midnight
+        // This runs once per day per session
         $lastResetDate = $_SESSION['last_status_reset'] ?? '';
         $today = date('Y-m-d');
-        
+
         if ($lastResetDate !== $today) {
             // Reset daily work status for PTWs where approvals are NOT all for today
-            // Only reset if they don't have all three current approvals
             $todayDanish = date('d-m-Y');
             $db->execute("
-                UPDATE work_orders 
-                SET status_dag = 'kræver_dagsgodkendelse', 
+                UPDATE work_orders
+                SET status_dag = 'kræver_dagsgodkendelse',
                     ikon = 'green_static',
                     sluttid = NULL
                 WHERE status_dag IN ('aktiv_dag', 'pause_dag')
@@ -56,14 +70,11 @@ if ($current_script !== 'change_password.php' && $current_script !== 'logout.php
                     AND approvals::jsonb->>'entreprenor' = ?
                 )
             ", [$todayDanish, $todayDanish, $todayDanish]);
-            
-            // Mark that we've reset for today
+
             $_SESSION['last_status_reset'] = $today;
-            error_log("Daily status reset completed on login at " . date('Y-m-d H:i:s'));
         }
-        
+
     } catch (Exception $e) {
-        // FAIL CLOSED: On database error, destroy session and redirect to login
         error_log('Auth check error: ' . $e->getMessage());
         session_destroy();
         header('Location: login.php?error=db');

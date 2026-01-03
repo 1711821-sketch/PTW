@@ -34,7 +34,10 @@ try {
     if (is_string($entry['approval_history'] ?? '')) {
         $entry['approval_history'] = json_decode($entry['approval_history'], true) ?? [];
     }
-    if (is_string($entry['completion_images'] ?? '[]')) {
+    // Handle completion_images - ensure it exists and is an array
+    if (!isset($entry['completion_images'])) {
+        $entry['completion_images'] = [];
+    } elseif (is_string($entry['completion_images'])) {
         $entry['completion_images'] = json_decode($entry['completion_images'], true) ?? [];
     }
     
@@ -214,7 +217,7 @@ if ($statusVal === 'planning') {
     <title>Vis/Print PTW</title>
     <?php include 'pwa-head.php'; ?>
     <!-- Import global stylesheet for consistent typography and navigation -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <style>
         body { font-family: Arial, sans-serif; margin: 1rem; color: #222; }
         h1 { margin-top: 0; font-size: 1.6em; text-align: center; }

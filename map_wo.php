@@ -78,7 +78,7 @@ try {
     <title>Oversigtskort over WO</title>
     <?php include 'pwa-head.php'; ?>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <style>
         body {
             margin: 0;

@@ -486,17 +486,67 @@ try {
             error_log("Work order access denied - Entrepreneur: $currentUser, No firma defined");
         }
     } elseif (in_array($currentRole, ['admin', 'opgaveansvarlig', 'drift'])) {
-        // Get total count for pagination
-        $countResult = $db->fetch("SELECT COUNT(*) as total FROM work_orders");
+        // Build filter conditions
+        $filterConditions = [];
+        $filterParams = [];
+
+        // Status filter
+        if (!empty($_GET['status'])) {
+            $filterConditions[] = "status = ?";
+            $filterParams[] = $_GET['status'];
+        }
+
+        // Firma filter
+        if (!empty($_GET['firma'])) {
+            $filterConditions[] = "entreprenor_firma = ?";
+            $filterParams[] = $_GET['firma'];
+        }
+
+        // Jobansvarlig filter
+        if (!empty($_GET['jobansvarlig'])) {
+            $filterConditions[] = "jobansvarlig = ?";
+            $filterParams[] = $_GET['jobansvarlig'];
+        }
+
+        // Date filters
+        if (!empty($_GET['date_from'])) {
+            $filterConditions[] = "DATE(created_at) >= ?";
+            $filterParams[] = $_GET['date_from'];
+        }
+        if (!empty($_GET['date_to'])) {
+            $filterConditions[] = "DATE(created_at) <= ?";
+            $filterParams[] = $_GET['date_to'];
+        }
+
+        // Search filter
+        if (!empty($_GET['search'])) {
+            $searchTerm = '%' . $_GET['search'] . '%';
+            $filterConditions[] = "(work_order_no ILIKE ? OR description ILIKE ? OR entreprenor_firma ILIKE ? OR jobansvarlig ILIKE ?)";
+            $filterParams[] = $searchTerm;
+            $filterParams[] = $searchTerm;
+            $filterParams[] = $searchTerm;
+            $filterParams[] = $searchTerm;
+        }
+
+        // Build WHERE clause
+        $whereClause = '';
+        if (!empty($filterConditions)) {
+            $whereClause = 'WHERE ' . implode(' AND ', $filterConditions);
+        }
+
+        // Get total count for pagination (with filters)
+        $countQuery = "SELECT COUNT(*) as total FROM work_orders $whereClause";
+        $countResult = $db->fetch($countQuery, $filterParams);
         $totalItems = $countResult['total'] ?? 0;
         $totalPages = ceil($totalItems / $itemsPerPage);
-        
-        // Admin, opgaveansvarlig and drift can see all work orders
+
+        // Admin, opgaveansvarlig and drift can see all work orders (with filters)
         $entries = $db->fetchAll("
-            SELECT * FROM work_orders 
+            SELECT * FROM work_orders
+            $whereClause
             ORDER BY created_at DESC
             LIMIT ? OFFSET ?
-        ", [$itemsPerPage, $offset]);
+        ", array_merge($filterParams, [$itemsPerPage, $offset]));
         
         error_log("Work order access - User: $currentUser, Role: $currentRole, Page: $currentPage, Count: " . count($entries) . ", Total: $totalItems");
     } else {
@@ -535,6 +585,52 @@ $data_file = __DIR__ . '/wo_data.json';
 
 $today = date('d-m-Y');
 $now = date('d-m-Y H:i');
+
+// AJAX handler for infinite scroll - returns paginated entries as JSON
+if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+    header('Content-Type: application/json');
+
+    // Generate HTML for the entries
+    ob_start();
+    foreach ($entries as $entry) {
+        $status = $entry['status'] ?? 'planning';
+        if ($status === 'planning') {
+            $statusLabel = 'Planlagt';
+            $statusClass = 'status-planlagt';
+        } elseif ($status === 'active') {
+            $statusLabel = 'Aktiv';
+            $statusClass = 'status-aktiv';
+        } else {
+            $statusLabel = 'Afsluttet';
+            $statusClass = 'status-afsluttet';
+        }
+
+        $approvals = $entry['approvals'] ?? [];
+        if (is_string($approvals)) {
+            $approvals = json_decode($approvals, true) ?? [];
+        }
+        $oaApproved = (isset($approvals['opgaveansvarlig']) && $approvals['opgaveansvarlig'] === $today);
+        $driftApproved = (isset($approvals['drift']) && $approvals['drift'] === $today);
+        $entApproved = (isset($approvals['entreprenor']) && $approvals['entreprenor'] === $today);
+
+        $status_dag = $entry['status_dag'] ?? '';
+        $firma = $entry['entreprenor_firma'] ?? '';
+        $kontakt = $entry['entreprenor_kontakt'] ?? '';
+
+        // Include the card HTML template
+        include __DIR__ . '/templates/card_ajax.php';
+    }
+    $html = ob_get_clean();
+
+    echo json_encode([
+        'success' => true,
+        'html' => $html,
+        'currentPage' => $currentPage,
+        'totalPages' => $totalPages,
+        'hasMore' => $currentPage < $totalPages
+    ]);
+    exit();
+}
 
 // Note: GET-based approval system removed to prevent conflicts with AJAX approval system
 // All approvals now handled via AJAX requests for better user experience
@@ -594,7 +690,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <title>Alle PTW'er</title>
     <?php include 'pwa-head.php'; ?>
     <!-- Import the global stylesheet for a modern look -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.1">
     <script src="navigation.js"></script>
     <style>
         /* Time Modal Styles */
@@ -2036,23 +2132,27 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
     <?php if ($msg): ?>
         <div class="alert alert-success"><?php echo $msg; ?></div>
     <?php endif; ?>
+    <!-- Avanceret søgning og filtrering -->
+    <?php include 'includes/advanced_filters.php'; ?>
+
     <?php if (count($entries) > 0): ?>
-        <div class="filter-controls">
+        <!-- Quick visibility toggles -->
+        <div class="filter-controls quick-filters">
             <div class="filter-group">
                 <label class="filter-label">
-                    <input type="checkbox" id="filterPlanning" checked> 
+                    <input type="checkbox" id="filterPlanning" checked>
                     <span class="status-planlagt">📋 Vis planlagte</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterActive" checked> 
+                    <input type="checkbox" id="filterActive" checked>
                     <span class="status-aktiv">🔥 Vis aktive</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterCompleted" checked> 
+                    <input type="checkbox" id="filterCompleted" checked>
                     <span class="status-afsluttet">✅ Vis afsluttede</span>
                 </label>
                 <label class="filter-label">
-                    <input type="checkbox" id="filterOngoing" checked> 
+                    <input type="checkbox" id="filterOngoing" checked>
                     <span class="status-aktiv">🔨 Igangværende</span>
                 </label>
             </div>
@@ -2301,7 +2401,7 @@ if ($role === 'admin' && isset($_GET['delete_id'])) {
             </div>
             
             <div class="slider-container">
-                <div class="card-slider" id="cardSlider">
+                <div class="card-slider work-permit-cards" id="cardSlider" data-current-page="<?php echo $currentPage; ?>" data-total-pages="<?php echo $totalPages; ?>" data-total-items="<?php echo $totalItems; ?>">
             <?php foreach ($entries as $entry):
                 $status = $entry['status'] ?? 'planning';
                 // Map internal status codes to Danish labels and CSS classes
